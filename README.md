@@ -9,3 +9,5 @@ This entire exercise consists of one function (static method Play in the Program
 4. Repeat step 3 while new digits are being added to the board.
 
 Final source of the Play function is the starting point for refactoring. Complete exercise consists of refactoring the Play function into a complete object model. There are no correct and incorrect solutions to the exercise - try to go as far as you can with building a better object-oriented solution which is still doing the same thing as the original function.
+
+This kata is a Java-port of the original C#-version: https://github.com/zoran-horvat/sudoku-kata
