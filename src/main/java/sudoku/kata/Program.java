@@ -11,6 +11,10 @@ import static java.util.stream.Collectors.toList;
 public class Program {
 
     static void play() {
+        play(new Random());
+    }
+
+    static void play(Random random) {
         //region Construct fully populated board
         // Prepare empty board
         String line = "+---+---+---+";
@@ -33,7 +37,7 @@ public class Program {
                 };
 
         // Construct board to be solved
-        Random rng = new Random();
+        Random rng = random;
 
         // Top element is current state of the board
         Stack<int[]> stateStack = new Stack<>();
