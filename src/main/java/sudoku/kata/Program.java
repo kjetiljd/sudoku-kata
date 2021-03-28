@@ -18,25 +18,8 @@ public class Program {
 
     static void play(Random rng) {
         //region Construct fully populated board
-        // Prepare empty board
-        String line = "+---+---+---+";
-        String middle = "|...|...|...|";
-        char[][] board = new char[][]
-                {
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray()
-                };
+
+        char[][] board = emptyBoard();
 
         // Construct board to be solved
 
@@ -181,7 +164,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
+        System.out.println(String.join(System.lineSeparator(), boardLines(board)));
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -229,7 +212,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        System.out.println(String.join("\n", Arrays.stream(board).map(it -> new String(it)).collect(toList())));
+        System.out.println(String.join("\n", boardLines(board)));
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -836,13 +819,40 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
+                System.out.println(String.join(System.lineSeparator(), boardLines(board)));
                 String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
                 System.out.format("Code: %s", code).println();
                 System.out.println();
                 //endregion
             }
         }
+    }
+
+    private static List<String> boardLines(char[][] board) {
+        return Arrays.stream(board).map(it -> new String(it)).collect(toList());
+    }
+
+    // Prepare empty board
+    private static char[][] emptyBoard() {
+        String line = "+---+---+---+";
+        String middle = "|...|...|...|";
+        char[][] board = new char[][]
+                {
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray()
+                };
+        return board;
     }
 
     private static int[] calculateCandidates(int[] state) {
