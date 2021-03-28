@@ -46,7 +46,7 @@ public class Program {
                     int[] currentState = new int[9 * 9];
 
                     if (!stateStack.isEmpty()) {
-                        System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
+                        currentState = new State(stateStack.peek()).copy().getState();
                     }
 
                     int bestRow = -1;
@@ -174,8 +174,7 @@ public class Program {
         int[][] removedPerBlock = new int[3][3];
         int[] positions = IntStream.range(0, 9 * 9).toArray();
 
-        int[] finalState = new int[state.length];
-        System.arraycopy(state, 0, finalState, 0, finalState.length);
+        int[] finalState = new State(state).copy().getState();
 
         int removedPos = 0;
         while (removedPos < 9 * 9 - remainingDigits) {
@@ -567,8 +566,8 @@ public class Program {
                     int digit1 = candidateDigit1.remove();
                     int digit2 = candidateDigit2.remove();
 
-                    int[] alternateState = new int[finalState.length];
-                    System.arraycopy(state, 0, alternateState, 0, alternateState.length);
+
+                    int[] alternateState = new State(state).copy().getState();
 
                     if (finalState[index1] == digit1) {
                         alternateState[index1] = digit2;
@@ -596,9 +595,9 @@ public class Program {
                                 int[] currentState = new int[9 * 9];
 
                                 if (!stateStack.isEmpty()) {
-                                    System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
+                                    currentState = new State(stateStack.peek()).copy().getState();
                                 } else {
-                                    System.arraycopy(alternateState, 0, currentState, 0, currentState.length);
+                                    currentState = new State(alternateState).copy().getState();
                                 }
 
                                 int bestRow = -1;
@@ -815,6 +814,12 @@ class State {
 
     public int[] getState() {
         return state;
+    }
+
+    public State copy(){
+        int[] copy = new int[state.length];
+        System.arraycopy(state, 0, copy, 0, copy.length);
+        return new State(copy);
     }
 }
 
