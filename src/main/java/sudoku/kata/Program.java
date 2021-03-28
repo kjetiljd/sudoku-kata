@@ -359,22 +359,20 @@ public class Program {
                                     .distinct().toArray();
 
                     var groups =
-                            IntStream.range(0, twoDigitMasks.length)
-                                    .mapToObj(maskIndex ->
+                            Arrays.stream(twoDigitMasks)
+                                    .mapToObj(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(cell -> candidateMasks[cell.getIndex()] == twoDigitMasks[maskIndex]).count() == 2)
+                                                            .filter(cell -> candidateMasks[cell.getIndex()] == twoDigitMask).count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMasks[maskIndex]
-                                                                    && (candidateMasks[cell.getIndex()] & twoDigitMasks[maskIndex]) > 0))
+                                                            .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMask
+                                                                    && (candidateMasks[cell.getIndex()] & twoDigitMask) > 0))
                                                     .map(group -> Map.of(
-                                                            "Mask", twoDigitMasks[maskIndex],
+                                                            "Mask", twoDigitMask,
                                                             "Discriminator", group.getDiscriminator(),
                                                             "Description", group.getDescription(),
-                                                            "Cells", group
-                                                            )
-                                                    ).collect(toList())
-                                    ).flatMap(Collection::stream)
+                                                            "Cells", group))
+                                                    .collect(toList())).flatMap(Collection::stream)
                                     .collect(toList());
 
                     if (!groups.isEmpty()) {
