@@ -971,11 +971,15 @@ class CellGroup extends AbstractList<Cell> {
 }
 
 class Cell {
-    static final Cell[] cells = new Cell[9 * 9];
+    private static final Cell[] cells = new Cell[9 * 9];
 
     static {
         for (int index = 0; index < 9 * 9; index++)
             cells[index] = new Cell(index);
+    }
+
+    static List<Cell> cells() {
+        return List.of(cells);
     }
 
     private int index;
