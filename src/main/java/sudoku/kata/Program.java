@@ -157,7 +157,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        Board.printBoard(stateStack.peek());
+        new Board(stateStack.peek()).printBoard();
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -200,7 +200,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        Board.printBoard(state);
+        new Board(state).printBoard();
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -784,7 +784,7 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                Board.printBoard(state);
+                new Board(state).printBoard();
                 String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
                 System.out.format("Code: %s", code).println();
                 System.out.println();
@@ -839,7 +839,7 @@ class Board {
         board = board(state);
     }
 
-    static List<String> board(int[] state) {
+    private static List<String> board(int[] state) {
         char[][] board = emptyBoard();
         for (int i = 0; i < state.length; i++) {
             int tempRow = i / 9;
@@ -856,7 +856,7 @@ class Board {
     }
 
     // Prepare empty board
-    static char[][] emptyBoard() {
+    private static char[][] emptyBoard() {
         String line = "+---+---+---+";
         String middle = "|...|...|...|";
         return new char[][]
@@ -877,8 +877,8 @@ class Board {
                 };
     }
 
-    static void printBoard(int[] state) {
-        System.out.println(String.join(System.lineSeparator(), board(state)));
+    void printBoard() {
+        System.out.println(String.join(System.lineSeparator(), board));
     }
 }
 
