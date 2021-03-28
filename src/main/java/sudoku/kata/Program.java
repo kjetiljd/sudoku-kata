@@ -373,26 +373,30 @@ public class Program {
                                     .mapToObj(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(cell -> candidateMasks[cell.getIndex()] == twoDigitMask).count() == 2)
+                                                            .filter(cell -> candidateMasks[cell.getIndex()] == twoDigitMask)
+                                                            .count() == 2)
                                                     .filter(group -> group.stream()
                                                             .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMask
                                                                     && (candidateMasks[cell.getIndex()] & twoDigitMask) > 0))
                                                     .map(group -> new TwoDigitGroups(twoDigitMask, group))
-                                                    .collect(toList())).flatMap(Collection::stream)
+                                                    .collect(toList()))
+                                    .flatMap(Collection::stream)
                                     .collect(toList());
 
                     if (!twoDigitGroups.isEmpty()) {
                         for (var twoDigitGroup : twoDigitGroups) {
-                            var cells = twoDigitGroup.getGroup()
-                                    .stream().filter(cell ->
-                                            candidateMasks[cell.getIndex()] != twoDigitGroup.getMask()
-                                                    && (candidateMasks[cell.getIndex()] & twoDigitGroup.getMask()) > 0)
-                                    .collect(toList());
+                            var cells =
+                                    twoDigitGroup.getGroup().stream()
+                                            .filter(cell ->
+                                                    candidateMasks[cell.getIndex()] != twoDigitGroup.getMask()
+                                                            && (candidateMasks[cell.getIndex()] & twoDigitGroup.getMask()) > 0)
+                                            .collect(toList());
 
-                            var maskCells = twoDigitGroup.getGroup()
-                                    .stream().filter(cell ->
-                                            candidateMasks[cell.getIndex()] == twoDigitGroup.getMask())
-                                    .collect(toList());
+                            var maskCells =
+                                    twoDigitGroup.getGroup().stream()
+                                            .filter(cell ->
+                                                    candidateMasks[cell.getIndex()] == twoDigitGroup.getMask())
+                                            .collect(toList());
 
                             if (!cells.isEmpty()) {
                                 int upper = 0;
