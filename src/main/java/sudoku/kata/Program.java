@@ -263,23 +263,24 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
 
+                    Cell[] sibling = new Cell[9];
                     for (int j = 0; j < 9; j++) {
-                        Cell sibling = cell.rowSibling(j);
-                        int siblingIndex = sibling.getIndex();
+                        sibling[j] = cell.rowSibling(j);
+                        int siblingIndex = sibling[j].getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
                     for (int j = 0; j < 9; j++) {
-                        Cell sibling = cell.columnSibling(j);
-                        int siblingIndex = sibling.getIndex();
+                        sibling[j] = cell.columnSibling(j);
+                        int siblingIndex = sibling[j].getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
                     for (int j = 0; j < 9; j++) {
-                        Cell sibling = cell.blockSibling(j);
-                        int siblingIndex = sibling.getIndex();
+                        sibling[j] = cell.blockSibling(j);
+                        int siblingIndex = sibling[j].getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
