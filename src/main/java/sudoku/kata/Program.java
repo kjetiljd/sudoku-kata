@@ -940,18 +940,18 @@ public class Program {
 }
 
 class CellGroup extends AbstractList<Cell> {
-    private final String discriminator;
+    private final int discriminator;
     private final String description;
 
     private final List<Cell> cells;
 
-    CellGroup(String discriminator, String description, List<Cell> cells) {
+    CellGroup(int discriminator, String description, List<Cell> cells) {
         this.discriminator = discriminator;
         this.description = description;
         this.cells = Collections.unmodifiableList(cells);
     }
 
-    public String getDiscriminator() {
+    public int getDiscriminator() {
         return discriminator;
     }
 
