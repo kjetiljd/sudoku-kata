@@ -771,15 +771,14 @@ public class Program {
 
         return IntStream.range(0, state.size())
                 .map(i -> {
-                    Cell cell = Cell.of(i);
-                    if (state.get(i) == 0) {
-                        int collidingDigitsMask =
-                                cell.allSiblings().stream()
-                                        .mapToInt(sibling -> maskForDigit(state.get(sibling.getIndex())))
-                                        .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
-                        return allOnes & ~collidingDigitsMask;
+                    if (state.hasValue(i)) {
+                        return 0;
                     }
-                    return 0;
+                    int collidingDigitsMask =
+                            Cell.of(i).allSiblings().stream()
+                                    .mapToInt(sibling -> maskForDigit(state.get(sibling.getIndex())))
+                                    .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+                    return allOnes & ~collidingDigitsMask;
                 }).toArray();
     }
 
@@ -835,6 +834,10 @@ class State extends AbstractList<Integer> {
     @Override
     public int size() {
         return state.length;
+    }
+
+    boolean hasValue(int i) {
+        return state[i] != 0;
     }
 }
 
