@@ -363,10 +363,10 @@ public class Program {
                                     .mapToObj(maskIndex ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(tuple -> candidateMasks[tuple.getIndex()] == twoDigitMasks[maskIndex]).count() == 2)
+                                                            .filter(cell -> candidateMasks[cell.getIndex()] == twoDigitMasks[maskIndex]).count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(tuple -> candidateMasks[tuple.getIndex()] != twoDigitMasks[maskIndex]
-                                                                    && (candidateMasks[tuple.getIndex()] & twoDigitMasks[maskIndex]) > 0))
+                                                            .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMasks[maskIndex]
+                                                                    && (candidateMasks[cell.getIndex()] & twoDigitMasks[maskIndex]) > 0))
                                                     .map(group -> Map.of(
                                                             "Mask", twoDigitMasks[maskIndex],
                                                             "Discriminator", group.getDiscriminator(),
