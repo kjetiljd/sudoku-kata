@@ -427,10 +427,7 @@ public class Program {
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
-                                                    "CellsWithMask",
-                                                    group.stream()
-                                                            .filter(cell -> state[cell.getIndex()] == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
-                                                            .collect(toList()),
+                                                    "CellsWithMask", group.cellsWithMask(mask, state, candidateMasks),
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state[cell.getIndex()] == 0) &&
@@ -994,6 +991,13 @@ class CellGroup extends AbstractList<Cell> {
         return Collections.unmodifiableList(cellGroupsList);
         //endregion
     }
+
+    public List<Cell> cellsWithMask(int mask, int[] state, int[] candidateMasks) {
+        return this.stream()
+                .filter(cell -> state[cell.getIndex()] == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
+                .collect(toList());
+    }
+
 }
 
 class Cell {
