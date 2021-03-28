@@ -16,7 +16,7 @@ public class Program {
         play(new Random());
     }
 
-    static void play(Random random) {
+    static void play(Random rng) {
         //region Construct fully populated board
         // Prepare empty board
         String line = "+---+---+---+";
@@ -39,7 +39,6 @@ public class Program {
                 };
 
         // Construct board to be solved
-        Random rng = random;
 
         // Top element is current state of the board
         Stack<int[]> stateStack = new Stack<>();
