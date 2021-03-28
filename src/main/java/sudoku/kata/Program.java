@@ -837,12 +837,7 @@ public class Program {
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
                 System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
-                String code =
-                        String.join("", Arrays.stream(board).map(it -> new String(it)).collect(toList()))
-                                .replace("-", "")
-                                .replace("+", "")
-                                .replace("|", "")
-                                .replace(".", "0");
+                String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
                 System.out.format("Code: %s", code).println();
                 System.out.println();
                 //endregion
