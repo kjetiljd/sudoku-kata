@@ -258,11 +258,12 @@ public class Program {
             //region Calculate candidates for current state of the board
             int[] candidateMasks = new int[state.length];
 
-            for (int i = 0; i < state.length; i++)
+            for (int i = 0; i < state.length; i++) {
+                Cell cell = Cell.of(i);
                 if (state[i] == 0) {
 
-                    int row = i / 9;
-                    int col = i % 9;
+                    int row = cell.getRow();
+                    int col = cell.getColumn();
                     int blockRow = row / 3;
                     int blockCol = col / 3;
 
@@ -281,6 +282,7 @@ public class Program {
 
                     candidateMasks[i] = allOnes & ~colidingNumbers;
                 }
+            }
             //endregion
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
