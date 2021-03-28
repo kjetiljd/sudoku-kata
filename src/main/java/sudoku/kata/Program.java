@@ -405,10 +405,10 @@ public class Program {
                                     .mapToObj(maskIndex ->
                                             cellGroups.stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(tuple -> candidateMasks[(Integer) tuple.get("Index")] == twoDigitMasks[maskIndex]).count() == 2)
+                                                            .filter(tuple -> candidateMasks[tuple.getIndex()] == twoDigitMasks[maskIndex]).count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(tuple -> candidateMasks[(Integer) tuple.get("Index")] != twoDigitMasks[maskIndex]
-                                                                    && (candidateMasks[(Integer) tuple.get("Index")] & twoDigitMasks[maskIndex]) > 0))
+                                                            .anyMatch(tuple -> candidateMasks[tuple.getIndex()] != twoDigitMasks[maskIndex]
+                                                                    && (candidateMasks[tuple.getIndex()] & twoDigitMasks[maskIndex]) > 0))
                                                     .map(group -> Map.of(
                                                             "Mask", twoDigitMasks[maskIndex],
                                                             "Discriminator", group.getDiscriminator(),
@@ -423,13 +423,13 @@ public class Program {
                         for (var group : groups) {
                             var cells = ((List<Cell>) group.get("Cells"))
                                     .stream().filter(cell ->
-                                            candidateMasks[(int) cell.get("Index")] != (int) group.get("Mask")
-                                                    && (candidateMasks[(int) cell.get("Index")] & (int) group.get("Mask")) > 0)
+                                            candidateMasks[cell.getIndex()] != (int) group.get("Mask")
+                                                    && (candidateMasks[cell.getIndex()] & (int) group.get("Mask")) > 0)
                                     .collect(toList());
 
                             var maskCells = ((List<Cell>) group.get("Cells"))
                                     .stream().filter(cell ->
-                                            candidateMasks[(int) cell.get("Index")] == (int) group.get("Mask"))
+                                            candidateMasks[cell.getIndex()] == (int) group.get("Mask"))
                                     .collect(toList());
 
                             if (!cells.isEmpty()) {
@@ -449,11 +449,11 @@ public class Program {
 
                                 System.out.println(
                                         "Values " + lower + " and " + upper + " in " + group.get("Description") +
-                                                " are in cells (" + ((int) maskCells.get(0).get("Row") + 1) + ", " + ((int) maskCells.get(0).get("Column") + 1) + ")" +
-                                                " and (" + ((int) maskCells.get(1).get("Row") + 1) + ", " + ((int) maskCells.get(1).get("Column") + 1) + ").");
+                                                " are in cells (" + (maskCells.get(0).getRow() + 1) + ", " + (maskCells.get(0).getColumn() + 1) + ")" +
+                                                " and (" + (maskCells.get(1).getRow() + 1) + ", " + (maskCells.get(1).getColumn() + 1) + ").");
 
                                 for (var cell : cells) {
-                                    int maskToRemove = candidateMasks[(int) cell.get("Index")] & (int) group.get("Mask");
+                                    int maskToRemove = candidateMasks[cell.getIndex()] & (int) group.get("Mask");
                                     List<Integer> valuesToRemove = new ArrayList<Integer>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -465,9 +465,9 @@ public class Program {
                                     }
 
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
-                                    System.out.println(valuesReport + " cannot appear in (" + ((int) cell.get("Row") + 1) + ", " + ((int) cell.get("Column") + 1) + ").");
+                                    System.out.println(valuesReport + " cannot appear in (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ").");
 
-                                    candidateMasks[(int) cell.get("Index")] &= ~(int) group.get("Mask");
+                                    candidateMasks[cell.getIndex()] &= ~(int) group.get("Mask");
                                     stepChangeMade = true;
                                 }
                             }
@@ -492,19 +492,19 @@ public class Program {
                             masks.stream()
                                     .map(mask -> cellGroups.stream()
                                             .filter(group -> group.stream().allMatch(cell ->
-                                                    state[(Integer) cell.get("Index")] == 0 || (mask & (maskForDigit(state[(Integer) cell.get("Index")]))) == 0))
+                                                    state[cell.getIndex()] == 0 || (mask & (maskForDigit(state[cell.getIndex()]))) == 0))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Description", group.getDescription(),
                                                     "Cells", group,
                                                     "CellsWithMask",
                                                     group.stream()
-                                                            .filter(cell -> state[(Integer) cell.get("Index")] == 0 && (candidateMasks[(Integer) cell.get("Index")] & mask) != 0)
+                                                            .filter(cell -> state[cell.getIndex()] == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
                                                             .collect(toList()),
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> {
-                                                                int cellIndex = (Integer) cell.get("Index");
+                                                                int cellIndex = cell.getIndex();
                                                                 return (state[cellIndex] == 0) &&
                                                                         ((candidateMasks[cellIndex] & mask) != 0) &&
                                                                         ((candidateMasks[cellIndex] & ~mask) != 0);
@@ -521,8 +521,8 @@ public class Program {
 
                         if (((List<Cell>) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell ->
-                                        ((candidateMasks[(Integer) cell.get("Index")] & mask) != 0) &&
-                                                ((candidateMasks[(Integer) cell.get("Index")] & ~mask) != 0))) {
+                                        ((candidateMasks[cell.getIndex()] & mask) != 0) &&
+                                                ((candidateMasks[cell.getIndex()] & ~mask) != 0))) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + groupWithNMasks.get("Description") + " values ");
 
@@ -540,7 +540,7 @@ public class Program {
 
                             message.append(" appear only in cells");
                             for (var cell : ((List<Cell>) groupWithNMasks.get("CellsWithMask"))) {
-                                message.append(" (" + ((Integer) cell.get("Row") + 1) + ", " + ((Integer) cell.get("Column") + 1) + ")");
+                                message.append(" (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ")");
                             }
 
                             message.append(" and other values cannot appear in those cells.");
@@ -549,11 +549,11 @@ public class Program {
                         }
 
                         for (var cell : ((List<Cell>) groupWithNMasks.get("CellsWithMask"))) {
-                            int maskToClear = candidateMasks[(Integer) cell.get("Index")] & ~((Integer) groupWithNMasks.get("Mask"));
+                            int maskToClear = candidateMasks[cell.getIndex()] & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
 
-                            candidateMasks[(Integer) cell.get("Index")] &= ((Integer) groupWithNMasks.get("Mask"));
+                            candidateMasks[cell.getIndex()] &= ((Integer) groupWithNMasks.get("Mask"));
                             stepChangeMade = true;
 
                             int valueToClear = 1;
@@ -570,7 +570,7 @@ public class Program {
                                 valueToClear += 1;
                             }
 
-                            message.append(" cannot appear in cell (" + ((int) cell.get("Row") + 1) + ", " + ((int) cell.get("Column") + 1) + ").");
+                            message.append(" cannot appear in cell (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ").");
                             System.out.println(message.toString());
                         }
                     }
@@ -986,20 +986,6 @@ class Cell {
 
     static Cell of(int index) {
         return cells[index];
-    }
-
-    /* temp method during conversion */
-    Object get(String field) {
-        switch (field) {
-            case "Index":
-                return getIndex();
-            case "Row":
-                return getRow();
-            case "Column":
-                return getColumn();
-            default:
-                throw new UnsupportedOperationException();
-        }
     }
 
     int getIndex() {
