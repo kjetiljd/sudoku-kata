@@ -24,7 +24,7 @@ public class Program {
             // Construct board to be solved
 
             // Top element is current state of the board
-            Stack<int[]> stateStack = new Stack<>();
+            Stack<State> stateStack = new Stack<>();
 
             // Top elements are (row, col) of cell which has been modified compared to previous state
             Stack<Integer> rowIndexStack = new Stack<>();
@@ -43,10 +43,10 @@ public class Program {
             String command = "expand";
             while (stateStack.size() <= 9 * 9) {
                 if (command.equals("expand")) {
-                    int[] currentState = new int[9 * 9];
+                    State currentState = new State(new int[9 * 9]);
 
                     if (!stateStack.isEmpty()) {
-                        currentState = new State(stateStack.peek()).copy().getState();
+                        currentState = stateStack.peek().copy();
                     }
 
                     int bestRow = -1;
@@ -56,8 +56,8 @@ public class Program {
                     int bestRandomValue = -1;
                     boolean containsUnsolvableCells = false;
 
-                    for (int index = 0; index < currentState.length; index++)
-                        if (currentState[index] == 0) {
+                    for (int index = 0; index < currentState.size(); index++)
+                        if (currentState.get(index) == 0) {
 
                             int row = index / 9;
                             int col = index % 9;
@@ -67,15 +67,15 @@ public class Program {
                             boolean[] isDigitUsed = new boolean[9];
 
                             for (int i = 0; i < 9; i++) {
-                                int rowDigit = currentState[9 * i + col];
+                                int rowDigit = currentState.get(9 * i + col);
                                 if (rowDigit > 0)
                                     isDigitUsed[rowDigit - 1] = true;
 
-                                int colDigit = currentState[9 * row + i];
+                                int colDigit = currentState.get(9 * row + i);
                                 if (colDigit > 0)
                                     isDigitUsed[colDigit - 1] = true;
 
-                                int blockDigit = currentState[(blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3)];
+                                int blockDigit = currentState.get((blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3));
                                 if (blockDigit > 0)
                                     isDigitUsed[blockDigit - 1] = true;
                             } // for (i = 0..8)
@@ -129,7 +129,7 @@ public class Program {
                     int digitToMove = lastDigitStack.pop();
 
                     boolean[] usedDigits = usedDigitsStack.peek();
-                    int[] currentState = stateStack.peek();
+                    State currentState = stateStack.peek();
                     int currentStateIndex = 9 * rowToMove + colToMove;
 
                     int movedToDigit = digitToMove + 1;
@@ -138,13 +138,13 @@ public class Program {
 
                     if (digitToMove > 0) {
                         usedDigits[digitToMove - 1] = false;
-                        currentState[currentStateIndex] = 0;
+                        currentState.set(currentStateIndex, 0);
                     }
 
                     if (movedToDigit <= 9) {
                         lastDigitStack.push(movedToDigit);
                         usedDigits[movedToDigit - 1] = true;
-                        currentState[currentStateIndex] = movedToDigit;
+                        currentState.set(currentStateIndex, movedToDigit);
 
                         // Next possible digit was found at current position
                         // Next step will be to expand the state
@@ -159,9 +159,9 @@ public class Program {
 
             System.out.println();
             System.out.println("Final look of the solved board:");
-            new Board(stateStack.peek()).printBoard();
+            new Board(stateStack.peek().getState()).printBoard();
 
-            state = new State(stateStack.peek());
+            state = stateStack.peek();
         }
 
         //endregion
@@ -822,6 +822,10 @@ class State extends AbstractList<Integer> {
     @Override
     public Integer get(int index) {
         return state[index];
+    }
+
+    public Integer get(Cell cell) {
+        return state[cell.getIndex()];
     }
 
     @Override
