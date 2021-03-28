@@ -939,6 +939,19 @@ public class Program {
     }
 }
 
+class CellGroup extends AbstractList<Cell> {
+
+    @Override
+    public Cell get(int index) {
+        return null;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
+}
+
 class Cell {
     static final Cell[] cells = new Cell[9 * 9];
 
