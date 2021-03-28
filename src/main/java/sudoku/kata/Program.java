@@ -469,7 +469,7 @@ public class Program {
                                                                         ((candidateMasks[cellIndex] & ~mask) != 0);
                                                             })
                                                             .count()))
-                                            .filter(group -> ((List) (group.get("CellsWithMask"))).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((List<Cell>) (group.get("CellsWithMask"))).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -478,7 +478,7 @@ public class Program {
                     for (var groupWithNMasks : groupsWithNMasks) {
                         int mask = (int) groupWithNMasks.get("Mask");
 
-                        if (((List<Cell>) groupWithNMasks.get("Cells")).stream()
+                        if (((CellGroup) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell ->
                                         ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                 ((candidateMasks[cell.getIndex()] & ~mask) != 0))) {
