@@ -157,7 +157,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        printBoard(stateStack.peek());
+        Board.printBoard(stateStack.peek());
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -200,7 +200,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        printBoard(state);
+        Board.printBoard(state);
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -784,55 +784,13 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                printBoard(state);
+                Board.printBoard(state);
                 String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
                 System.out.format("Code: %s", code).println();
                 System.out.println();
                 //endregion
             }
         }
-    }
-
-    private static void printBoard(int[] state) {
-        System.out.println(String.join(System.lineSeparator(), board(state)));
-    }
-
-    static List<String> board(int[] state) {
-        char[][] board = emptyBoard();
-        for (int i = 0; i < state.length; i++) {
-            int tempRow = i / 9;
-            int tempCol = i % 9;
-            int rowToWrite = tempRow + tempRow / 3 + 1;
-            int colToWrite = tempCol + tempCol / 3 + 1;
-
-            board[rowToWrite][colToWrite] = '.';
-            if (state[i] > 0)
-                board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
-        }
-
-        return Arrays.stream(board).map(it -> new String(it)).collect(toList());
-    }
-
-    // Prepare empty board
-    static char[][] emptyBoard() {
-        String line = "+---+---+---+";
-        String middle = "|...|...|...|";
-        return new char[][]
-                {
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray()
-                };
     }
 
     private static int[] calculateCandidates(int[] state) {
@@ -878,7 +836,49 @@ class Board {
     private final List<String> board;
 
     Board(int[] state) {
-        board = Program.board(state);
+        board = board(state);
+    }
+
+    static List<String> board(int[] state) {
+        char[][] board = emptyBoard();
+        for (int i = 0; i < state.length; i++) {
+            int tempRow = i / 9;
+            int tempCol = i % 9;
+            int rowToWrite = tempRow + tempRow / 3 + 1;
+            int colToWrite = tempCol + tempCol / 3 + 1;
+
+            board[rowToWrite][colToWrite] = '.';
+            if (state[i] > 0)
+                board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
+        }
+
+        return Arrays.stream(board).map(it -> new String(it)).collect(toList());
+    }
+
+    // Prepare empty board
+    static char[][] emptyBoard() {
+        String line = "+---+---+---+";
+        String middle = "|...|...|...|";
+        return new char[][]
+                {
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray()
+                };
+    }
+
+    static void printBoard(int[] state) {
+        System.out.println(String.join(System.lineSeparator(), board(state)));
     }
 }
 
