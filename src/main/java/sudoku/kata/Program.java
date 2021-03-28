@@ -943,11 +943,12 @@ class CellGroup extends AbstractList<Cell> {
     private final String discriminator;
     private final String description;
 
-    private List<Cell> cells = new ArrayList<>();
+    private final List<Cell> cells;
 
-    CellGroup(String discriminator, String description) {
+    CellGroup(String discriminator, String description, List<Cell> cells) {
         this.discriminator = discriminator;
         this.description = description;
+        this.cells = Collections.unmodifiableList(cells);
     }
 
     public String getDiscriminator() {
@@ -956,11 +957,6 @@ class CellGroup extends AbstractList<Cell> {
 
     public String getDescription() {
         return description;
-    }
-
-    @Override
-    public boolean add(Cell cell) {
-        return cells.add(cell);
     }
 
     @Override
