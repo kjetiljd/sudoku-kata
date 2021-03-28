@@ -431,7 +431,7 @@ public class Program {
                 if (!changeMade && !stepChangeMade) {
 
                     var masks =
-                            Mask.maskToOnesCount().entrySet().stream()
+                            Mask.maskToOnesCount.entrySet().stream()
                                     .filter(tuple -> tuple.getValue() > 1)
                                     .map(tuple -> tuple.getKey())
                                     .collect(toList());
@@ -823,12 +823,13 @@ public class Program {
 }
 
 class Mask {
+    static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
 
     static int candidatesInMaskCount(int mask) {
-        return maskToOnesCount().get(mask);
+        return maskToOnesCount.get(mask);
     }
 
-    static Map<Integer, Integer> maskToOnesCount() {
+    private static Map<Integer, Integer> maskToOnesCount() {
         Map<Integer, Integer> maskToOnesCount = new HashMap<>();
         maskToOnesCount.put(0, 0);
         for (int i = 1; i < (1 << 9); i++) {
