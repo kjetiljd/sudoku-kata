@@ -226,12 +226,11 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                int[] singleCandidateIndices = Mask.singleCandidateIndices(candidateMasks);
+                List<Integer> singleCandidateIndices = Mask.singleCandidateIndices(candidateMasks);
 
-
-                if (singleCandidateIndices.length > 0) {
-                    int pickSingleCandidateIndex = rng.nextInt(singleCandidateIndices.length);
-                    int singleCandidateIndex = singleCandidateIndices[pickSingleCandidateIndex];
+                if (singleCandidateIndices.size() > 0) {
+                    int pickSingleCandidateIndex = rng.nextInt(singleCandidateIndices.size());
+                    int singleCandidateIndex = singleCandidateIndices.get(pickSingleCandidateIndex);
                     int candidateMask = candidateMasks[singleCandidateIndex];
                     int candidate = singleBitToIndex.get(candidateMask);
 
@@ -839,12 +838,11 @@ class Mask {
                 .collect(toList());
     }
 
-    static int[] singleCandidateIndices(int[] candidateMasks) {
-        int[] singleCandidateIndices =
-                IntStream.range(0, candidateMasks.length)
-                        .filter(index -> candidatesInMaskCount(candidateMasks[index]) == 1)
-                        .toArray();
-        return singleCandidateIndices;
+    static List<Integer> singleCandidateIndices(int[] candidateMasks) {
+        return IntStream.range(0, candidateMasks.length)
+                .filter(index -> candidatesInMaskCount(candidateMasks[index]) == 1)
+                .boxed()
+                .collect(toList());
     }
 
     private static Map<Integer, Integer> maskToOnesCount() {
