@@ -455,7 +455,6 @@ public class Program {
                                                     state[cell.getIndex()] == 0 || (mask & (maskForDigit(state[cell.getIndex()]))) == 0))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
-                                                    "Description", group.getDescription(),
                                                     "Cells", group,
                                                     "CellsWithMask",
                                                     group.stream()
@@ -484,7 +483,7 @@ public class Program {
                                         ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                 ((candidateMasks[cell.getIndex()] & ~mask) != 0))) {
                             StringBuilder message = new StringBuilder();
-                            message.append("In " + groupWithNMasks.get("Description") + " values ");
+                            message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
 
                             String separator = "";
                             int temp = mask;
