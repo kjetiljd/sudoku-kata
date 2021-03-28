@@ -940,15 +940,32 @@ public class Program {
 }
 
 class CellGroup extends AbstractList<Cell> {
+    private final String discriminator;
+    private final String description;
+
+    private List<Cell> cells = new ArrayList<>();
+
+    CellGroup(String discriminator, String description) {
+        this.discriminator = discriminator;
+        this.description = description;
+    }
+
+    public String getDiscriminator() {
+        return discriminator;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
     @Override
     public Cell get(int index) {
-        return null;
+        return cells.get(index);
     }
 
     @Override
     public int size() {
-        return 0;
+        return cells.size();
     }
 }
 
