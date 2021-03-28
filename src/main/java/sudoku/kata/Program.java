@@ -583,8 +583,7 @@ public class Program {
                         // Implementation below assumes that the board might not have a solution.
 
                         Stack<State> stateStack = new Stack<>();
-                        Stack<Integer> rowIndexStack = new Stack<>();
-                        Stack<Integer> colIndexStack = new Stack<>();
+                        Stack<Cell> cellStack = new Stack<>();
                         Stack<boolean[]> usedDigitsStack = new Stack<>();
                         Stack<Integer> lastDigitStack = new Stack<>();
 
@@ -656,8 +655,7 @@ public class Program {
 
                                 if (!containsUnsolvableCells) {
                                     stateStack.push(currentState);
-                                    rowIndexStack.push(bestRow);
-                                    colIndexStack.push(bestCol);
+                                    cellStack.push(Cell.of(9 * bestRow + bestCol));
                                     usedDigitsStack.push(bestUsedDigits);
                                     lastDigitStack.push(0); // No digit was tried at this position
                                 }
@@ -668,8 +666,7 @@ public class Program {
                             } // if (command == "expand")
                             else if (command.equals("collapse")) {
                                 stateStack.pop();
-                                rowIndexStack.pop();
-                                colIndexStack.pop();
+                                cellStack.pop();
                                 usedDigitsStack.pop();
                                 lastDigitStack.pop();
 
@@ -679,13 +676,12 @@ public class Program {
                                     command = "fail";
                             } else if (command.equals("move")) {
 
-                                int rowToMove = rowIndexStack.peek();
-                                int colToMove = colIndexStack.peek();
+                                Cell cellToMove = cellStack.peek();
                                 int digitToMove = lastDigitStack.pop();
 
                                 boolean[] usedDigits = usedDigitsStack.peek();
                                 State currentState = stateStack.peek();
-                                int currentStateIndex = 9 * rowToMove + colToMove;
+                                int currentStateIndex = cellToMove.getIndex();
 
                                 int movedToDigit = digitToMove + 1;
                                 while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
