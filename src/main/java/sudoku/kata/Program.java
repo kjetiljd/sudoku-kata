@@ -353,10 +353,10 @@ public class Program {
                 //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
                 if (!changeMade) {
 
-                    var twoDigitMasks = IntStream.range(0, candidateMasks.length)
-                            .map(index -> candidateMasks[index])
-                            .filter(mask -> maskToOnesCount.get(mask) == 2)
-                            .distinct().toArray();
+                    var twoDigitMasks =
+                            Arrays.stream(candidateMasks)
+                                    .filter(mask -> maskToOnesCount.get(mask) == 2)
+                                    .distinct().toArray();
 
                     var groups =
                             IntStream.range(0, twoDigitMasks.length)
