@@ -228,7 +228,7 @@ public class Program {
 
                 int[] singleCandidateIndices =
                         IntStream.range(0, candidateMasks.length)
-                                .filter(index -> Mask.maskToOnesCount().get(candidateMasks[index]) == 1)
+                                .filter(index -> Mask.candidatesInMaskCount(candidateMasks[index]) == 1)
                                 .toArray();
 
 
@@ -347,7 +347,7 @@ public class Program {
 
                     var twoDigitMasks =
                             Arrays.stream(candidateMasks)
-                                    .filter(mask -> Mask.maskToOnesCount().get(mask) == 2)
+                                    .filter(mask -> Mask.candidatesInMaskCount(mask) == 2)
                                     .distinct().toArray();
 
                     var groups =
@@ -458,7 +458,7 @@ public class Program {
                                                                         ((candidateMasks[cellIndex] & ~mask) != 0);
                                                             })
                                                             .count()))
-                                            .filter(group -> ((List) (group.get("CellsWithMask"))).size() == Mask.maskToOnesCount().get(group.get("Mask")))
+                                            .filter(group -> ((List) (group.get("CellsWithMask"))).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -540,7 +540,7 @@ public class Program {
                 Queue<Integer> candidateDigit2 = new LinkedList<>();
 
                 for (int i = 0; i < candidateMasks.length - 1; i++) {
-                    if (Mask.maskToOnesCount().get(candidateMasks[i]) == 2) {
+                    if (Mask.candidatesInMaskCount(candidateMasks[i]) == 2) {
                         int row = i / 9;
                         int col = i % 9;
                         int blockIndex = 3 * (row / 3) + col / 3;
@@ -823,6 +823,10 @@ public class Program {
 }
 
 class Mask {
+
+    static int candidatesInMaskCount(int mask) {
+        return maskToOnesCount().get(mask);
+    }
 
     static Map<Integer, Integer> maskToOnesCount() {
         Map<Integer, Integer> maskToOnesCount = new HashMap<>();
