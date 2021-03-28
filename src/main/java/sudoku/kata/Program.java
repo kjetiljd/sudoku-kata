@@ -430,10 +430,8 @@ public class Program {
 
                 if (!changeMade && !stepChangeMade) {
 
-                    List<Integer> masks = Mask.nMasks;
-
                     var groupsWithNMasks =
-                            masks.stream()
+                            Mask.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell ->
                                                     state[cell.getIndex()] == 0 || (mask & (maskForDigit(state[cell.getIndex()]))) == 0))
