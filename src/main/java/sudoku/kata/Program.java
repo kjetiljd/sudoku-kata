@@ -315,8 +315,10 @@ public class Program {
                     int candidateMask = candidateMasks[singleCandidateIndex];
                     int candidate = singleBitToIndex.get(candidateMask);
 
-                    int row = singleCandidateIndex / 9;
-                    int col = singleCandidateIndex % 9;
+                    Cell singleCandidate = Cell.of(singleCandidateIndex);
+
+                    int row = singleCandidate.getRow();
+                    int col = singleCandidate.getColumn();
 
                     int rowToWrite = row + row / 3 + 1;
                     int colToWrite = col + col / 3 + 1;
