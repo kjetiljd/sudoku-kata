@@ -817,7 +817,8 @@ public class Program {
 }
 
 class Mask {
-    static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
+    private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
+
     static final List<Integer> nMasks = nMasks();
 
     static int candidatesInMaskCount(int mask) {
@@ -835,13 +836,12 @@ class Mask {
         return maskToOnesCount;
     }
 
+    // masks that represent two or more candidates
     private static List<Integer> nMasks() {
-        var masks =
-                maskToOnesCount.entrySet().stream()
-                        .filter(tuple -> tuple.getValue() > 1)
-                        .map(tuple -> tuple.getKey())
-                        .collect(toList());
-        return masks;
+        return maskToOnesCount.entrySet().stream()
+                .filter(tuple -> tuple.getValue() > 1)
+                .map(tuple -> tuple.getKey())
+                .collect(toList());
     }
 }
 
