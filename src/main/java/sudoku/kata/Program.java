@@ -409,12 +409,11 @@ public class Program {
                                                     .filter(group -> group.getValue().stream()
                                                             .anyMatch(tuple -> candidateMasks[(Integer) tuple.get("Index")] != twoDigitMasks[maskIndex]
                                                                     && (candidateMasks[(Integer) tuple.get("Index")] & twoDigitMasks[maskIndex]) > 0))
-                                                    .map(group ->
-                                                            Map.of(
-                                                                    "Mask", twoDigitMasks[maskIndex],
-                                                                    "Discriminator", group.getKey(),
-                                                                    "Description", group.getDescription(),
-                                                                    "Cells", group.getValue()
+                                                    .map(group -> Map.of(
+                                                            "Mask", twoDigitMasks[maskIndex],
+                                                            "Discriminator", group.getDiscriminator(),
+                                                            "Description", group.getDescription(),
+                                                            "Cells", group.getValue()
                                                             )
                                                     ).collect(toList())
                                     ).flatMap(Collection::stream)
@@ -969,11 +968,6 @@ class CellGroup extends AbstractList<Cell> {
 
     public List<Cell> getCells() {
         return cells;
-    }
-
-    /* temp method during conversion */
-    Integer getKey() {
-        return getDiscriminator();
     }
 
     /* temp method during conversion */
