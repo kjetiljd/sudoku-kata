@@ -404,16 +404,16 @@ public class Program {
                             IntStream.range(0, twoDigitMasks.length)
                                     .mapToObj(maskIndex ->
                                             cellGroups.stream()
-                                                    .filter(group -> group.getValue().stream()
+                                                    .filter(group -> group.stream()
                                                             .filter(tuple -> candidateMasks[(Integer) tuple.get("Index")] == twoDigitMasks[maskIndex]).count() == 2)
-                                                    .filter(group -> group.getValue().stream()
+                                                    .filter(group -> group.stream()
                                                             .anyMatch(tuple -> candidateMasks[(Integer) tuple.get("Index")] != twoDigitMasks[maskIndex]
                                                                     && (candidateMasks[(Integer) tuple.get("Index")] & twoDigitMasks[maskIndex]) > 0))
                                                     .map(group -> Map.of(
                                                             "Mask", twoDigitMasks[maskIndex],
                                                             "Discriminator", group.getDiscriminator(),
                                                             "Description", group.getDescription(),
-                                                            "Cells", group.getValue()
+                                                            "Cells", group
                                                             )
                                                     ).collect(toList())
                                     ).flatMap(Collection::stream)
@@ -491,26 +491,25 @@ public class Program {
                     var groupsWithNMasks =
                             masks.stream()
                                     .map(mask -> cellGroups.stream()
-                                            .filter(group -> group.getValue().stream().allMatch(cell ->
+                                            .filter(group -> group.stream().allMatch(cell ->
                                                     state[(Integer) cell.get("Index")] == 0 || (mask & (maskForDigit(state[(Integer) cell.get("Index")]))) == 0))
-                                            .map(group ->
-                                                    Map.of(
-                                                            "Mask", mask,
-                                                            "Description", group.getDescription(),
-                                                            "Cells", group.getValue(),
-                                                            "CellsWithMask",
-                                                            group.getValue().stream()
-                                                                    .filter(cell -> state[(Integer) cell.get("Index")] == 0 && (candidateMasks[(Integer) cell.get("Index")] & mask) != 0)
-                                                                    .collect(toList()),
-                                                            "CleanableCellsCount",
-                                                            (int) group.getValue().stream()
-                                                                    .filter(cell -> {
-                                                                        int cellIndex = (Integer) cell.get("Index");
-                                                                        return (state[cellIndex] == 0) &&
-                                                                                ((candidateMasks[cellIndex] & mask) != 0) &&
-                                                                                ((candidateMasks[cellIndex] & ~mask) != 0);
-                                                                    })
-                                                                    .count()))
+                                            .map(group -> Map.of(
+                                                    "Mask", mask,
+                                                    "Description", group.getDescription(),
+                                                    "Cells", group,
+                                                    "CellsWithMask",
+                                                    group.stream()
+                                                            .filter(cell -> state[(Integer) cell.get("Index")] == 0 && (candidateMasks[(Integer) cell.get("Index")] & mask) != 0)
+                                                            .collect(toList()),
+                                                    "CleanableCellsCount",
+                                                    (int) group.stream()
+                                                            .filter(cell -> {
+                                                                int cellIndex = (Integer) cell.get("Index");
+                                                                return (state[cellIndex] == 0) &&
+                                                                        ((candidateMasks[cellIndex] & mask) != 0) &&
+                                                                        ((candidateMasks[cellIndex] & ~mask) != 0);
+                                                            })
+                                                            .count()))
                                             .filter(group -> ((List) (group.get("CellsWithMask"))).size() == maskToOnesCount.get((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
@@ -968,11 +967,6 @@ class CellGroup extends AbstractList<Cell> {
 
     public List<Cell> getCells() {
         return cells;
-    }
-
-    /* temp method during conversion */
-    List<Cell> getValue() {
-        return getCells();
     }
 }
 
