@@ -18,146 +18,152 @@ public class Program {
 
     static void play(Random rng) {
         //region Construct fully populated board
+        int[] state;
 
-        // Construct board to be solved
+        {
+            // Construct board to be solved
 
-        // Top element is current state of the board
-        Stack<int[]> stateStack = new Stack<>();
+            // Top element is current state of the board
+            Stack<int[]> stateStack = new Stack<>();
 
-        // Top elements are (row, col) of cell which has been modified compared to previous state
-        Stack<Integer> rowIndexStack = new Stack<>();
-        Stack<Integer> colIndexStack = new Stack<>();
+            // Top elements are (row, col) of cell which has been modified compared to previous state
+            Stack<Integer> rowIndexStack = new Stack<>();
+            Stack<Integer> colIndexStack = new Stack<>();
 
-        // Top element indicates candidate digits (those with False) for (row, col)
-        Stack<boolean[]> usedDigitsStack = new Stack<>();
+            // Top element indicates candidate digits (those with False) for (row, col)
+            Stack<boolean[]> usedDigitsStack = new Stack<>();
 
-        // Top element is the value that was set on (row, col)
-        Stack<Integer> lastDigitStack = new Stack<>();
+            // Top element is the value that was set on (row, col)
+            Stack<Integer> lastDigitStack = new Stack<>();
 
-        // Indicates operation to perform next
-        // - expand - finds next empty cell and puts new state on stacks
-        // - move - finds next candidate number at current pos and applies it to current state
-        // - collapse - pops current state from stack as it did not yield a solution
-        String command = "expand";
-        while (stateStack.size() <= 9 * 9) {
-            if (command.equals("expand")) {
-                int[] currentState = new int[9 * 9];
+            // Indicates operation to perform next
+            // - expand - finds next empty cell and puts new state on stacks
+            // - move - finds next candidate number at current pos and applies it to current state
+            // - collapse - pops current state from stack as it did not yield a solution
+            String command = "expand";
+            while (stateStack.size() <= 9 * 9) {
+                if (command.equals("expand")) {
+                    int[] currentState = new int[9 * 9];
 
-                if (stateStack.size() > 0) {
-                    System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
-                }
+                    if (stateStack.size() > 0) {
+                        System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
+                    }
 
-                int bestRow = -1;
-                int bestCol = -1;
-                boolean[] bestUsedDigits = null;
-                int bestCandidatesCount = -1;
-                int bestRandomValue = -1;
-                boolean containsUnsolvableCells = false;
+                    int bestRow = -1;
+                    int bestCol = -1;
+                    boolean[] bestUsedDigits = null;
+                    int bestCandidatesCount = -1;
+                    int bestRandomValue = -1;
+                    boolean containsUnsolvableCells = false;
 
-                for (int index = 0; index < currentState.length; index++)
-                    if (currentState[index] == 0) {
+                    for (int index = 0; index < currentState.length; index++)
+                        if (currentState[index] == 0) {
 
-                        int row = index / 9;
-                        int col = index % 9;
-                        int blockRow = row / 3;
-                        int blockCol = col / 3;
+                            int row = index / 9;
+                            int col = index % 9;
+                            int blockRow = row / 3;
+                            int blockCol = col / 3;
 
-                        boolean[] isDigitUsed = new boolean[9];
+                            boolean[] isDigitUsed = new boolean[9];
 
-                        for (int i = 0; i < 9; i++) {
-                            int rowDigit = currentState[9 * i + col];
-                            if (rowDigit > 0)
-                                isDigitUsed[rowDigit - 1] = true;
+                            for (int i = 0; i < 9; i++) {
+                                int rowDigit = currentState[9 * i + col];
+                                if (rowDigit > 0)
+                                    isDigitUsed[rowDigit - 1] = true;
 
-                            int colDigit = currentState[9 * row + i];
-                            if (colDigit > 0)
-                                isDigitUsed[colDigit - 1] = true;
+                                int colDigit = currentState[9 * row + i];
+                                if (colDigit > 0)
+                                    isDigitUsed[colDigit - 1] = true;
 
-                            int blockDigit = currentState[(blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3)];
-                            if (blockDigit > 0)
-                                isDigitUsed[blockDigit - 1] = true;
-                        } // for (i = 0..8)
+                                int blockDigit = currentState[(blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3)];
+                                if (blockDigit > 0)
+                                    isDigitUsed[blockDigit - 1] = true;
+                            } // for (i = 0..8)
 
-                        int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
-                                .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
+                            int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
+                                    .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
 
-                        if (candidatesCount == 0) {
-                            containsUnsolvableCells = true;
-                            break;
-                        }
+                            if (candidatesCount == 0) {
+                                containsUnsolvableCells = true;
+                                break;
+                            }
 
-                        int randomValue = rng.nextInt();
+                            int randomValue = rng.nextInt();
 
-                        if (bestCandidatesCount < 0 ||
-                                candidatesCount < bestCandidatesCount ||
-                                (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                            bestRow = row;
-                            bestCol = col;
-                            bestUsedDigits = isDigitUsed;
-                            bestCandidatesCount = candidatesCount;
-                            bestRandomValue = randomValue;
-                        }
+                            if (bestCandidatesCount < 0 ||
+                                    candidatesCount < bestCandidatesCount ||
+                                    (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
+                                bestRow = row;
+                                bestCol = col;
+                                bestUsedDigits = isDigitUsed;
+                                bestCandidatesCount = candidatesCount;
+                                bestRandomValue = randomValue;
+                            }
 
-                    } // for (index = 0..81)
+                        } // for (index = 0..81)
 
-                if (!containsUnsolvableCells) {
-                    stateStack.push(currentState);
-                    rowIndexStack.push(bestRow);
-                    colIndexStack.push(bestCol);
-                    usedDigitsStack.push(bestUsedDigits);
-                    lastDigitStack.push(0); // No digit was tried at this position
-                }
+                    if (!containsUnsolvableCells) {
+                        stateStack.push(currentState);
+                        rowIndexStack.push(bestRow);
+                        colIndexStack.push(bestCol);
+                        usedDigitsStack.push(bestUsedDigits);
+                        lastDigitStack.push(0); // No digit was tried at this position
+                    }
 
-                // Always try to move after expand
-                command = "move";
+                    // Always try to move after expand
+                    command = "move";
 
-            } // if (command == "expand")
-            else if (command.equals("collapse")) {
-                stateStack.pop();
-                rowIndexStack.pop();
-                colIndexStack.pop();
-                usedDigitsStack.pop();
-                lastDigitStack.pop();
+                } // if (command == "expand")
+                else if (command.equals("collapse")) {
+                    stateStack.pop();
+                    rowIndexStack.pop();
+                    colIndexStack.pop();
+                    usedDigitsStack.pop();
+                    lastDigitStack.pop();
 
-                command = "move";   // Always try to move after collapse
-            } else if (command.equals("move")) {
+                    command = "move";   // Always try to move after collapse
+                } else if (command.equals("move")) {
 
-                int rowToMove = rowIndexStack.peek();
-                int colToMove = colIndexStack.peek();
-                int digitToMove = lastDigitStack.pop();
+                    int rowToMove = rowIndexStack.peek();
+                    int colToMove = colIndexStack.peek();
+                    int digitToMove = lastDigitStack.pop();
 
-                boolean[] usedDigits = usedDigitsStack.peek();
-                int[] currentState = stateStack.peek();
-                int currentStateIndex = 9 * rowToMove + colToMove;
+                    boolean[] usedDigits = usedDigitsStack.peek();
+                    int[] currentState = stateStack.peek();
+                    int currentStateIndex = 9 * rowToMove + colToMove;
 
-                int movedToDigit = digitToMove + 1;
-                while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
-                    movedToDigit += 1;
+                    int movedToDigit = digitToMove + 1;
+                    while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
+                        movedToDigit += 1;
 
-                if (digitToMove > 0) {
-                    usedDigits[digitToMove - 1] = false;
-                    currentState[currentStateIndex] = 0;
-                }
+                    if (digitToMove > 0) {
+                        usedDigits[digitToMove - 1] = false;
+                        currentState[currentStateIndex] = 0;
+                    }
 
-                if (movedToDigit <= 9) {
-                    lastDigitStack.push(movedToDigit);
-                    usedDigits[movedToDigit - 1] = true;
-                    currentState[currentStateIndex] = movedToDigit;
+                    if (movedToDigit <= 9) {
+                        lastDigitStack.push(movedToDigit);
+                        usedDigits[movedToDigit - 1] = true;
+                        currentState[currentStateIndex] = movedToDigit;
 
-                    // Next possible digit was found at current position
-                    // Next step will be to expand the state
-                    command = "expand";
-                } else {
-                    // No viable candidate was found at current position - pop it in the next iteration
-                    lastDigitStack.push(0);
-                    command = "collapse";
-                }
-            } // if (command == "move")
+                        // Next possible digit was found at current position
+                        // Next step will be to expand the state
+                        command = "expand";
+                    } else {
+                        // No viable candidate was found at current position - pop it in the next iteration
+                        lastDigitStack.push(0);
+                        command = "collapse";
+                    }
+                } // if (command == "move")
+            }
+
+            System.out.println();
+            System.out.println("Final look of the solved board:");
+            new Board(stateStack.peek()).printBoard();
+
+            state = stateStack.peek();
         }
 
-        System.out.println();
-        System.out.println("Final look of the solved board:");
-        new Board(stateStack.peek()).printBoard();
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -167,7 +173,6 @@ public class Program {
         int maxRemovedPerBlock = 6;
         int[][] removedPerBlock = new int[3][3];
         int[] positions = IntStream.range(0, 9 * 9).toArray();
-        int[] state = stateStack.peek();
 
         int[] finalState = new int[state.length];
         System.arraycopy(state, 0, finalState, 0, finalState.length);
@@ -573,145 +578,149 @@ public class Program {
                         alternateState[index2] = digit2;
                     }
 
-                    // What follows below is a complete copy-paste of the solver which appears at the beginning of this method
-                    // However, the algorithm couldn't be applied directly and it had to be modified.
-                    // Implementation below assumes that the board might not have a solution.
-                    stateStack = new Stack<>();
-                    rowIndexStack = new Stack<>();
-                    colIndexStack = new Stack<>();
-                    usedDigitsStack = new Stack<>();
-                    lastDigitStack = new Stack<>();
+                    {
+                        // What follows below is a complete copy-paste of the solver which appears at the beginning of this method
+                        // However, the algorithm couldn't be applied directly and it had to be modified.
+                        // Implementation below assumes that the board might not have a solution.
 
-                    command = "expand";
-                    while (!command.equals("complete") && !command.equals("fail")) {
-                        if (command.equals("expand")) {
-                            int[] currentState = new int[9 * 9];
+                        Stack<int[]> stateStack = new Stack<>();
+                        Stack<Integer> rowIndexStack = new Stack<>();
+                        Stack<Integer> colIndexStack = new Stack<>();
+                        Stack<boolean[]> usedDigitsStack = new Stack<>();
+                        Stack<Integer> lastDigitStack = new Stack<>();
 
-                            if (!stateStack.isEmpty()) {
-                                System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
-                            } else {
-                                System.arraycopy(alternateState, 0, currentState, 0, currentState.length);
-                            }
+                        String command = "expand";
 
-                            int bestRow = -1;
-                            int bestCol = -1;
-                            boolean[] bestUsedDigits = null;
-                            int bestCandidatesCount = -1;
-                            int bestRandomValue = -1;
-                            boolean containsUnsolvableCells = false;
+                        while (!command.equals("complete") && !command.equals("fail")) {
+                            if (command.equals("expand")) {
+                                int[] currentState = new int[9 * 9];
 
-                            for (int index = 0; index < currentState.length; index++)
-                                if (currentState[index] == 0) {
+                                if (!stateStack.isEmpty()) {
+                                    System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
+                                } else {
+                                    System.arraycopy(alternateState, 0, currentState, 0, currentState.length);
+                                }
 
-                                    int row = index / 9;
-                                    int col = index % 9;
-                                    int blockRow = row / 3;
-                                    int blockCol = col / 3;
+                                int bestRow = -1;
+                                int bestCol = -1;
+                                boolean[] bestUsedDigits = null;
+                                int bestCandidatesCount = -1;
+                                int bestRandomValue = -1;
+                                boolean containsUnsolvableCells = false;
 
-                                    boolean[] isDigitUsed = new boolean[9];
+                                for (int index = 0; index < currentState.length; index++)
+                                    if (currentState[index] == 0) {
 
-                                    for (int i = 0; i < 9; i++) {
-                                        int rowDigit = currentState[9 * i + col];
-                                        if (rowDigit > 0)
-                                            isDigitUsed[rowDigit - 1] = true;
+                                        int row = index / 9;
+                                        int col = index % 9;
+                                        int blockRow = row / 3;
+                                        int blockCol = col / 3;
 
-                                        int colDigit = currentState[9 * row + i];
-                                        if (colDigit > 0)
-                                            isDigitUsed[colDigit - 1] = true;
+                                        boolean[] isDigitUsed = new boolean[9];
 
-                                        int blockDigit = currentState[(blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3)];
-                                        if (blockDigit > 0)
-                                            isDigitUsed[blockDigit - 1] = true;
-                                    } // for (i = 0..8)
+                                        for (int i = 0; i < 9; i++) {
+                                            int rowDigit = currentState[9 * i + col];
+                                            if (rowDigit > 0)
+                                                isDigitUsed[rowDigit - 1] = true;
+
+                                            int colDigit = currentState[9 * row + i];
+                                            if (colDigit > 0)
+                                                isDigitUsed[colDigit - 1] = true;
+
+                                            int blockDigit = currentState[(blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3)];
+                                            if (blockDigit > 0)
+                                                isDigitUsed[blockDigit - 1] = true;
+                                        } // for (i = 0..8)
 
 
-                                    int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
-                                            .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
+                                        int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
+                                                .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
 
-                                    if (candidatesCount == 0) {
-                                        containsUnsolvableCells = true;
-                                        break;
-                                    }
+                                        if (candidatesCount == 0) {
+                                            containsUnsolvableCells = true;
+                                            break;
+                                        }
 
-                                    int randomValue = rng.nextInt();
+                                        int randomValue = rng.nextInt();
 
-                                    if (bestCandidatesCount < 0 ||
-                                            candidatesCount < bestCandidatesCount ||
-                                            (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                                        bestRow = row;
-                                        bestCol = col;
-                                        bestUsedDigits = isDigitUsed;
-                                        bestCandidatesCount = candidatesCount;
-                                        bestRandomValue = randomValue;
-                                    }
+                                        if (bestCandidatesCount < 0 ||
+                                                candidatesCount < bestCandidatesCount ||
+                                                (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
+                                            bestRow = row;
+                                            bestCol = col;
+                                            bestUsedDigits = isDigitUsed;
+                                            bestCandidatesCount = candidatesCount;
+                                            bestRandomValue = randomValue;
+                                        }
 
-                                } // for (index = 0..81)
+                                    } // for (index = 0..81)
 
-                            if (!containsUnsolvableCells) {
-                                stateStack.push(currentState);
-                                rowIndexStack.push(bestRow);
-                                colIndexStack.push(bestCol);
-                                usedDigitsStack.push(bestUsedDigits);
-                                lastDigitStack.push(0); // No digit was tried at this position
-                            }
+                                if (!containsUnsolvableCells) {
+                                    stateStack.push(currentState);
+                                    rowIndexStack.push(bestRow);
+                                    colIndexStack.push(bestCol);
+                                    usedDigitsStack.push(bestUsedDigits);
+                                    lastDigitStack.push(0); // No digit was tried at this position
+                                }
 
-                            // Always try to move after expand
-                            command = "move";
+                                // Always try to move after expand
+                                command = "move";
 
-                        } // if (command == "expand")
-                        else if (command.equals("collapse")) {
-                            stateStack.pop();
-                            rowIndexStack.pop();
-                            colIndexStack.pop();
-                            usedDigitsStack.pop();
-                            lastDigitStack.pop();
+                            } // if (command == "expand")
+                            else if (command.equals("collapse")) {
+                                stateStack.pop();
+                                rowIndexStack.pop();
+                                colIndexStack.pop();
+                                usedDigitsStack.pop();
+                                lastDigitStack.pop();
 
-                            if (!stateStack.empty())
-                                command = "move"; // Always try to move after collapse
-                            else
-                                command = "fail";
-                        } else if (command.equals("move")) {
-
-                            int rowToMove = rowIndexStack.peek();
-                            int colToMove = colIndexStack.peek();
-                            int digitToMove = lastDigitStack.pop();
-
-                            boolean[] usedDigits = usedDigitsStack.peek();
-                            int[] currentState = stateStack.peek();
-                            int currentStateIndex = 9 * rowToMove + colToMove;
-
-                            int movedToDigit = digitToMove + 1;
-                            while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
-                                movedToDigit += 1;
-
-                            if (digitToMove > 0) {
-                                usedDigits[digitToMove - 1] = false;
-                                currentState[currentStateIndex] = 0;
-                            }
-
-                            if (movedToDigit <= 9) {
-                                lastDigitStack.push(movedToDigit);
-                                usedDigits[movedToDigit - 1] = true;
-                                currentState[currentStateIndex] = movedToDigit;
-
-                                if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
-                                    command = "expand";
+                                if (!stateStack.empty())
+                                    command = "move"; // Always try to move after collapse
                                 else
-                                    command = "complete";
-                            } else {
-                                // No viable candidate was found at current position - pop it in the next iteration
-                                lastDigitStack.push(0);
-                                command = "collapse";
-                            }
-                        } // if (command == "move")
+                                    command = "fail";
+                            } else if (command.equals("move")) {
 
-                    } // while (command != "complete" && command != "fail")
+                                int rowToMove = rowIndexStack.peek();
+                                int colToMove = colIndexStack.peek();
+                                int digitToMove = lastDigitStack.pop();
 
-                    if (command.equals("complete")) {   // Board was solved successfully even with two digits swapped
-                        stateIndex1.add(index1);
-                        stateIndex2.add(index2);
-                        value1.add(digit1);
-                        value2.add(digit2);
+                                boolean[] usedDigits = usedDigitsStack.peek();
+                                int[] currentState = stateStack.peek();
+                                int currentStateIndex = 9 * rowToMove + colToMove;
+
+                                int movedToDigit = digitToMove + 1;
+                                while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
+                                    movedToDigit += 1;
+
+                                if (digitToMove > 0) {
+                                    usedDigits[digitToMove - 1] = false;
+                                    currentState[currentStateIndex] = 0;
+                                }
+
+                                if (movedToDigit <= 9) {
+                                    lastDigitStack.push(movedToDigit);
+                                    usedDigits[movedToDigit - 1] = true;
+                                    currentState[currentStateIndex] = movedToDigit;
+
+                                    if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
+                                        command = "expand";
+                                    else
+                                        command = "complete";
+                                } else {
+                                    // No viable candidate was found at current position - pop it in the next iteration
+                                    lastDigitStack.push(0);
+                                    command = "collapse";
+                                }
+                            } // if (command == "move")
+
+                        } // while (command != "complete" && command != "fail")
+
+                        if (command.equals("complete")) {   // Board was solved successfully even with two digits swapped
+                            stateIndex1.add(index1);
+                            stateIndex2.add(index2);
+                            value1.add(digit1);
+                            value2.add(digit2);
+                        }
                     }
                 } // while (!candidateIndex1.empty())
 
