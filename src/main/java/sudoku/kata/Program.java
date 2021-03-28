@@ -157,7 +157,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        System.out.println(String.join(System.lineSeparator(), board(stateStack.peek())));
+        printBoard(stateStack.peek());
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -200,7 +200,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        System.out.println(String.join("\n", board(state)));
+        printBoard(state);
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -784,13 +784,17 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                System.out.println(String.join(System.lineSeparator(), board(state)));
+                printBoard(state);
                 String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
                 System.out.format("Code: %s", code).println();
                 System.out.println();
                 //endregion
             }
         }
+    }
+
+    private static void printBoard(int[] state) {
+        System.out.println(String.join(System.lineSeparator(), board(state)));
     }
 
     private static List<String> board(int[] state) {
