@@ -361,21 +361,19 @@ public class Program {
                                                                     && (candidateMasks[cell.getIndex()] & twoDigitMask) > 0))
                                                     .map(group -> Map.of(
                                                             "Mask", twoDigitMask,
-                                                            "Discriminator", group.getDiscriminator(),
-                                                            "Description", group.getDescription(),
-                                                            "Cells", group))
+                                                            "Group", group))
                                                     .collect(toList())).flatMap(Collection::stream)
                                     .collect(toList());
 
                     if (!groups.isEmpty()) {
                         for (var group : groups) {
-                            var cells = ((List<Cell>) group.get("Cells"))
+                            var cells = ((List<Cell>) group.get("Group"))
                                     .stream().filter(cell ->
                                             candidateMasks[cell.getIndex()] != (int) group.get("Mask")
                                                     && (candidateMasks[cell.getIndex()] & (int) group.get("Mask")) > 0)
                                     .collect(toList());
 
-                            var maskCells = ((List<Cell>) group.get("Cells"))
+                            var maskCells = ((List<Cell>) group.get("Group"))
                                     .stream().filter(cell ->
                                             candidateMasks[cell.getIndex()] == (int) group.get("Mask"))
                                     .collect(toList());
@@ -396,7 +394,7 @@ public class Program {
                                 }
 
                                 System.out.println(
-                                        "Values " + lower + " and " + upper + " in " + group.get("Description") +
+                                        "Values " + lower + " and " + upper + " in " + ((CellGroup) (group.get("Group"))).getDescription() +
                                                 " are in cells (" + (maskCells.get(0).getRow() + 1) + ", " + (maskCells.get(0).getColumn() + 1) + ")" +
                                                 " and (" + (maskCells.get(1).getRow() + 1) + ", " + (maskCells.get(1).getColumn() + 1) + ").");
 
