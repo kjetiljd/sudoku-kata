@@ -816,7 +816,7 @@ class State {
         return state;
     }
 
-    public State copy(){
+    public State copy() {
         int[] copy = new int[state.length];
         System.arraycopy(state, 0, copy, 0, copy.length);
         return new State(copy);
