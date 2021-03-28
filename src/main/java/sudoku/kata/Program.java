@@ -263,9 +263,9 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
                     for (int j = 0; j < 9; j++) {
-                        int rowSiblingIndex = rowSibling(cell, j).getIndex();
-                        int colSiblingIndex = columnSibling(cell, j).getIndex();
-                        int blockSiblingIndex = blockSibling(cell, j).getIndex();
+                        int rowSiblingIndex = cell.rowSibling(j).getIndex();
+                        int colSiblingIndex = cell.columnSibling(j).getIndex();
+                        int blockSiblingIndex = cell.blockSibling(j).getIndex();
 
                         int rowSiblingMask = 1 << (state[rowSiblingIndex] - 1);
                         int colSiblingMask = 1 << (state[colSiblingIndex] - 1);
@@ -919,18 +919,6 @@ public class Program {
         }
     }
 
-    private static Cell rowSibling(Cell cell, int i) {
-        return Cell.of(9 * cell.getRow() + i);
-    }
-
-    private static Cell columnSibling(Cell cell, int i) {
-        return Cell.of(9 * i + cell.getColumn());
-    }
-
-    private static Cell blockSibling(Cell cell, int i) {
-        return Cell.of(9 * (cell.getBlockRow() * 3 + i / 3) + cell.getBlockCol() * 3 + i % 3);
-    }
-
     public static void main(String[] args) throws IOException {
         int seed = new Random().nextInt();
         System.out.println("Seed: " + seed);
@@ -983,5 +971,17 @@ class Cell {
 
     int getBlockRow() {
         return getRow() / 3;
+    }
+
+    Cell rowSibling(int i) {
+        return of(9 * getRow() + i);
+    }
+
+    Cell columnSibling(int i) {
+        return of(9 * i + getColumn());
+    }
+
+    Cell blockSibling(int i) {
+        return of(9 * (getBlockRow() * 3 + i / 3) + getBlockCol() * 3 + i % 3);
     }
 }
