@@ -971,23 +971,16 @@ class MaskGroup {
 class CellGroup extends AbstractList<Cell> {
     private static final List<CellGroup> cellGroups = buildCellGroups();
 
-    private final int discriminator;
     private final String description;
-
     private final List<Cell> cells;
 
-    private CellGroup(int discriminator, String description, List<Cell> cells) {
-        this.discriminator = discriminator;
+    private CellGroup(String description, List<Cell> cells) {
         this.description = description;
         this.cells = Collections.unmodifiableList(cells);
     }
 
     static List<CellGroup> all() {
         return cellGroups;
-    }
-
-    public int getDiscriminator() {
-        return discriminator;
     }
 
     public String getDescription() {
@@ -1011,7 +1004,6 @@ class CellGroup extends AbstractList<Cell> {
                         .collect(groupingBy(Cell::getRow))
                         .entrySet().stream()
                         .map(group -> new CellGroup(
-                                group.getKey(),
                                 "row #" + (group.getKey() + 1),
                                 group.getValue()))
                         .collect(toList());
@@ -1021,7 +1013,6 @@ class CellGroup extends AbstractList<Cell> {
                         .collect(groupingBy(Cell::getColumn))
                         .entrySet().stream()
                         .map(group -> new CellGroup(
-                                9 + group.getKey(),
                                 "column #" + (group.getKey() + 1),
                                 group.getValue()))
                         .collect(toList());
@@ -1031,7 +1022,6 @@ class CellGroup extends AbstractList<Cell> {
                         .collect(groupingBy(Cell::getBlock))
                         .entrySet().stream()
                         .map(group -> new CellGroup(
-                                18 + group.getKey(),
                                 format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
                                 group.getValue()))
                         .collect(toList());
