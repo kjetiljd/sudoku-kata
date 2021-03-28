@@ -258,11 +258,6 @@ public class Program {
 
             int[] candidateMasks = calculateCandidates(state);
 
-            //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
-
-            var cellGroups = CellGroup.all();
-            //endregion
-
             boolean stepChangeMade = true;
             while (stepChangeMade) {
                 stepChangeMade = false;
@@ -403,7 +398,7 @@ public class Program {
                     var groups =
                             IntStream.range(0, twoDigitMasks.length)
                                     .mapToObj(maskIndex ->
-                                            cellGroups.stream()
+                                            CellGroup.all().stream()
                                                     .filter(group -> group.stream()
                                                             .filter(tuple -> candidateMasks[tuple.getIndex()] == twoDigitMasks[maskIndex]).count() == 2)
                                                     .filter(group -> group.stream()
@@ -490,7 +485,7 @@ public class Program {
 
                     var groupsWithNMasks =
                             masks.stream()
-                                    .map(mask -> cellGroups.stream()
+                                    .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell ->
                                                     state[cell.getIndex()] == 0 || (mask & (maskForDigit(state[cell.getIndex()]))) == 0))
                                             .map(group -> Map.of(
@@ -932,6 +927,7 @@ class CellGroup extends AbstractList<Cell> {
     }
 
     private static List<CellGroup> buildCellGroups() {
+        //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
         var rowCellGroups =
                 Cell.cells().stream()
                         .collect(groupingBy(Cell::getRow))
@@ -968,6 +964,7 @@ class CellGroup extends AbstractList<Cell> {
                         .collect(toList());
 
         return Collections.unmodifiableList(cellGroupsList);
+        //endregion
     }
 }
 
