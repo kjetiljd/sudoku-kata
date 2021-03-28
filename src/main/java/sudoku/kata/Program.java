@@ -263,11 +263,7 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
 
-                    List<Cell> allSiblings = new ArrayList<>();
-                    allSiblings.addAll(cell.rowSiblings());
-                    allSiblings.addAll(cell.columnSiblings());
-                    allSiblings.addAll(cell.blockSiblings());
-                    for (Cell sibling : allSiblings) {
+                    for (Cell sibling : cell.allSiblings()) {
                         int siblingIndex = sibling.getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
@@ -1012,11 +1008,19 @@ class Cell {
         return siblings;
     }
 
-    List<Cell> blockSiblings() {
+     List<Cell> blockSiblings() {
         List<Cell> siblings = new ArrayList<>();
         for (int j = 0; j < 9; j++) {
             siblings.add(blockSibling(j));
         }
         return siblings;
+    }
+
+    List<Cell> allSiblings() {
+        List<Cell> allSiblings = new ArrayList<>();
+        allSiblings.addAll(rowSiblings());
+        allSiblings.addAll(columnSiblings());
+        allSiblings.addAll(blockSiblings());
+        return allSiblings;
     }
 }
