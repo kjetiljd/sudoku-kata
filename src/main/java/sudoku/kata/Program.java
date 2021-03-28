@@ -797,7 +797,7 @@ public class Program {
         System.out.println(String.join(System.lineSeparator(), board(state)));
     }
 
-    private static List<String> board(int[] state) {
+    static List<String> board(int[] state) {
         char[][] board = emptyBoard();
         for (int i = 0; i < state.length; i++) {
             int tempRow = i / 9;
@@ -814,7 +814,7 @@ public class Program {
     }
 
     // Prepare empty board
-    private static char[][] emptyBoard() {
+    static char[][] emptyBoard() {
         String line = "+---+---+---+";
         String middle = "|...|...|...|";
         return new char[][]
@@ -871,6 +871,14 @@ public class Program {
             System.out.print("Press ENTER to exit... ");
             System.console().readLine();
         }
+    }
+}
+
+class Board {
+    private final List<String> board;
+
+    Board(int[] state) {
+        board = Program.board(state);
     }
 }
 
