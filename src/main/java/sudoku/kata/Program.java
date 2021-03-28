@@ -430,11 +430,7 @@ public class Program {
 
                 if (!changeMade && !stepChangeMade) {
 
-                    var masks =
-                            Mask.maskToOnesCount.entrySet().stream()
-                                    .filter(tuple -> tuple.getValue() > 1)
-                                    .map(tuple -> tuple.getKey())
-                                    .collect(toList());
+                    List<Integer> masks = Mask.nMasks();
 
                     var groupsWithNMasks =
                             masks.stream()
@@ -838,6 +834,15 @@ class Mask {
             maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
         }
         return maskToOnesCount;
+    }
+
+    static List<Integer> nMasks() {
+        var masks =
+                maskToOnesCount.entrySet().stream()
+                        .filter(tuple -> tuple.getValue() > 1)
+                        .map(tuple -> tuple.getKey())
+                        .collect(toList());
+        return masks;
     }
 }
 
