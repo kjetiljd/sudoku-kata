@@ -243,7 +243,7 @@ public class Program {
                             singleCandidate.getColumn() + 1,
                             digit).println();
 
-                    state.set(singleCandidate.getIndex(), digit);
+                    state.set(singleCandidate, digit);
                     candidateMasks[singleCandidate.getIndex()] = 0;
                     changeMade = true;
                 }
@@ -427,13 +427,13 @@ public class Program {
                             Mask.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell ->
-                                                    state.get(cell.getIndex()) == 0 || (mask & (maskForDigit(state.get(cell.getIndex())))) == 0))
+                                                    state.get(cell) == 0 || (mask & (maskForDigit(state.get(cell)))) == 0))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
-                                                            .filter(cell -> (state.get(cell.getIndex()) == 0) &&
+                                                            .filter(cell -> (state.get(cell) == 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & ~mask) != 0))
                                                             .count()))
@@ -776,7 +776,7 @@ public class Program {
                     }
                     int collidingDigitsMask =
                             Cell.of(i).allSiblings().stream()
-                                    .mapToInt(sibling -> maskForDigit(state.get(sibling.getIndex())))
+                                    .mapToInt(sibling -> maskForDigit(state.get(sibling)))
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                     return allOnes & ~collidingDigitsMask;
                 }).toArray();
@@ -832,6 +832,12 @@ class State extends AbstractList<Integer> {
     public Integer set(int index, Integer value) {
         var prev = state[index];
         state[index] = value;
+        return prev;
+    }
+
+    public Integer set(Cell cell, Integer value) {
+        var prev = state[cell.getIndex()];
+        state[cell.getIndex()] = value;
         return prev;
     }
 
@@ -1041,7 +1047,7 @@ class CellGroup extends AbstractList<Cell> {
 
     public List<Cell> cellsWithMask(int mask, State state, int[] candidateMasks) {
         return this.stream()
-                .filter(cell -> state.get(cell.getIndex()) == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
+                .filter(cell -> state.get(cell) == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
                 .collect(toList());
     }
 
