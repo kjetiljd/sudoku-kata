@@ -262,15 +262,13 @@ public class Program {
                 Cell cell = Cell.of(i);
                 if (state[i] == 0) {
 
-                    int row = cell.getRow();
-                    int col = cell.getColumn();
-                    int blockRow = row / 3;
-                    int blockCol = col / 3;
+                    int blockRow = cell.getRow() / 3;
+                    int blockCol = cell.getColumn() / 3;
 
                     int colidingNumbers = 0;
                     for (int j = 0; j < 9; j++) {
-                        int rowSiblingIndex = 9 * row + j;
-                        int colSiblingIndex = 9 * j + col;
+                        int rowSiblingIndex = 9 * cell.getRow() + j;
+                        int colSiblingIndex = 9 * j + cell.getColumn();
                         int blockSiblingIndex = 9 * (blockRow * 3 + j / 3) + blockCol * 3 + j % 3;
 
                         int rowSiblingMask = 1 << (state[rowSiblingIndex] - 1);
