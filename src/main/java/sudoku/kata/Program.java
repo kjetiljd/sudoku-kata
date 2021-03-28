@@ -970,14 +970,26 @@ class Cell {
     }
 
     Cell rowSibling(int i) {
-        return of(9 * getRow() + i);
+        return of(rowSiblingIndex(i));
+    }
+
+    private int rowSiblingIndex(int i) {
+        return 9 * getRow() + i;
     }
 
     Cell columnSibling(int i) {
-        return of(9 * i + getColumn());
+        return of(columnSiblingIndex(i));
+    }
+
+    private int columnSiblingIndex(int i) {
+        return 9 * i + getColumn();
     }
 
     Cell blockSibling(int i) {
-        return of(9 * (getBlockRow() * 3 + i / 3) + getBlockCol() * 3 + i % 3);
+        return of(blockSiblingIndex(i));
+    }
+
+    private int blockSiblingIndex(int i) {
+        return 9 * (getBlockRow() * 3 + i / 3) + getBlockCol() * 3 + i % 3;
     }
 }
