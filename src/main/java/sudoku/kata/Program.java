@@ -226,10 +226,7 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                int[] singleCandidateIndices =
-                        IntStream.range(0, candidateMasks.length)
-                                .filter(index -> Mask.candidatesInMaskCount(candidateMasks[index]) == 1)
-                                .toArray();
+                int[] singleCandidateIndices = Mask.singleCandidateIndices(candidateMasks);
 
 
                 if (singleCandidateIndices.length > 0) {
@@ -842,6 +839,13 @@ class Mask {
                 .collect(toList());
     }
 
+    static int[] singleCandidateIndices(int[] candidateMasks) {
+        int[] singleCandidateIndices =
+                IntStream.range(0, candidateMasks.length)
+                        .filter(index -> candidatesInMaskCount(candidateMasks[index]) == 1)
+                        .toArray();
+        return singleCandidateIndices;
+    }
 
     private static Map<Integer, Integer> maskToOnesCount() {
         Map<Integer, Integer> maskToOnesCount = new HashMap<>();
