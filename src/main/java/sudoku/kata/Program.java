@@ -339,11 +339,11 @@ public class Program {
                 //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
                 if (!changeMade) {
 
-                    class TwoDigitGroups {
+                    class MaskGroup {
                         private final int mask;
                         private final CellGroup group;
 
-                        public TwoDigitGroups(int mask, CellGroup group) {
+                        public MaskGroup(int mask, CellGroup group) {
                             this.mask = mask;
                             this.group = group;
                         }
@@ -367,7 +367,7 @@ public class Program {
                                                     .filter(group -> group.stream()
                                                             .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMask
                                                                     && (candidateMasks[cell.getIndex()] & twoDigitMask) > 0))
-                                                    .map(group -> new TwoDigitGroups(twoDigitMask, group))
+                                                    .map(group -> new MaskGroup(twoDigitMask, group))
                                                     .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
