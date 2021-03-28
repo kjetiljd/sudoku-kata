@@ -350,6 +350,24 @@ public class Program {
                                     .filter(mask -> Mask.candidatesInMaskCount(mask) == 2)
                                     .distinct().toArray();
 
+                    class TwoDigitGroups {
+                        private final int mask;
+                        private final CellGroup group;
+
+                        public TwoDigitGroups(int mask, CellGroup group) {
+                            this.mask = mask;
+                            this.group = group;
+                        }
+
+                        public int getMask() {
+                            return mask;
+                        }
+
+                        public CellGroup getGroup() {
+                            return group;
+                        }
+                    }
+
                     var groups =
                             Arrays.stream(twoDigitMasks)
                                     .mapToObj(twoDigitMask ->
