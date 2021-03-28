@@ -260,7 +260,7 @@ public class Program {
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
-            var cellGroups = CellGroup.buildCellGroups();
+            var cellGroups = CellGroup.all();
             //endregion
 
             boolean stepChangeMade = true;
@@ -896,7 +896,7 @@ public class Program {
 }
 
 class CellGroup extends AbstractList<Cell> {
-    private static final List<CellGroup> cellGroups = buildCellGroups2();
+    private static final List<CellGroup> cellGroups = buildCellGroups();
     private final int discriminator;
     private final String description;
 
@@ -908,12 +908,11 @@ class CellGroup extends AbstractList<Cell> {
         this.cells = Collections.unmodifiableList(cells);
     }
 
-    static List<CellGroup> buildCellGroups() {
+    static List<CellGroup> all() {
         return cellGroups;
-
     }
 
-    static List<CellGroup> buildCellGroups2() {
+    private static List<CellGroup> buildCellGroups() {
         var rowCellGroups =
                 Cell.cells().stream()
                         .collect(groupingBy(Cell::getRow))
