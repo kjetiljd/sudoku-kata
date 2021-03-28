@@ -437,7 +437,7 @@ public class Program {
                                                                     ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state.getState(), candidateMasks).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidateMasks).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -466,7 +466,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state.getState(), candidateMasks)) {
+                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
                                 message.append(" (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ")");
                             }
 
@@ -475,7 +475,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state.getState(), candidateMasks)) {
+                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
                             int maskToClear = candidateMasks[cell.getIndex()] & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
@@ -1035,9 +1035,9 @@ class CellGroup extends AbstractList<Cell> {
         //endregion
     }
 
-    public List<Cell> cellsWithMask(int mask, int[] state, int[] candidateMasks) {
+    public List<Cell> cellsWithMask(int mask, State state, int[] candidateMasks) {
         return this.stream()
-                .filter(cell -> state[cell.getIndex()] == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
+                .filter(cell -> state.get(cell.getIndex()) == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
                 .collect(toList());
     }
 
