@@ -305,12 +305,7 @@ public class Program {
 
                 int[] singleCandidateIndices =
                         IntStream.range(0, candidateMasks.length)
-                                .mapToObj(index -> Map.of(
-                                        "CandidatesCount", maskToOnesCount.get(candidateMasks[index]),
-                                        "Index", index))
-                                .filter(tuple -> tuple.get("CandidatesCount") == 1)
-                                .map(tuple -> tuple.get("Index"))
-                                .mapToInt(Integer::intValue)
+                                .filter(index -> maskToOnesCount.get(candidateMasks[index]) == 1)
                                 .toArray();
 
 
