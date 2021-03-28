@@ -19,8 +19,6 @@ public class Program {
     static void play(Random rng) {
         //region Construct fully populated board
 
-        char[][] board = emptyBoard();
-
         // Construct board to be solved
 
         // Top element is current state of the board
@@ -128,9 +126,6 @@ public class Program {
                 int colToMove = colIndexStack.peek();
                 int digitToMove = lastDigitStack.pop();
 
-                int rowToWrite = rowToMove + rowToMove / 3 + 1;
-                int colToWrite = colToMove + colToMove / 3 + 1;
-
                 boolean[] usedDigits = usedDigitsStack.peek();
                 int[] currentState = stateStack.peek();
                 int currentStateIndex = 9 * rowToMove + colToMove;
@@ -142,14 +137,12 @@ public class Program {
                 if (digitToMove > 0) {
                     usedDigits[digitToMove - 1] = false;
                     currentState[currentStateIndex] = 0;
-                    board[rowToWrite][colToWrite] = '.';
                 }
 
                 if (movedToDigit <= 9) {
                     lastDigitStack.push(movedToDigit);
                     usedDigits[movedToDigit - 1] = true;
                     currentState[currentStateIndex] = movedToDigit;
-                    board[rowToWrite][colToWrite] = (char) ('0' + movedToDigit);
 
                     // Next possible digit was found at current position
                     // Next step will be to expand the state
@@ -164,7 +157,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        System.out.println(String.join(System.lineSeparator(), boardLines(board)));
+        System.out.println(String.join(System.lineSeparator(), board(stateStack.peek())));
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -199,11 +192,6 @@ public class Program {
             positions[removedPos] = positions[indexToPick];
             positions[indexToPick] = temp;
 
-            int rowToWrite = row + row / 3 + 1;
-            int colToWrite = col + col / 3 + 1;
-
-            board[rowToWrite][colToWrite] = '.';
-
             int stateIndex = 9 * row + col;
             state[stateIndex] = 0;
 
@@ -212,7 +200,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        System.out.println(String.join("\n", boardLines(board)));
+        System.out.println(String.join("\n", board(state)));
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -263,11 +251,7 @@ public class Program {
                     int row = singleCandidate.getRow();
                     int col = singleCandidate.getColumn();
 
-                    int rowToWrite = row + row / 3 + 1;
-                    int colToWrite = col + col / 3 + 1;
-
                     state[singleCandidateIndex] = candidate + 1;
-                    board[rowToWrite][colToWrite] = (char) ('1' + candidate);
                     candidateMasks[singleCandidateIndex] = 0;
                     changeMade = true;
 
@@ -351,15 +335,12 @@ public class Program {
                         int row = candidateRowIndices.get(index);
                         int col = candidateColIndices.get(index);
                         int digit = candidates.get(index);
-                        int rowToWrite = row + row / 3 + 1;
-                        int colToWrite = col + col / 3 + 1;
 
                         String message = description + " can contain " + digit + " only at (" + (row + 1) + ", " + (col + 1) + ").";
 
                         int stateIndex = 9 * row + col;
                         state[stateIndex] = digit;
                         candidateMasks[stateIndex] = 0;
-                        board[rowToWrite][colToWrite] = (char) ('0' + digit);
 
                         changeMade = true;
 
@@ -730,9 +711,6 @@ public class Program {
                             int colToMove = colIndexStack.peek();
                             int digitToMove = lastDigitStack.pop();
 
-                            int rowToWrite = rowToMove + rowToMove / 3 + 1;
-                            int colToWrite = colToMove + colToMove / 3 + 1;
-
                             boolean[] usedDigits = usedDigitsStack.peek();
                             int[] currentState = stateStack.peek();
                             int currentStateIndex = 9 * rowToMove + colToMove;
@@ -744,14 +722,12 @@ public class Program {
                             if (digitToMove > 0) {
                                 usedDigits[digitToMove - 1] = false;
                                 currentState[currentStateIndex] = 0;
-                                board[rowToWrite][colToWrite] = '.';
                             }
 
                             if (movedToDigit <= 9) {
                                 lastDigitStack.push(movedToDigit);
                                 usedDigits[movedToDigit - 1] = true;
                                 currentState[currentStateIndex] = movedToDigit;
-                                board[rowToWrite][colToWrite] = (char) ('0' + movedToDigit);
 
                                 if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
                                     command = "expand";
@@ -801,17 +777,6 @@ public class Program {
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    for (int i = 0; i < state.length; i++) {
-                        int tempRow = i / 9;
-                        int tempCol = i % 9;
-                        int rowToWrite = tempRow + tempRow / 3 + 1;
-                        int colToWrite = tempCol + tempCol / 3 + 1;
-
-                        board[rowToWrite][colToWrite] = '.';
-                        if (state[i] > 0)
-                            board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
-                    }
-
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
             }
@@ -819,7 +784,7 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                System.out.println(String.join(System.lineSeparator(), boardLines(board)));
+                System.out.println(String.join(System.lineSeparator(), board(state)));
                 String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
                 System.out.format("Code: %s", code).println();
                 System.out.println();
@@ -828,7 +793,19 @@ public class Program {
         }
     }
 
-    private static List<String> boardLines(char[][] board) {
+    private static List<String> board(int[] state) {
+        char[][] board = emptyBoard();
+        for (int i = 0; i < state.length; i++) {
+            int tempRow = i / 9;
+            int tempCol = i % 9;
+            int rowToWrite = tempRow + tempRow / 3 + 1;
+            int colToWrite = tempCol + tempCol / 3 + 1;
+
+            board[rowToWrite][colToWrite] = '.';
+            if (state[i] > 0)
+                board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
+        }
+
         return Arrays.stream(board).map(it -> new String(it)).collect(toList());
     }
 
@@ -836,7 +813,7 @@ public class Program {
     private static char[][] emptyBoard() {
         String line = "+---+---+---+";
         String middle = "|...|...|...|";
-        char[][] board = new char[][]
+        return new char[][]
                 {
                         line.toCharArray(),
                         middle.toCharArray(),
@@ -852,7 +829,6 @@ public class Program {
                         middle.toCharArray(),
                         line.toCharArray()
                 };
-        return board;
     }
 
     private static int[] calculateCandidates(int[] state) {
