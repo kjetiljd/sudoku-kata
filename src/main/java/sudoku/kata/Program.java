@@ -161,7 +161,7 @@ public class Program {
             System.out.println("Final look of the solved board:");
             new Board(stateStack.peek()).printBoard();
 
-            state = stateStack.peek();
+            state = new State(stateStack.peek()).getState();
         }
 
         //endregion
@@ -803,6 +803,18 @@ public class Program {
             System.out.print("Press ENTER to exit... ");
             System.console().readLine();
         }
+    }
+}
+
+class State {
+    private final int[] state;
+
+    State(int[] initalState) {
+        this.state = initalState;
+    }
+
+    public int[] getState() {
+        return state;
     }
 }
 
