@@ -835,6 +835,10 @@ public class Program {
     }
 }
 
+class Mask {
+
+}
+
 class Board {
     private final int[] state;
 
