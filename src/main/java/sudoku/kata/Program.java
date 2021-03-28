@@ -265,7 +265,7 @@ public class Program {
 
                     for (Cell sibling : cell.allSiblings()) {
                         int siblingIndex = sibling.getIndex();
-                        int siblingMask = 1 << (state[siblingIndex] - 1);
+                        int siblingMask = maskForDigit(state[siblingIndex]);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
@@ -363,7 +363,7 @@ public class Program {
                     List<Integer> candidates = new ArrayList<Integer>();
 
                     for (int digit = 1; digit <= 9; digit++) {
-                        int mask = 1 << (digit - 1);
+                        int mask = maskForDigit(digit);
                         for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
                             int rowNumberCount = 0;
                             int indexInRow = 0;
@@ -548,7 +548,7 @@ public class Program {
                             masks.stream()
                                     .map(mask -> cellGroups.entrySet().stream()
                                             .filter(group -> group.getValue().stream().allMatch(cell ->
-                                                    state[(Integer) cell.get("Index")] == 0 || (mask & (1 << (state[(Integer) cell.get("Index")] - 1))) == 0))
+                                                    state[(Integer) cell.get("Index")] == 0 || (mask & (maskForDigit(state[(Integer) cell.get("Index")]))) == 0))
                                             .map(group ->
                                                     Map.of(
                                                             "Mask", mask,
@@ -914,6 +914,10 @@ public class Program {
         }
     }
 
+    private static int maskForDigit(int i) {
+        return 1 << (i - 1);
+    }
+
     public static void main(String[] args) throws IOException {
         int seed = new Random().nextInt();
         System.out.println("Seed: " + seed);
@@ -1008,7 +1012,7 @@ class Cell {
         return siblings;
     }
 
-     List<Cell> blockSiblings() {
+    List<Cell> blockSiblings() {
         List<Cell> siblings = new ArrayList<>();
         for (int j = 0; j < 9; j++) {
             siblings.add(blockSibling(j));
