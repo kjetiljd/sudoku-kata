@@ -222,7 +222,7 @@ public class Program {
         while (changeMade) {
             changeMade = false;
 
-            int[] candidateMasks = calculateCandidates(state.getState());
+            int[] candidateMasks = calculateCandidates(state);
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -766,16 +766,16 @@ public class Program {
         }
     }
 
-    private static int[] calculateCandidates(int[] state) {
+    private static int[] calculateCandidates(State state) {
         int allOnes = (1 << 9) - 1;
 
-        return IntStream.range(0, state.length)
+        return IntStream.range(0, state.size())
                 .map(i -> {
                     Cell cell = Cell.of(i);
-                    if (state[i] == 0) {
+                    if (state.get(i) == 0) {
                         int collidingDigitsMask =
                                 cell.allSiblings().stream()
-                                        .mapToInt(sibling -> maskForDigit(state[sibling.getIndex()]))
+                                        .mapToInt(sibling -> maskForDigit(state.get(sibling.getIndex())))
                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                         return allOnes & ~collidingDigitsMask;
                     }
