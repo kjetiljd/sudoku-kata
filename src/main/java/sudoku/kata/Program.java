@@ -248,28 +248,13 @@ public class Program {
         for (int i = 0; i < 9; i++)
             singleBitToIndex.put(1 << i, i);
 
-        int allOnes = (1 << 9) - 1;
         //endregion
 
         boolean changeMade = true;
         while (changeMade) {
             changeMade = false;
 
-            //region Calculate candidates for current state of the board
-            int[] candidateMasks = new int[state.length];
-
-            for (int i = 0; i < state.length; i++) {
-                Cell cell = Cell.of(i);
-                if (state[i] == 0) {
-                    int collidingDigitsMask =
-                            cell.allSiblings().stream()
-                                    .mapToInt(sibling -> maskForDigit(state[sibling.getIndex()]))
-                                    .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
-
-                    candidateMasks[i] = allOnes & ~collidingDigitsMask;
-                }
-            }
-            //endregion
+            int[] candidateMasks = calculateCandidates(state);
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
@@ -909,6 +894,25 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static int[] calculateCandidates(int[] state) {
+        int allOnes = (1 << 9) - 1;
+
+        int[] candidateMasks = new int[state.length];
+
+        for (int i = 0; i < state.length; i++) {
+            Cell cell = Cell.of(i);
+            if (state[i] == 0) {
+                int collidingDigitsMask =
+                        cell.allSiblings().stream()
+                                .mapToInt(sibling -> maskForDigit(state[sibling.getIndex()]))
+                                .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+
+                candidateMasks[i] = allOnes & ~collidingDigitsMask;
+            }
+        }
+        return candidateMasks;
     }
 
     private static int maskForDigit(int i) {
