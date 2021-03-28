@@ -681,7 +681,6 @@ public class Program {
 
                                 boolean[] usedDigits = usedDigitsStack.peek();
                                 State currentState = stateStack.peek();
-                                int currentStateIndex = cellToMove.getIndex();
 
                                 int movedToDigit = digitToMove + 1;
                                 while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
@@ -689,13 +688,13 @@ public class Program {
 
                                 if (digitToMove > 0) {
                                     usedDigits[digitToMove - 1] = false;
-                                    currentState.set(currentStateIndex, 0);
+                                    currentState.set(cellToMove, 0);
                                 }
 
                                 if (movedToDigit <= 9) {
                                     lastDigitStack.push(movedToDigit);
                                     usedDigits[movedToDigit - 1] = true;
-                                    currentState.set(currentStateIndex, movedToDigit);
+                                    currentState.set(cellToMove, movedToDigit);
 
                                     if (Arrays.stream(currentState.getState()).anyMatch(digit -> digit == 0))
                                         command = "expand";
