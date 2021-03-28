@@ -897,12 +897,13 @@ public class Program {
 
 class CellGroup extends AbstractList<Cell> {
     private static final List<CellGroup> cellGroups = buildCellGroups();
+
     private final int discriminator;
     private final String description;
 
     private final List<Cell> cells;
 
-    CellGroup(int discriminator, String description, List<Cell> cells) {
+    private CellGroup(int discriminator, String description, List<Cell> cells) {
         this.discriminator = discriminator;
         this.description = description;
         this.cells = Collections.unmodifiableList(cells);
@@ -910,6 +911,24 @@ class CellGroup extends AbstractList<Cell> {
 
     static List<CellGroup> all() {
         return cellGroups;
+    }
+
+    public int getDiscriminator() {
+        return discriminator;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public Cell get(int index) {
+        return cells.get(index);
+    }
+
+    @Override
+    public int size() {
+        return cells.size();
     }
 
     private static List<CellGroup> buildCellGroups() {
@@ -949,24 +968,6 @@ class CellGroup extends AbstractList<Cell> {
                         .collect(toList());
 
         return Collections.unmodifiableList(cellGroupsList);
-    }
-
-    public int getDiscriminator() {
-        return discriminator;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public Cell get(int index) {
-        return cells.get(index);
-    }
-
-    @Override
-    public int size() {
-        return cells.size();
     }
 }
 
