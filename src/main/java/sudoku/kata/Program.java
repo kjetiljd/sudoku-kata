@@ -959,6 +959,11 @@ class CellGroup extends AbstractList<Cell> {
     }
 
     @Override
+    public boolean add(Cell cell) {
+        return cells.add(cell);
+    }
+
+    @Override
     public Cell get(int index) {
         return cells.get(index);
     }
