@@ -1,11 +1,12 @@
 package sudoku.kata;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
@@ -259,7 +260,7 @@ public class Program {
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
-            Map<? extends Serializable, List<Map<String, ? extends Serializable>>> cellGroups = buildCellGroups(state);
+            var cellGroups = buildCellGroups2();
             //endregion
 
             boolean stepChangeMade = true;
@@ -402,7 +403,7 @@ public class Program {
                     var groups =
                             IntStream.range(0, twoDigitMasks.length)
                                     .mapToObj(maskIndex ->
-                                            cellGroups.entrySet().stream()
+                                            cellGroups.stream()
                                                     .filter(group -> group.getValue().stream()
                                                             .filter(tuple -> candidateMasks[(Integer) tuple.get("Index")] == twoDigitMasks[maskIndex]).count() == 2)
                                                     .filter(group -> group.getValue().stream()
@@ -412,7 +413,7 @@ public class Program {
                                                             Map.of(
                                                                     "Mask", twoDigitMasks[maskIndex],
                                                                     "Discriminator", group.getKey(),
-                                                                    "Description", group.getValue().get(0).get("Description"),
+                                                                    "Description", group.getDescription(),
                                                                     "Cells", group.getValue()
                                                             )
                                                     ).collect(toList())
@@ -421,13 +422,13 @@ public class Program {
 
                     if (!groups.isEmpty()) {
                         for (var group : groups) {
-                            var cells = ((List<Map<String, Object>>) group.get("Cells"))
+                            var cells = ((List<Cell>) group.get("Cells"))
                                     .stream().filter(cell ->
                                             candidateMasks[(int) cell.get("Index")] != (int) group.get("Mask")
                                                     && (candidateMasks[(int) cell.get("Index")] & (int) group.get("Mask")) > 0)
                                     .collect(toList());
 
-                            var maskCells = ((List<Map<String, Object>>) group.get("Cells"))
+                            var maskCells = ((List<Cell>) group.get("Cells"))
                                     .stream().filter(cell ->
                                             candidateMasks[(int) cell.get("Index")] == (int) group.get("Mask"))
                                     .collect(toList());
@@ -490,13 +491,13 @@ public class Program {
 
                     var groupsWithNMasks =
                             masks.stream()
-                                    .map(mask -> cellGroups.entrySet().stream()
+                                    .map(mask -> cellGroups.stream()
                                             .filter(group -> group.getValue().stream().allMatch(cell ->
                                                     state[(Integer) cell.get("Index")] == 0 || (mask & (maskForDigit(state[(Integer) cell.get("Index")]))) == 0))
                                             .map(group ->
                                                     Map.of(
                                                             "Mask", mask,
-                                                            "Description", group.getValue().get(0).get("Description"),
+                                                            "Description", group.getDescription(),
                                                             "Cells", group.getValue(),
                                                             "CellsWithMask",
                                                             group.getValue().stream()
@@ -520,7 +521,7 @@ public class Program {
                     for (var groupWithNMasks : groupsWithNMasks) {
                         int mask = (int) groupWithNMasks.get("Mask");
 
-                        if (((List<Map<String, Object>>) groupWithNMasks.get("Cells")).stream()
+                        if (((List<Cell>) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell ->
                                         ((candidateMasks[(Integer) cell.get("Index")] & mask) != 0) &&
                                                 ((candidateMasks[(Integer) cell.get("Index")] & ~mask) != 0))) {
@@ -540,7 +541,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : ((List<Map<String, Object>>) groupWithNMasks.get("CellsWithMask"))) {
+                            for (var cell : ((List<Cell>) groupWithNMasks.get("CellsWithMask"))) {
                                 message.append(" (" + ((Integer) cell.get("Row") + 1) + ", " + ((Integer) cell.get("Column") + 1) + ")");
                             }
 
@@ -549,7 +550,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : ((List<Map<String, Object>>) groupWithNMasks.get("CellsWithMask"))) {
+                        for (var cell : ((List<Cell>) groupWithNMasks.get("CellsWithMask"))) {
                             int maskToClear = candidateMasks[(Integer) cell.get("Index")] & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
@@ -858,9 +859,11 @@ public class Program {
         }
     }
 
-    private static Map buildCellGroups(int[] state) {
+    private static Map buildCellGroups() {
+        var length = 9 * 9;
+
         var rowsIndices =
-                IntStream.range(0, state.length)
+                IntStream.range(0, length)
                         .mapToObj(index -> Map.of(
                                 "Discriminator", index / 9,
                                 "Description", "row #" + (index / 9 + 1),
@@ -870,7 +873,7 @@ public class Program {
                         .collect(groupingBy(tuple -> tuple.get("Discriminator")));
 
         var columnIndices =
-                IntStream.range(0, state.length)
+                IntStream.range(0, length)
                         .mapToObj(index -> Map.of(
                                 "Discriminator", 9 + index % 9,
                                 "Description", "column #" + (index % 9 + 1),
@@ -880,7 +883,7 @@ public class Program {
                         .collect(groupingBy(tuple -> tuple.get("Discriminator")));
 
         var blockIndices =
-                IntStream.range(0, state.length)
+                IntStream.range(0, length)
                         .mapToObj(index -> Map.of(
                                 "Row", index / 9,
                                 "Column", index % 9,
@@ -898,6 +901,45 @@ public class Program {
         cellGroups.putAll(columnIndices);
         cellGroups.putAll(blockIndices);
         return cellGroups;
+    }
+
+    private static List<CellGroup> buildCellGroups2() {
+        var rowCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getRow))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                group.getKey(),
+                                "row #" + (group.getKey() + 1),
+                                group.getValue()))
+                        .collect(toList());
+
+        var columnCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getColumn))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                9 + group.getKey(),
+                                "column #" + (group.getKey() + 1),
+                                group.getValue()))
+                        .collect(toList());
+
+        var blockCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getBlock))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                18 + group.getKey(),
+                                format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
+                                group.getValue()))
+                        .collect(toList());
+
+        var cellGroupsList =
+                Stream.of(rowCellGroups, columnCellGroups, blockCellGroups)
+                        .flatMap(Collection::stream)
+                        .collect(toList());
+
+        return cellGroupsList;
     }
 
     private static int[] calculateCandidates(int[] state) {
@@ -968,6 +1010,20 @@ class CellGroup extends AbstractList<Cell> {
     public int size() {
         return cells.size();
     }
+
+    public List<Cell> getCells() {
+        return cells;
+    }
+
+    /* temp method during conversion */
+    Integer getKey() {
+        return getDiscriminator();
+    }
+
+    /* temp method during conversion */
+    List<Cell> getValue() {
+        return getCells();
+    }
 }
 
 class Cell {
@@ -990,6 +1046,20 @@ class Cell {
 
     static Cell of(int index) {
         return cells[index];
+    }
+
+    /* temp method during conversion */
+    Object get(String field) {
+        switch (field) {
+            case "Index":
+                return getIndex();
+            case "Row":
+                return getRow();
+            case "Column":
+                return getColumn();
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     int getIndex() {
