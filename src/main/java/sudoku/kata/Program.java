@@ -260,13 +260,13 @@ public class Program {
 
             var rowsIndices =
                     IntStream.range(0, state.length)
-                        .mapToObj(index -> Map.of(
-                                "Discriminator", index / 9,
-                                "Description", "row #" + (index / 9 + 1),
-                                "Index", index,
-                                "Row", index / 9,
-                                "Column", index % 9))
-                        .collect(groupingBy(tuple -> tuple.get("Discriminator")));
+                            .mapToObj(index -> Map.of(
+                                    "Discriminator", index / 9,
+                                    "Description", "row #" + (index / 9 + 1),
+                                    "Index", index,
+                                    "Row", index / 9,
+                                    "Column", index % 9))
+                            .collect(groupingBy(tuple -> tuple.get("Discriminator")));
 
             var columnIndices =
                     IntStream.range(0, state.length)
@@ -934,7 +934,7 @@ public class Program {
 }
 
 class Cell {
-    private static final Cell[] cells = new Cell[9 * 9];
+    static final Cell[] cells = new Cell[9 * 9];
 
     static {
         for (int index = 0; index < 9 * 9; index++)
