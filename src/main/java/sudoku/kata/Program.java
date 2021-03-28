@@ -260,7 +260,7 @@ public class Program {
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
-            var cellGroups = buildCellGroups();
+            var cellGroups = CellGroup.buildCellGroups();
             //endregion
 
             boolean stepChangeMade = true;
@@ -856,45 +856,6 @@ public class Program {
         }
     }
 
-    private static List<CellGroup> buildCellGroups() {
-        var rowCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getRow))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                group.getKey(),
-                                "row #" + (group.getKey() + 1),
-                                group.getValue()))
-                        .collect(toList());
-
-        var columnCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getColumn))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                9 + group.getKey(),
-                                "column #" + (group.getKey() + 1),
-                                group.getValue()))
-                        .collect(toList());
-
-        var blockCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getBlock))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                18 + group.getKey(),
-                                format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
-                                group.getValue()))
-                        .collect(toList());
-
-        var cellGroupsList =
-                Stream.of(rowCellGroups, columnCellGroups, blockCellGroups)
-                        .flatMap(Collection::stream)
-                        .collect(toList());
-
-        return cellGroupsList;
-    }
-
     private static int[] calculateCandidates(int[] state) {
         int allOnes = (1 << 9) - 1;
 
@@ -935,6 +896,7 @@ public class Program {
 }
 
 class CellGroup extends AbstractList<Cell> {
+    private static final List<CellGroup> cellGroups = buildCellGroups2();
     private final int discriminator;
     private final String description;
 
@@ -944,6 +906,50 @@ class CellGroup extends AbstractList<Cell> {
         this.discriminator = discriminator;
         this.description = description;
         this.cells = Collections.unmodifiableList(cells);
+    }
+
+    static List<CellGroup> buildCellGroups() {
+        return cellGroups;
+
+    }
+
+    static List<CellGroup> buildCellGroups2() {
+        var rowCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getRow))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                group.getKey(),
+                                "row #" + (group.getKey() + 1),
+                                group.getValue()))
+                        .collect(toList());
+
+        var columnCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getColumn))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                9 + group.getKey(),
+                                "column #" + (group.getKey() + 1),
+                                group.getValue()))
+                        .collect(toList());
+
+        var blockCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getBlock))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                18 + group.getKey(),
+                                format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
+                                group.getValue()))
+                        .collect(toList());
+
+        var cellGroupsList =
+                Stream.of(rowCellGroups, columnCellGroups, blockCellGroups)
+                        .flatMap(Collection::stream)
+                        .collect(toList());
+
+        return Collections.unmodifiableList(cellGroupsList);
     }
 
     public int getDiscriminator() {
