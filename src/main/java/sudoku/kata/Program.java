@@ -964,10 +964,6 @@ class CellGroup extends AbstractList<Cell> {
     public int size() {
         return cells.size();
     }
-
-    public List<Cell> getCells() {
-        return cells;
-    }
 }
 
 class Cell {
