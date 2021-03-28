@@ -1012,6 +1012,10 @@ class Cell {
         return getRow() / 3;
     }
 
+    int getBlock() {
+        return 3 * getBlockRow() + getBlockCol();
+    }
+
     Cell rowSibling(int i) {
         return of(rowSiblingIndex(i));
     }
