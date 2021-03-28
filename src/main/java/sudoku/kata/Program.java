@@ -45,7 +45,7 @@ public class Program {
                 if (command.equals("expand")) {
                     int[] currentState = new int[9 * 9];
 
-                    if (stateStack.size() > 0) {
+                    if (!stateStack.isEmpty()) {
                         System.arraycopy(stateStack.peek(), 0, currentState, 0, currentState.length);
                     }
 
