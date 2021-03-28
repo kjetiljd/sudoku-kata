@@ -1005,27 +1005,27 @@ class Cell {
         return 9 * (getBlockRow() * 3 + i / 3) + getBlockCol() * 3 + i % 3;
     }
 
-    Cell[] rowSiblings() {
-        Cell[] rowSibling = new Cell[9];
+    List<Cell> rowSiblings() {
+        List<Cell> siblings = new ArrayList<>();
         for (int j = 0; j < 9; j++) {
-            rowSibling[j] = rowSibling(j);
+            siblings.add(rowSibling(j));
         }
-        return rowSibling;
+        return siblings;
     }
 
-    Cell[] columnSiblings() {
-        Cell[] columnSibling = new Cell[9];
+    List<Cell> columnSiblings() {
+        List<Cell> siblings = new ArrayList<>();
         for (int j = 0; j < 9; j++) {
-            columnSibling[j] = columnSibling(j);
+            siblings.add(columnSibling(j));
         }
-        return columnSibling;
+        return siblings;
     }
 
-    Cell[] blockSiblings() {
-        Cell[] blockSibling = new Cell[9];
+    List<Cell> blockSiblings() {
+        List<Cell> siblings = new ArrayList<>();
         for (int j = 0; j < 9; j++) {
-            blockSibling[j] = blockSibling(j);
+            siblings.add(blockSibling(j));
         }
-        return blockSibling;
+        return siblings;
     }
 }
