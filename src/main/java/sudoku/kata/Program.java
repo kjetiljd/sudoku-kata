@@ -263,10 +263,7 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
 
-                    Cell[] rowSibling = new Cell[9];
-                    for (int j = 0; j < 9; j++) {
-                        rowSibling[j] = cell.rowSibling(j);
-                    }
+                    Cell[] rowSibling = cell.rowSiblings();
 
                     for (int j = 0; j < 9; j++) {
                         int siblingIndex = rowSibling[j].getIndex();
@@ -274,10 +271,7 @@ public class Program {
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
-                    Cell[] columnSibling = new Cell[9];
-                    for (int j = 0; j < 9; j++) {
-                        columnSibling[j] = cell.columnSibling(j);
-                    }
+                    Cell[] columnSibling = cell.columnSiblings();
 
                     for (int j = 0; j < 9; j++) {
                         int siblingIndex = columnSibling[j].getIndex();
@@ -285,10 +279,7 @@ public class Program {
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
-                    Cell[] blockSibling = new Cell[9];
-                    for (int j = 0; j < 9; j++) {
-                        blockSibling[j] = cell.blockSibling(j);
-                    }
+                    Cell[] blockSibling = cell.blockSiblings();
 
                     for (int j = 0; j < 9; j++) {
                         int siblingIndex = blockSibling[j].getIndex();
@@ -1017,5 +1008,29 @@ class Cell {
 
     private int blockSiblingIndex(int i) {
         return 9 * (getBlockRow() * 3 + i / 3) + getBlockCol() * 3 + i % 3;
+    }
+
+    Cell[] rowSiblings() {
+        Cell[] rowSibling = new Cell[9];
+        for (int j = 0; j < 9; j++) {
+            rowSibling[j] = rowSibling(j);
+        }
+        return rowSibling;
+    }
+
+    Cell[] columnSiblings() {
+        Cell[] columnSibling = new Cell[9];
+        for (int j = 0; j < 9; j++) {
+            columnSibling[j] = columnSibling(j);
+        }
+        return columnSibling;
+    }
+
+    Cell[] blockSiblings() {
+        Cell[] blockSibling = new Cell[9];
+        for (int j = 0; j < 9; j++) {
+            blockSibling[j] = blockSibling(j);
+        }
+        return blockSibling;
     }
 }
