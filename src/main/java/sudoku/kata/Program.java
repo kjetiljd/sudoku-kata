@@ -462,12 +462,9 @@ public class Program {
                                                             .collect(toList()),
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
-                                                            .filter(cell -> {
-                                                                int cellIndex = cell.getIndex();
-                                                                return (state[cellIndex] == 0) &&
-                                                                        ((candidateMasks[cellIndex] & mask) != 0) &&
-                                                                        ((candidateMasks[cellIndex] & ~mask) != 0);
-                                                            })
+                                                            .filter(cell -> (state[cell.getIndex()] == 0) &&
+                                                                    ((candidateMasks[cell.getIndex()] & mask) != 0) &&
+                                                                    ((candidateMasks[cell.getIndex()] & ~mask) != 0))
                                                             .count()))
                                             .filter(group -> ((List<Cell>) (group.get("CellsWithMask"))).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
