@@ -264,9 +264,7 @@ public class Program {
                     int colidingNumbers = 0;
 
                     for (Cell sibling : cell.allSiblings()) {
-                        int siblingIndex = sibling.getIndex();
-                        int siblingMask = maskForDigit(state[siblingIndex]);
-                        colidingNumbers = colidingNumbers | siblingMask;
+                        colidingNumbers = colidingNumbers | maskForDigit(state[sibling.getIndex()]);
                     }
 
                     candidateMasks[i] = allOnes & ~colidingNumbers;
