@@ -805,11 +805,11 @@ public class Program {
     }
 }
 
-class State {
+class State extends AbstractList<Integer> {
     private final int[] state;
 
-    State(int[] initalState) {
-        this.state = initalState;
+    State(int[] initialState) {
+        this.state = initialState;
     }
 
     public int[] getState() {
@@ -820,6 +820,23 @@ class State {
         int[] copy = new int[state.length];
         System.arraycopy(state, 0, copy, 0, copy.length);
         return new State(copy);
+    }
+
+    @Override
+    public Integer get(int index) {
+        return state[index];
+    }
+
+    @Override
+    public Integer set(int index, Integer value) {
+        var prev = state[index];
+        state[index] = value;
+        return prev;
+    }
+
+    @Override
+    public int size() {
+        return state.length;
     }
 }
 
