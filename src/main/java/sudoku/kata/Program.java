@@ -510,7 +510,7 @@ public class Program {
                                                                         ((candidateMasks[cellIndex] & ~mask) != 0);
                                                             })
                                                             .count()))
-                                            .filter(group -> ((List) (group.get("CellsWithMask"))).size() == maskToOnesCount.get((Integer) group.get("Mask")))
+                                            .filter(group -> ((List) (group.get("CellsWithMask"))).size() == maskToOnesCount.get(group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -843,7 +843,6 @@ public class Program {
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
                 System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
-                ;
                 String code =
                         String.join("", Arrays.stream(board).map(it -> new String(it)).collect(toList()))
                                 .replace("-", "")
@@ -978,7 +977,7 @@ class Cell {
         return List.of(cells);
     }
 
-    private int index;
+    private final int index;
 
     private Cell(int index) {
         this.index = index;
