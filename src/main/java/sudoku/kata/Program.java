@@ -263,24 +263,15 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
 
-                    for (Cell sibling : cell.rowSiblings()) {
+                    List<Cell> allSiblings = new ArrayList<>();
+                    allSiblings.addAll(cell.rowSiblings());
+                    allSiblings.addAll(cell.columnSiblings());
+                    allSiblings.addAll(cell.blockSiblings());
+                    for (Cell sibling : allSiblings) {
                         int siblingIndex = sibling.getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
-
-                    for (Cell sibling : cell.columnSiblings()) {
-                        int siblingIndex = sibling.getIndex();
-                        int siblingMask = 1 << (state[siblingIndex] - 1);
-                        colidingNumbers = colidingNumbers | siblingMask;
-                    }
-
-                    for (Cell sibling : cell.blockSiblings()) {
-                        int siblingIndex = sibling.getIndex();
-                        int siblingMask = 1 << (state[siblingIndex] - 1);
-                        colidingNumbers = colidingNumbers | siblingMask;
-                    }
-
 
                     candidateMasks[i] = allOnes & ~colidingNumbers;
                 }
