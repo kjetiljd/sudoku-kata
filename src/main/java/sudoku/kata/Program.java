@@ -45,14 +45,14 @@ public class Program {
         Stack<int[]> stateStack = new Stack<>();
 
         // Top elements are (row, col) of cell which has been modified compared to previous state
-        Stack<Integer> rowIndexStack = new Stack<Integer>();
-        Stack<Integer> colIndexStack = new Stack<Integer>();
+        Stack<Integer> rowIndexStack = new Stack<>();
+        Stack<Integer> colIndexStack = new Stack<>();
 
         // Top element indicates candidate digits (those with False) for (row, col)
-        Stack<boolean[]> usedDigitsStack = new Stack<boolean[]>();
+        Stack<boolean[]> usedDigitsStack = new Stack<>();
 
         // Top element is the value that was set on (row, col)
-        Stack<Integer> lastDigitStack = new Stack<Integer>();
+        Stack<Integer> lastDigitStack = new Stack<>();
 
         // Indicates operation to perform next
         // - expand - finds next empty cell and puts new state on stacks
@@ -238,7 +238,7 @@ public class Program {
         System.out.println("=".repeat(80));
         System.out.println();
 
-        Map<Integer, Integer> maskToOnesCount = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> maskToOnesCount = new HashMap<>();
         maskToOnesCount.put(0, 0);
         for (int i = 1; i < (1 << 9); i++) {
             int smaller = i >> 1;
@@ -246,7 +246,7 @@ public class Program {
             maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
         }
 
-        Map<Integer, Integer> singleBitToIndex = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> singleBitToIndex = new HashMap<>();
         for (int i = 0; i < 9; i++)
             singleBitToIndex.put(1 << i, i);
 
@@ -297,10 +297,10 @@ public class Program {
                 //region Try to find a number which can only appear in one place in a row/column/block
 
                 if (!changeMade) {
-                    List<String> groupDescriptions = new ArrayList<String>();
-                    List<Integer> candidateRowIndices = new ArrayList<Integer>();
-                    List<Integer> candidateColIndices = new ArrayList<Integer>();
-                    List<Integer> candidates = new ArrayList<Integer>();
+                    List<String> groupDescriptions = new ArrayList<>();
+                    List<Integer> candidateRowIndices = new ArrayList<>();
+                    List<Integer> candidateColIndices = new ArrayList<>();
+                    List<Integer> candidates = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
                         int mask = maskForDigit(digit);
@@ -449,7 +449,7 @@ public class Program {
 
                                 for (var cell : cells) {
                                     int maskToRemove = candidateMasks[cell.getIndex()] & (int) group.get("Mask");
-                                    List<Integer> valuesToRemove = new ArrayList<Integer>();
+                                    List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
                                         if ((maskToRemove & 1) > 0) {
@@ -581,10 +581,10 @@ public class Program {
                 // Try to see if there are pairs of values that can be exchanged arbitrarily
                 // This happens when board has more than one valid solution
 
-                Queue<Integer> candidateIndex1 = new LinkedList<Integer>();
-                Queue<Integer> candidateIndex2 = new LinkedList<Integer>();
-                Queue<Integer> candidateDigit1 = new LinkedList<Integer>();
-                Queue<Integer> candidateDigit2 = new LinkedList<Integer>();
+                Queue<Integer> candidateIndex1 = new LinkedList<>();
+                Queue<Integer> candidateIndex2 = new LinkedList<>();
+                Queue<Integer> candidateDigit1 = new LinkedList<>();
+                Queue<Integer> candidateDigit2 = new LinkedList<>();
 
                 for (int i = 0; i < candidateMasks.length - 1; i++) {
                     if (maskToOnesCount.get(candidateMasks[i]) == 2) {
@@ -623,10 +623,10 @@ public class Program {
                 // At this point we have the lists with pairs of cells that might pick one of two digits each
                 // Now we have to check whether that is really true - does the board have two solutions?
 
-                List<Integer> stateIndex1 = new ArrayList<Integer>();
-                List<Integer> stateIndex2 = new ArrayList<Integer>();
-                List<Integer> value1 = new ArrayList<Integer>();
-                List<Integer> value2 = new ArrayList<Integer>();
+                List<Integer> stateIndex1 = new ArrayList<>();
+                List<Integer> stateIndex2 = new ArrayList<>();
+                List<Integer> value1 = new ArrayList<>();
+                List<Integer> value2 = new ArrayList<>();
 
                 while (!candidateIndex1.isEmpty()) {
                     int index1 = candidateIndex1.remove();
@@ -649,10 +649,10 @@ public class Program {
                     // However, the algorithm couldn't be applied directly and it had to be modified.
                     // Implementation below assumes that the board might not have a solution.
                     stateStack = new Stack<>();
-                    rowIndexStack = new Stack<Integer>();
-                    colIndexStack = new Stack<Integer>();
-                    usedDigitsStack = new Stack<boolean[]>();
-                    lastDigitStack = new Stack<Integer>();
+                    rowIndexStack = new Stack<>();
+                    colIndexStack = new Stack<>();
+                    usedDigitsStack = new Stack<>();
+                    lastDigitStack = new Stack<>();
 
                     command = "expand";
                     while (!command.equals("complete") && !command.equals("fail")) {
