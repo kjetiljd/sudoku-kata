@@ -18,7 +18,7 @@ public class Program {
 
     static void play(Random rng) {
         //region Construct fully populated board
-        int[] state;
+        State state;
 
         {
             // Construct board to be solved
@@ -161,7 +161,7 @@ public class Program {
             System.out.println("Final look of the solved board:");
             new Board(stateStack.peek()).printBoard();
 
-            state = new State(stateStack.peek()).getState();
+            state = new State(stateStack.peek());
         }
 
         //endregion
@@ -174,7 +174,7 @@ public class Program {
         int[][] removedPerBlock = new int[3][3];
         int[] positions = IntStream.range(0, 9 * 9).toArray();
 
-        int[] finalState = new State(state).copy().getState();
+        State finalState = state.copy();
 
         int removedPos = 0;
         while (removedPos < 9 * 9 - remainingDigits) {
@@ -197,14 +197,14 @@ public class Program {
             positions[indexToPick] = temp;
 
             int stateIndex = 9 * row + col;
-            state[stateIndex] = 0;
+            state.set(stateIndex, 0);
 
             removedPos += 1;
         }
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        new Board(state).printBoard();
+        new Board(state.getState()).printBoard();
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -222,7 +222,7 @@ public class Program {
         while (changeMade) {
             changeMade = false;
 
-            int[] candidateMasks = calculateCandidates(state);
+            int[] candidateMasks = calculateCandidates(state.getState());
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -243,7 +243,7 @@ public class Program {
                             singleCandidate.getColumn() + 1,
                             digit).println();
 
-                    state[singleCandidate.getIndex()] = digit;
+                    state.set(singleCandidate.getIndex(), digit);
                     candidateMasks[singleCandidate.getIndex()] = 0;
                     changeMade = true;
                 }
@@ -329,7 +329,7 @@ public class Program {
                         String message = description + " can contain " + digit + " only at (" + (row + 1) + ", " + (col + 1) + ").";
 
                         int stateIndex = 9 * row + col;
-                        state[stateIndex] = digit;
+                        state.set(stateIndex, digit);
                         candidateMasks[stateIndex] = 0;
 
                         changeMade = true;
@@ -427,17 +427,17 @@ public class Program {
                             Mask.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell ->
-                                                    state[cell.getIndex()] == 0 || (mask & (maskForDigit(state[cell.getIndex()]))) == 0))
+                                                    state.get(cell.getIndex()) == 0 || (mask & (maskForDigit(state.get(cell.getIndex())))) == 0))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
-                                                            .filter(cell -> (state[cell.getIndex()] == 0) &&
+                                                            .filter(cell -> (state.get(cell.getIndex()) == 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidateMasks).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state.getState(), candidateMasks).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -466,7 +466,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
+                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state.getState(), candidateMasks)) {
                                 message.append(" (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ")");
                             }
 
@@ -475,7 +475,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
+                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state.getState(), candidateMasks)) {
                             int maskToClear = candidateMasks[cell.getIndex()] & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
@@ -567,14 +567,14 @@ public class Program {
                     int digit2 = candidateDigit2.remove();
 
 
-                    int[] alternateState = new State(state).copy().getState();
+                    State alternateState = state.copy();
 
-                    if (finalState[index1] == digit1) {
-                        alternateState[index1] = digit2;
-                        alternateState[index2] = digit1;
+                    if (finalState.get(index1) == digit1) {
+                        alternateState.set(index1, digit2);
+                        alternateState.set(index2, digit1);
                     } else {
-                        alternateState[index1] = digit1;
-                        alternateState[index2] = digit2;
+                        alternateState.set(index1, digit1);
+                        alternateState.set(index2, digit2);
                     }
 
                     {
@@ -582,7 +582,7 @@ public class Program {
                         // However, the algorithm couldn't be applied directly and it had to be modified.
                         // Implementation below assumes that the board might not have a solution.
 
-                        Stack<int[]> stateStack = new Stack<>();
+                        Stack<State> stateStack = new Stack<>();
                         Stack<Integer> rowIndexStack = new Stack<>();
                         Stack<Integer> colIndexStack = new Stack<>();
                         Stack<boolean[]> usedDigitsStack = new Stack<>();
@@ -592,12 +592,12 @@ public class Program {
 
                         while (!command.equals("complete") && !command.equals("fail")) {
                             if (command.equals("expand")) {
-                                int[] currentState = new int[9 * 9];
+                                State currentState = new State(new int[9 * 9]);
 
                                 if (!stateStack.isEmpty()) {
-                                    currentState = new State(stateStack.peek()).copy().getState();
+                                    currentState = stateStack.peek().copy();
                                 } else {
-                                    currentState = new State(alternateState).copy().getState();
+                                    currentState = alternateState.copy();
                                 }
 
                                 int bestRow = -1;
@@ -607,8 +607,8 @@ public class Program {
                                 int bestRandomValue = -1;
                                 boolean containsUnsolvableCells = false;
 
-                                for (int index = 0; index < currentState.length; index++)
-                                    if (currentState[index] == 0) {
+                                for (int index = 0; index < currentState.size(); index++)
+                                    if (currentState.get(index) == 0) {
 
                                         int row = index / 9;
                                         int col = index % 9;
@@ -618,15 +618,15 @@ public class Program {
                                         boolean[] isDigitUsed = new boolean[9];
 
                                         for (int i = 0; i < 9; i++) {
-                                            int rowDigit = currentState[9 * i + col];
+                                            int rowDigit = currentState.get(9 * i + col);
                                             if (rowDigit > 0)
                                                 isDigitUsed[rowDigit - 1] = true;
 
-                                            int colDigit = currentState[9 * row + i];
+                                            int colDigit = currentState.get(9 * row + i);
                                             if (colDigit > 0)
                                                 isDigitUsed[colDigit - 1] = true;
 
-                                            int blockDigit = currentState[(blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3)];
+                                            int blockDigit = currentState.get((blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3));
                                             if (blockDigit > 0)
                                                 isDigitUsed[blockDigit - 1] = true;
                                         } // for (i = 0..8)
@@ -684,7 +684,7 @@ public class Program {
                                 int digitToMove = lastDigitStack.pop();
 
                                 boolean[] usedDigits = usedDigitsStack.peek();
-                                int[] currentState = stateStack.peek();
+                                State currentState = stateStack.peek();
                                 int currentStateIndex = 9 * rowToMove + colToMove;
 
                                 int movedToDigit = digitToMove + 1;
@@ -693,15 +693,15 @@ public class Program {
 
                                 if (digitToMove > 0) {
                                     usedDigits[digitToMove - 1] = false;
-                                    currentState[currentStateIndex] = 0;
+                                    currentState.set(currentStateIndex, 0);
                                 }
 
                                 if (movedToDigit <= 9) {
                                     lastDigitStack.push(movedToDigit);
                                     usedDigits[movedToDigit - 1] = true;
-                                    currentState[currentStateIndex] = movedToDigit;
+                                    currentState.set(currentStateIndex, movedToDigit);
 
-                                    if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
+                                    if (Arrays.stream(currentState.getState()).anyMatch(digit -> digit == 0))
                                         command = "expand";
                                     else
                                         command = "complete";
@@ -744,20 +744,20 @@ public class Program {
                         description = "block (" + (row1 / 3 + 1) + ", " + (col1 / 3 + 1) + ")";
                     }
 
-                    state[index1] = finalState[index1];
-                    state[index2] = finalState[index2];
+                    state.set(index1, finalState.get(index1));
+                    state.set(index2, finalState.get(index2));
                     candidateMasks[index1] = 0;
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
+                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState.get(index1) + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState.get(index2) + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
             }
             //endregion
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                Board board = new Board(state);
+                Board board = new Board(state.getState());
                 board.printBoard();
                 board.printCode();
                 System.out.println();
