@@ -769,20 +769,18 @@ public class Program {
     private static int[] calculateCandidates(int[] state) {
         int allOnes = (1 << 9) - 1;
 
-        int[] candidateMasks = new int[state.length];
-
-        for (int i = 0; i < state.length; i++) {
-            Cell cell = Cell.of(i);
-            if (state[i] == 0) {
-                int collidingDigitsMask =
-                        cell.allSiblings().stream()
-                                .mapToInt(sibling -> maskForDigit(state[sibling.getIndex()]))
-                                .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
-
-                candidateMasks[i] = allOnes & ~collidingDigitsMask;
-            }
-        }
-        return candidateMasks;
+        return IntStream.range(0, state.length)
+                .map(i -> {
+                    Cell cell = Cell.of(i);
+                    if (state[i] == 0) {
+                        int collidingDigitsMask =
+                                cell.allSiblings().stream()
+                                        .mapToInt(sibling -> maskForDigit(state[sibling.getIndex()]))
+                                        .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+                        return allOnes & ~collidingDigitsMask;
+                    }
+                    return 0;
+                }).toArray();
     }
 
     private static int maskForDigit(int i) {
