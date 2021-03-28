@@ -339,24 +339,6 @@ public class Program {
                 //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
                 if (!changeMade) {
 
-                    class MaskGroup {
-                        private final int mask;
-                        private final CellGroup group;
-
-                        public MaskGroup(int mask, CellGroup group) {
-                            this.mask = mask;
-                            this.group = group;
-                        }
-
-                        public int getMask() {
-                            return mask;
-                        }
-
-                        public CellGroup getGroup() {
-                            return group;
-                        }
-                    }
-
                     var twoDigitGroups =
                             Mask.twoDigitMasks(candidateMasks).stream()
                                     .map(twoDigitMask ->
@@ -915,6 +897,24 @@ class Board {
 
     void printBoard() {
         System.out.println(String.join(System.lineSeparator(), board(state)));
+    }
+}
+
+class MaskGroup {
+    private final int mask;
+    private final CellGroup group;
+
+    public MaskGroup(int mask, CellGroup group) {
+        this.mask = mask;
+        this.group = group;
+    }
+
+    public int getMask() {
+        return mask;
+    }
+
+    public CellGroup getGroup() {
+        return group;
     }
 }
 
