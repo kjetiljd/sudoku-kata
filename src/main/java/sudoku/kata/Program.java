@@ -368,7 +368,7 @@ public class Program {
                         }
                     }
 
-                    var groups =
+                    var twoDigitGroups =
                             Arrays.stream(twoDigitMasks)
                                     .mapToObj(twoDigitMask ->
                                             CellGroup.all().stream()
@@ -381,23 +381,23 @@ public class Program {
                                                     .collect(toList())).flatMap(Collection::stream)
                                     .collect(toList());
 
-                    if (!groups.isEmpty()) {
-                        for (var group : groups) {
-                            var cells = group.getGroup()
+                    if (!twoDigitGroups.isEmpty()) {
+                        for (var twoDigitGroup : twoDigitGroups) {
+                            var cells = twoDigitGroup.getGroup()
                                     .stream().filter(cell ->
-                                            candidateMasks[cell.getIndex()] != group.getMask()
-                                                    && (candidateMasks[cell.getIndex()] & group.getMask()) > 0)
+                                            candidateMasks[cell.getIndex()] != twoDigitGroup.getMask()
+                                                    && (candidateMasks[cell.getIndex()] & twoDigitGroup.getMask()) > 0)
                                     .collect(toList());
 
-                            var maskCells = group.getGroup()
+                            var maskCells = twoDigitGroup.getGroup()
                                     .stream().filter(cell ->
-                                            candidateMasks[cell.getIndex()] == group.getMask())
+                                            candidateMasks[cell.getIndex()] == twoDigitGroup.getMask())
                                     .collect(toList());
 
                             if (!cells.isEmpty()) {
                                 int upper = 0;
                                 int lower = 0;
-                                int temp = group.getMask();
+                                int temp = twoDigitGroup.getMask();
 
                                 int value = 1;
                                 while (temp > 0) {
@@ -410,12 +410,12 @@ public class Program {
                                 }
 
                                 System.out.println(
-                                        "Values " + lower + " and " + upper + " in " + group.getGroup().getDescription() +
+                                        "Values " + lower + " and " + upper + " in " + twoDigitGroup.getGroup().getDescription() +
                                                 " are in cells (" + (maskCells.get(0).getRow() + 1) + ", " + (maskCells.get(0).getColumn() + 1) + ")" +
                                                 " and (" + (maskCells.get(1).getRow() + 1) + ", " + (maskCells.get(1).getColumn() + 1) + ").");
 
                                 for (var cell : cells) {
-                                    int maskToRemove = candidateMasks[cell.getIndex()] & group.getMask();
+                                    int maskToRemove = candidateMasks[cell.getIndex()] & twoDigitGroup.getMask();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -429,7 +429,7 @@ public class Program {
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ").");
 
-                                    candidateMasks[cell.getIndex()] &= ~(int) group.getMask();
+                                    candidateMasks[cell.getIndex()] &= ~(int) twoDigitGroup.getMask();
                                     stepChangeMade = true;
                                 }
                             }
