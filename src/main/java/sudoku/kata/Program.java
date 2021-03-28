@@ -263,13 +263,9 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
                     for (int j = 0; j < 9; j++) {
-                        int rowSiblingIndex = cell.rowSibling(j).getIndex();
-                        int colSiblingIndex = cell.columnSibling(j).getIndex();
-                        int blockSiblingIndex = cell.blockSibling(j).getIndex();
-
-                        int rowSiblingMask = 1 << (state[rowSiblingIndex] - 1);
-                        int colSiblingMask = 1 << (state[colSiblingIndex] - 1);
-                        int blockSiblingMask = 1 << (state[blockSiblingIndex] - 1);
+                        int rowSiblingMask = 1 << (state[cell.rowSibling(j).getIndex()] - 1);
+                        int colSiblingMask = 1 << (state[cell.columnSibling(j).getIndex()] - 1);
+                        int blockSiblingMask = 1 << (state[cell.blockSibling(j).getIndex()] - 1);
 
                         colidingNumbers = colidingNumbers | rowSiblingMask | colSiblingMask | blockSiblingMask;
                     }
