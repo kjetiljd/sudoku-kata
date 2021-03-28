@@ -261,11 +261,10 @@ public class Program {
             for (int i = 0; i < state.length; i++) {
                 Cell cell = Cell.of(i);
                 if (state[i] == 0) {
-                    int colidingNumbers = 0;
-
-                    for (Cell sibling : cell.allSiblings()) {
-                        colidingNumbers = colidingNumbers | maskForDigit(state[sibling.getIndex()]);
-                    }
+                    int colidingNumbers =
+                            cell.allSiblings().stream()
+                                    .mapToInt(sibling -> maskForDigit(state[sibling.getIndex()]))
+                                    .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                     candidateMasks[i] = allOnes & ~colidingNumbers;
                 }
