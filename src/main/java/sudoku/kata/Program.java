@@ -938,3 +938,30 @@ public class Program {
         }
     }
 }
+
+class Cell {
+    private static final Cell[] cells = new Cell[9 * 9];
+    static {
+        for (int index = 0; index < 9 * 9; index++)
+                cells[index] = new Cell(index);
+    }
+
+    private int index;
+
+    private Cell(int index) {
+        this.index = index;
+    }
+
+    static Cell of(int index) {
+        return cells[index];
+    }
+
+    int getRow() {
+        return index / 9;
+    }
+
+    int getColumn() {
+        return index % 9;
+    }
+
+}
