@@ -260,7 +260,7 @@ public class Program {
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
-            var cellGroups = buildCellGroups2();
+            var cellGroups = buildCellGroups();
             //endregion
 
             boolean stepChangeMade = true;
@@ -859,51 +859,7 @@ public class Program {
         }
     }
 
-    private static Map buildCellGroups() {
-        var length = 9 * 9;
-
-        var rowsIndices =
-                IntStream.range(0, length)
-                        .mapToObj(index -> Map.of(
-                                "Discriminator", index / 9,
-                                "Description", "row #" + (index / 9 + 1),
-                                "Index", index,
-                                "Row", index / 9,
-                                "Column", index % 9))
-                        .collect(groupingBy(tuple -> tuple.get("Discriminator")));
-
-        var columnIndices =
-                IntStream.range(0, length)
-                        .mapToObj(index -> Map.of(
-                                "Discriminator", 9 + index % 9,
-                                "Description", "column #" + (index % 9 + 1),
-                                "Index", index,
-                                "Row", index / 9,
-                                "Column", index % 9))
-                        .collect(groupingBy(tuple -> tuple.get("Discriminator")));
-
-        var blockIndices =
-                IntStream.range(0, length)
-                        .mapToObj(index -> Map.of(
-                                "Row", index / 9,
-                                "Column", index % 9,
-                                "Index", index
-                        ))
-                        .map(tuple -> Map.of(
-                                "Discriminator", (18 + 3 * (tuple.get("Row") / 3) + tuple.get("Column") / 3),
-                                "Description", "block (" + (tuple.get("Row") / 3 + 1) + ", " + (tuple.get("Column") / 3 + 1) + ")",
-                                "Index", tuple.get("Index"),
-                                "Row", tuple.get("Row"),
-                                "Column", tuple.get("Column")))
-                        .collect(groupingBy(tuple -> tuple.get("Discriminator")));
-
-        var cellGroups = new HashMap<>(rowsIndices);
-        cellGroups.putAll(columnIndices);
-        cellGroups.putAll(blockIndices);
-        return cellGroups;
-    }
-
-    private static List<CellGroup> buildCellGroups2() {
+    private static List<CellGroup> buildCellGroups() {
         var rowCellGroups =
                 Cell.cells().stream()
                         .collect(groupingBy(Cell::getRow))
