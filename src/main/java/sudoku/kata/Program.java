@@ -784,9 +784,9 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                new Board(state).printBoard();
-                String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
-                System.out.format("Code: %s", code).println();
+                Board board = new Board(state);
+                board.printBoard();
+                board.printCode();
                 System.out.println();
                 //endregion
             }
@@ -833,10 +833,10 @@ public class Program {
 }
 
 class Board {
-    private final List<String> board;
+    private final int[] state;
 
     Board(int[] state) {
-        board = board(state);
+        this.state = state;
     }
 
     private static List<String> board(int[] state) {
@@ -877,8 +877,13 @@ class Board {
                 };
     }
 
+    void printCode() {
+        String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
+        System.out.format("Code: %s", code).println();
+    }
+
     void printBoard() {
-        System.out.println(String.join(System.lineSeparator(), board));
+        System.out.println(String.join(System.lineSeparator(), board(state)));
     }
 }
 
