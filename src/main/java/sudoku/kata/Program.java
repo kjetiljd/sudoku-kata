@@ -263,24 +263,35 @@ public class Program {
                 if (state[i] == 0) {
                     int colidingNumbers = 0;
 
-                    Cell[] sibling = new Cell[9];
+                    Cell[] rowSibling = new Cell[9];
                     for (int j = 0; j < 9; j++) {
-                        sibling[j] = cell.rowSibling(j);
-                        int siblingIndex = sibling[j].getIndex();
+                        rowSibling[j] = cell.rowSibling(j);
+                    }
+
+                    for (int j = 0; j < 9; j++) {
+                        int siblingIndex = rowSibling[j].getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
+                    Cell[] columnSibling = new Cell[9];
                     for (int j = 0; j < 9; j++) {
-                        sibling[j] = cell.columnSibling(j);
-                        int siblingIndex = sibling[j].getIndex();
+                        columnSibling[j] = cell.columnSibling(j);
+                    }
+
+                    for (int j = 0; j < 9; j++) {
+                        int siblingIndex = columnSibling[j].getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
 
+                    Cell[] blockSibling = new Cell[9];
                     for (int j = 0; j < 9; j++) {
-                        sibling[j] = cell.blockSibling(j);
-                        int siblingIndex = sibling[j].getIndex();
+                        blockSibling[j] = cell.blockSibling(j);
+                    }
+
+                    for (int j = 0; j < 9; j++) {
+                        int siblingIndex = blockSibling[j].getIndex();
                         int siblingMask = 1 << (state[siblingIndex] - 1);
                         colidingNumbers = colidingNumbers | siblingMask;
                     }
