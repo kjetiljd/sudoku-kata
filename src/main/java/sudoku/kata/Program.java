@@ -264,18 +264,24 @@ public class Program {
                     int colidingNumbers = 0;
 
                     for (int j = 0; j < 9; j++) {
-                        int rowSiblingMask = 1 << (state[cell.rowSibling(j).getIndex()] - 1);
-                        colidingNumbers = colidingNumbers | rowSiblingMask;
+                        Cell sibling = cell.rowSibling(j);
+                        int siblingIndex = sibling.getIndex();
+                        int siblingMask = 1 << (state[siblingIndex] - 1);
+                        colidingNumbers = colidingNumbers | siblingMask;
                     }
 
                     for (int j = 0; j < 9; j++) {
-                        int colSiblingMask = 1 << (state[cell.columnSibling(j).getIndex()] - 1);
-                        colidingNumbers = colidingNumbers | colSiblingMask;
+                        Cell sibling = cell.columnSibling(j);
+                        int siblingIndex = sibling.getIndex();
+                        int siblingMask = 1 << (state[siblingIndex] - 1);
+                        colidingNumbers = colidingNumbers | siblingMask;
                     }
 
                     for (int j = 0; j < 9; j++) {
-                        int blockSiblingMask = 1 << (state[cell.blockSibling(j).getIndex()] - 1);
-                        colidingNumbers = colidingNumbers | blockSiblingMask;
+                        Cell sibling = cell.blockSibling(j);
+                        int siblingIndex = sibling.getIndex();
+                        int siblingMask = 1 << (state[siblingIndex] - 1);
+                        colidingNumbers = colidingNumbers | siblingMask;
                     }
 
                     candidateMasks[i] = allOnes & ~colidingNumbers;
