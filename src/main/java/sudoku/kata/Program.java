@@ -427,14 +427,13 @@ public class Program {
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
-                                                    "CellsWithMask", group.cellsWithMask(mask, state, candidateMasks),
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state[cell.getIndex()] == 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((List<Cell>) (group.get("CellsWithMask"))).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidateMasks).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -463,7 +462,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : ((List<Cell>) groupWithNMasks.get("CellsWithMask"))) {
+                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
                                 message.append(" (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ")");
                             }
 
@@ -472,7 +471,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : ((List<Cell>) groupWithNMasks.get("CellsWithMask"))) {
+                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
                             int maskToClear = candidateMasks[cell.getIndex()] & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
