@@ -231,19 +231,17 @@ public class Program {
                 if (singleCandidateIndices.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidateIndices.size());
                     int singleCandidateIndex = singleCandidateIndices.get(pickSingleCandidateIndex);
-                    int candidateMask = candidateMasks[singleCandidateIndex];
-                    int candidate = singleBitToIndex.get(candidateMask);
-
                     Cell singleCandidate = Cell.of(singleCandidateIndex);
+                    int digit = singleBitToIndex.get(candidateMasks[singleCandidate.getIndex()]) + 1;
 
-                    int row = singleCandidate.getRow();
-                    int col = singleCandidate.getColumn();
+                    System.out.format("(%s, %s) can only contain %s.",
+                            singleCandidate.getRow() + 1,
+                            singleCandidate.getColumn() + 1,
+                            digit).println();
 
-                    state[singleCandidateIndex] = candidate + 1;
-                    candidateMasks[singleCandidateIndex] = 0;
+                    state[singleCandidate.getIndex()] = digit;
+                    candidateMasks[singleCandidate.getIndex()] = 0;
                     changeMade = true;
-
-                    System.out.format("(%s, %s) can only contain %s.", row + 1, col + 1, candidate + 1).println();
                 }
 
                 //endregion
