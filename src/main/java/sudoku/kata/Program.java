@@ -377,29 +377,27 @@ public class Program {
                                                     .filter(group -> group.stream()
                                                             .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMask
                                                                     && (candidateMasks[cell.getIndex()] & twoDigitMask) > 0))
-                                                    .map(group -> Map.of(
-                                                            "Mask", twoDigitMask,
-                                                            "Group", group))
+                                                    .map(group -> new TwoDigitGroups(twoDigitMask, group))
                                                     .collect(toList())).flatMap(Collection::stream)
                                     .collect(toList());
 
                     if (!groups.isEmpty()) {
                         for (var group : groups) {
-                            var cells = ((List<Cell>) group.get("Group"))
+                            var cells = group.getGroup()
                                     .stream().filter(cell ->
-                                            candidateMasks[cell.getIndex()] != (int) group.get("Mask")
-                                                    && (candidateMasks[cell.getIndex()] & (int) group.get("Mask")) > 0)
+                                            candidateMasks[cell.getIndex()] != group.getMask()
+                                                    && (candidateMasks[cell.getIndex()] & group.getMask()) > 0)
                                     .collect(toList());
 
-                            var maskCells = ((List<Cell>) group.get("Group"))
+                            var maskCells = group.getGroup()
                                     .stream().filter(cell ->
-                                            candidateMasks[cell.getIndex()] == (int) group.get("Mask"))
+                                            candidateMasks[cell.getIndex()] == group.getMask())
                                     .collect(toList());
 
                             if (!cells.isEmpty()) {
                                 int upper = 0;
                                 int lower = 0;
-                                int temp = (int) group.get("Mask");
+                                int temp = group.getMask();
 
                                 int value = 1;
                                 while (temp > 0) {
@@ -412,12 +410,12 @@ public class Program {
                                 }
 
                                 System.out.println(
-                                        "Values " + lower + " and " + upper + " in " + ((CellGroup) (group.get("Group"))).getDescription() +
+                                        "Values " + lower + " and " + upper + " in " + group.getGroup().getDescription() +
                                                 " are in cells (" + (maskCells.get(0).getRow() + 1) + ", " + (maskCells.get(0).getColumn() + 1) + ")" +
                                                 " and (" + (maskCells.get(1).getRow() + 1) + ", " + (maskCells.get(1).getColumn() + 1) + ").");
 
                                 for (var cell : cells) {
-                                    int maskToRemove = candidateMasks[cell.getIndex()] & (int) group.get("Mask");
+                                    int maskToRemove = candidateMasks[cell.getIndex()] & group.getMask();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -431,7 +429,7 @@ public class Program {
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ").");
 
-                                    candidateMasks[cell.getIndex()] &= ~(int) group.get("Mask");
+                                    candidateMasks[cell.getIndex()] &= ~(int) group.getMask();
                                     stepChangeMade = true;
                                 }
                             }
