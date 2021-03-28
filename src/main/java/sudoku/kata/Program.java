@@ -943,9 +943,10 @@ public class Program {
 
 class Cell {
     private static final Cell[] cells = new Cell[9 * 9];
+
     static {
         for (int index = 0; index < 9 * 9; index++)
-                cells[index] = new Cell(index);
+            cells[index] = new Cell(index);
     }
 
     private int index;
