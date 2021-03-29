@@ -567,43 +567,6 @@ public class Program {
         }
     }
 
-    private static State generateStartingState(Random rng, State solutionState) {
-        State startingState = solutionState.copy();
-
-        // Now pick subset of digits as the starting position.
-        int remainingDigits = 30;
-        int maxRemovedPerBlock = 6;
-        int[][] removedPerBlock = new int[3][3];
-        int[] positions = IntStream.range(0, 9 * 9).toArray();
-
-        int removedPos = 0;
-        while (removedPos < 9 * 9 - remainingDigits) {
-            int curRemainingDigits = positions.length - removedPos;
-            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
-
-            int row = positions[indexToPick] / 9;
-            int col = positions[indexToPick] % 9;
-
-            int blockRowToRemove = row / 3;
-            int blockColToRemove = col / 3;
-
-            if (removedPerBlock[blockRowToRemove][blockColToRemove] >= maxRemovedPerBlock)
-                continue;
-
-            removedPerBlock[blockRowToRemove][blockColToRemove] += 1;
-
-            int temp = positions[removedPos];
-            positions[removedPos] = positions[indexToPick];
-            positions[indexToPick] = temp;
-
-            int stateIndex = 9 * row + col;
-            startingState.set(stateIndex, 0);
-
-            removedPos += 1;
-        }
-        return startingState;
-    }
-
     private static State constructBoardToBeSolved(Random rng) {
 
         // Top element is current state of the board
@@ -727,6 +690,43 @@ public class Program {
         }
 
         return stateStack.peek();
+    }
+
+    private static State generateStartingState(Random rng, State solutionState) {
+        State startingState = solutionState.copy();
+
+        // Now pick subset of digits as the starting position.
+        int remainingDigits = 30;
+        int maxRemovedPerBlock = 6;
+        int[][] removedPerBlock = new int[3][3];
+        int[] positions = IntStream.range(0, 9 * 9).toArray();
+
+        int removedPos = 0;
+        while (removedPos < 9 * 9 - remainingDigits) {
+            int curRemainingDigits = positions.length - removedPos;
+            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
+
+            int row = positions[indexToPick] / 9;
+            int col = positions[indexToPick] % 9;
+
+            int blockRowToRemove = row / 3;
+            int blockColToRemove = col / 3;
+
+            if (removedPerBlock[blockRowToRemove][blockColToRemove] >= maxRemovedPerBlock)
+                continue;
+
+            removedPerBlock[blockRowToRemove][blockColToRemove] += 1;
+
+            int temp = positions[removedPos];
+            positions[removedPos] = positions[indexToPick];
+            positions[indexToPick] = temp;
+
+            int stateIndex = 9 * row + col;
+            startingState.set(stateIndex, 0);
+
+            removedPos += 1;
+        }
+        return startingState;
     }
 
     private static int[] calculateCandidates(State state) {
