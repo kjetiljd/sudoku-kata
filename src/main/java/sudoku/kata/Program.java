@@ -58,7 +58,7 @@ public class Program {
                     System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
 
                     state.set(singleCandidate.getCell(), digit);
-                    singleCandidate.setMask(new Mask(0));
+                    singleCandidate.setNoCandidates();
                     changeMade = true;
                 }
 
@@ -144,7 +144,7 @@ public class Program {
 
                         int stateIndex = 9 * row + col;
                         state.set(stateIndex, digit);
-                        candidates.get(stateIndex).setMask(new Mask(0));
+                        candidates.get(stateIndex).setNoCandidates();
                         changeMade = true;
 
                         System.out.println(message);
@@ -543,8 +543,8 @@ public class Program {
 
                     state.set(index1, solutionState.get(index1));
                     state.set(index2, solutionState.get(index2));
-                    candidates.get(index1).setMask(new Mask(0));
-                    candidates.get(index2).setMask(new Mask(0));
+                    candidates.get(index1).setNoCandidates();
+                    candidates.get(index2).setNoCandidates();
                     changeMade = true;
 
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(index1) + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + solutionState.get(index2) + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
@@ -855,6 +855,10 @@ class Candidate {
     Candidate(Cell cell, Mask mask) {
         this.cell = cell;
         this.mask = mask;
+    }
+
+    void setNoCandidates() {
+        mask = new Mask(0);
     }
 
     public Cell getCell() {
