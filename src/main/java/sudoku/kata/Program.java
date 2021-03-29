@@ -40,7 +40,7 @@ public class Program {
         while (changeMade) {
             changeMade = false;
 
-            int[] candidateMasks = Candidates.calculateCandidates(state);
+            int[] candidateMasks = Candidates.calculateFrom(state);
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -793,7 +793,7 @@ class State extends AbstractList<Integer> {
 
 class Candidates {
 
-    static int[] calculateCandidates(State state) {
+    static int[] calculateFrom(State state) {
         int allOnes = (1 << 9) - 1;
 
         return IntStream.range(0, state.size())
