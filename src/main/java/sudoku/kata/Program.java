@@ -55,10 +55,7 @@ public class Program {
                     Cell singleCandidate = singleCandidateCells.get(pickSingleCandidateIndex);
                     int digit = Mask.singleBitMaskToDigit.get(candidateMasks[singleCandidate.getIndex()]);
 
-                    System.out.format("(%s, %s) can only contain %s.",
-                            singleCandidate.getRow() + 1,
-                            singleCandidate.getColumn() + 1,
-                            digit).println();
+                    System.out.format("%s can only contain %s.", singleCandidate, digit).println();
 
                     state.set(singleCandidate, digit);
                     candidateMasks[singleCandidate.getIndex()] = 0;
@@ -207,8 +204,8 @@ public class Program {
 
                                 System.out.println(
                                         "Values " + lower + " and " + upper + " in " + twoDigitGroup.getGroup().getDescription() +
-                                                " are in cells (" + (maskCells.get(0).getRow() + 1) + ", " + (maskCells.get(0).getColumn() + 1) + ")" +
-                                                " and (" + (maskCells.get(1).getRow() + 1) + ", " + (maskCells.get(1).getColumn() + 1) + ").");
+                                                " are in cells " + maskCells.get(0) +
+                                                " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cells) {
                                     int maskToRemove = candidateMasks[cell.getIndex()] & twoDigitGroup.getMask();
@@ -223,7 +220,7 @@ public class Program {
                                     }
 
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
-                                    System.out.println(valuesReport + " cannot appear in (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ").");
+                                    System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
                                     candidateMasks[cell.getIndex()] &= ~(int) twoDigitGroup.getMask();
                                     stepChangeMade = true;
@@ -284,7 +281,7 @@ public class Program {
 
                             message.append(" appear only in cells");
                             for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
-                                message.append(" (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ")");
+                                message.append(" " + cell);
                             }
 
                             message.append(" and other values cannot appear in those cells.");
@@ -314,7 +311,7 @@ public class Program {
                                 valueToClear += 1;
                             }
 
-                            message.append(" cannot appear in cell (" + (cell.getRow() + 1) + ", " + (cell.getColumn() + 1) + ").");
+                            message.append(" cannot appear in cell " + cell + ".");
                             System.out.println(message.toString());
                         }
                     }
@@ -1120,5 +1117,10 @@ class Cell {
         allSiblings.addAll(columnSiblings());
         allSiblings.addAll(blockSiblings());
         return allSiblings;
+    }
+
+    @Override
+    public String toString() {
+        return format("(%s, %s)", getRow() + 1, getColumn() + 1);
     }
 }
