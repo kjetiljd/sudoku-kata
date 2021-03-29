@@ -24,6 +24,7 @@ public class Program {
         System.out.println("Final look of the solved board:");
         new Board(state).printBoard();
 
+        State solutionState = state.copy();
 
         //region Generate inital board from the completely solved one
         // Board is solved at this point.
@@ -33,7 +34,6 @@ public class Program {
         int[][] removedPerBlock = new int[3][3];
         int[] positions = IntStream.range(0, 9 * 9).toArray();
 
-        State finalState = state.copy();
 
         int removedPos = 0;
         while (removedPos < 9 * 9 - remainingDigits) {
@@ -420,7 +420,7 @@ public class Program {
 
                     State alternateState = state.copy();
 
-                    if (finalState.get(index1) == digit1) {
+                    if (solutionState.get(index1) == digit1) {
                         alternateState.set(index1, digit2);
                         alternateState.set(index2, digit1);
                     } else {
@@ -579,13 +579,13 @@ public class Program {
                         description = "block (" + (row1 / 3 + 1) + ", " + (col1 / 3 + 1) + ")";
                     }
 
-                    state.set(index1, finalState.get(index1));
-                    state.set(index2, finalState.get(index2));
+                    state.set(index1, solutionState.get(index1));
+                    state.set(index2, solutionState.get(index2));
                     candidateMasks[index1] = 0;
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState.get(index1) + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState.get(index2) + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
+                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(index1) + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + solutionState.get(index2) + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
             }
             //endregion
