@@ -53,7 +53,7 @@ public class Program {
                 if (singleCandidateCells.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidateCells.size());
                     Cell singleCandidate = singleCandidateCells.get(pickSingleCandidateIndex);
-                    int digit = Mask.singleBitToIndex.get(candidateMasks[singleCandidate.getIndex()]) + 1;
+                    int digit = Mask.singleBitMaskToDigit.get(candidateMasks[singleCandidate.getIndex()]);
 
                     System.out.format("(%s, %s) can only contain %s.",
                             singleCandidate.getRow() + 1,
@@ -812,7 +812,7 @@ class State extends AbstractList<Integer> {
 
 class Mask {
     private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
-    static final Map<Integer, Integer> singleBitToIndex = singleBitToIndex();
+    static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
 
     static final List<Integer> nMasks = nMasks();
 
@@ -851,12 +851,12 @@ class Mask {
         return maskToOnesCount;
     }
 
-    private static Map<Integer, Integer> singleBitToIndex() {
-        Map<Integer, Integer> singleBitToIndex = new HashMap<>();
+    private static Map<Integer, Integer> singleBitMaskToDigit() {
+        Map<Integer, Integer> singleBitMaskToDigit = new HashMap<>();
         for (int i = 0; i < 9; i++)
-            singleBitToIndex.put(1 << i, i);
+            singleBitMaskToDigit.put(1 << i, i + 1);
 
-        return singleBitToIndex;
+        return singleBitMaskToDigit;
     }
 
     // masks that represent two or more candidates
