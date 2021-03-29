@@ -791,7 +791,7 @@ class State extends AbstractList<Integer> {
     }
 }
 
-class Candidates {
+class Candidates extends AbstractList<Integer> {
     private static final int allOnes = (1 << 9) - 1;
 
     private final int[] candidatesMask;
@@ -816,6 +816,16 @@ class Candidates {
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                     return allOnes & ~collidingDigitsMask;
                 }).toArray();
+    }
+
+    @Override
+    public Integer get(int index) {
+        return candidatesMask[index];
+    }
+
+    @Override
+    public int size() {
+        return candidatesMask.length;
     }
 }
 
