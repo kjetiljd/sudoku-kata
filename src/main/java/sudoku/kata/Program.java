@@ -54,13 +54,13 @@ public class Program {
                     int bestRandomValue = -1;
                     boolean containsUnsolvableCells = false;
 
-                    for (int index = 0; index < currentState.size(); index++)
-                        if (currentState.get(index) == 0) {
+                    for (var cell : Cell.cells()) {
+                        if (currentState.get(cell.getIndex()) == 0) {
 
-                            int row = index / 9;
-                            int col = index % 9;
-                            int blockRow = row / 3;
-                            int blockCol = col / 3;
+                            int row = cell.getRow();
+                            int col = cell.getColumn();
+                            int blockRow = cell.getBlockRow();
+                            int blockCol = cell.getBlockCol();
 
                             boolean[] isDigitUsed = new boolean[9];
 
@@ -98,6 +98,7 @@ public class Program {
                             }
 
                         } // for (index = 0..81)
+                    }
 
                     if (!containsUnsolvableCells) {
                         stateStack.push(currentState);
@@ -599,13 +600,13 @@ public class Program {
                                 int bestRandomValue = -1;
                                 boolean containsUnsolvableCells = false;
 
-                                for (int index = 0; index < currentState.size(); index++)
-                                    if (currentState.get(index) == 0) {
+                                for (var cell : Cell.cells()) {
+                                    if (currentState.get(cell.getIndex()) == 0) {
 
-                                        int row = index / 9;
-                                        int col = index % 9;
-                                        int blockRow = row / 3;
-                                        int blockCol = col / 3;
+                                        int row = cell.getRow();
+                                        int col = cell.getColumn();
+                                        int blockRow = cell.getBlockRow();
+                                        int blockCol = cell.getBlockCol();
 
                                         boolean[] isDigitUsed = new boolean[9];
 
@@ -644,6 +645,7 @@ public class Program {
                                         }
 
                                     } // for (index = 0..81)
+                                }
 
                                 if (!containsUnsolvableCells) {
                                     stateStack.push(currentState);
