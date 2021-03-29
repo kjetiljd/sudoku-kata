@@ -157,7 +157,7 @@ public class Program {
                 if (!changeMade) {
 
                     var twoDigitGroups =
-                            Masks.twoDigitMasks(candidates.getMasks()).stream()
+                            Candidates.twoDigitMasks(candidates.getMasks()).stream()
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
@@ -799,6 +799,14 @@ class Candidates extends AbstractList<Candidate> {
         this.candidates = calculateFrom(state);
     }
 
+    static List<Integer> twoDigitMasks(int[] candidateMasks) {
+        return Arrays.stream(candidateMasks)
+                .filter(mask -> new Mask(mask).candidatesCount() == 2)
+                .distinct()
+                .boxed()
+                .collect(toList());
+    }
+
     List<Candidate> singleCandidates() {
         return candidates.stream()
                 .filter(candidate -> candidate.getMask().candidatesCount() == 1)
@@ -899,14 +907,6 @@ class Masks {
 
     static int maskForDigit(int i) {
         return 1 << (i - 1);
-    }
-
-    static List<Integer> twoDigitMasks(int[] candidateMasks) {
-        return Arrays.stream(candidateMasks)
-                .filter(mask -> new Mask(mask).candidatesCount() == 2)
-                .distinct()
-                .boxed()
-                .collect(toList());
     }
 
     private static Map<Integer, Integer> singleBitMaskToDigit() {
