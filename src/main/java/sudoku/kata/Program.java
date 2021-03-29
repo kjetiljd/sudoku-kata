@@ -161,12 +161,12 @@ public class Program {
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(cell -> candidates.get(cell.getIndex()).getMask().get() == twoDigitMask)
+                                                            .filter(cell -> candidates.get(cell.getIndex()).getMask().get() == twoDigitMask.get())
                                                             .count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(cell -> candidates.get(cell.getIndex()).getMask().get() != twoDigitMask
-                                                                    && (candidates.get(cell.getIndex()).getMask().get() & twoDigitMask) > 0))
-                                                    .map(group -> new MaskGroup(twoDigitMask, group))
+                                                            .anyMatch(cell -> candidates.get(cell.getIndex()).getMask().get() != twoDigitMask.get()
+                                                                    && (candidates.get(cell.getIndex()).getMask().get() & twoDigitMask.get()) > 0))
+                                                    .map(group -> new MaskGroup(twoDigitMask.get(), group))
                                                     .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -799,11 +799,11 @@ class Candidates extends AbstractList<Candidate> {
         this.candidates = calculateFrom(state);
     }
 
-    List<Integer> twoDigitMasks() {
-        return Arrays.stream(getMasks())
-                .filter(mask -> new Mask(mask).candidatesCount() == 2)
+    List<Mask> twoDigitMasks() {
+        return candidates.stream()
+                .map(candidate -> candidate.getMask())
+                .filter(mask -> mask.candidatesCount() == 2)
                 .distinct()
-                .boxed()
                 .collect(toList());
     }
 
