@@ -48,7 +48,7 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                List<Candidate> singleCandidates = Masks.singleCandidates(candidates);
+                List<Candidate> singleCandidates = Candidates.singleCandidates(candidates);
 
                 if (singleCandidates.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidates.size());
@@ -799,6 +799,12 @@ class Candidates extends AbstractList<Candidate> {
         this.candidates = calculateFrom(state);
     }
 
+    static List<Candidate> singleCandidates(Candidates candidates) {
+        return candidates.stream()
+                .filter(candidate -> Masks.candidatesInMaskCount(candidate.getMask().get()) == 1)
+                .collect(toList());
+    }
+
     public int[] getMasks() {
         return candidates.stream()
                 .mapToInt(candidate -> candidate.getMask().get())
@@ -889,12 +895,6 @@ class Masks {
                 .filter(mask -> candidatesInMaskCount(mask) == 2)
                 .distinct()
                 .boxed()
-                .collect(toList());
-    }
-
-    static List<Candidate> singleCandidates(Candidates candidates) {
-        return candidates.stream()
-                .filter(candidate -> candidatesInMaskCount(candidate.getMask().get()) == 1)
                 .collect(toList());
     }
 
