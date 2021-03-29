@@ -24,48 +24,13 @@ public class Program {
         System.out.println("Final look of the solved board:");
         new Board(solutionState).printBoard();
 
-        //region Generate inital board from the completely solved one
-        State startingState = solutionState.copy();
-        // Board is solved at this point.
-        // Now pick subset of digits as the starting position.
-        int remainingDigits = 30;
-        int maxRemovedPerBlock = 6;
-        int[][] removedPerBlock = new int[3][3];
-        int[] positions = IntStream.range(0, 9 * 9).toArray();
-
-        int removedPos = 0;
-        while (removedPos < 9 * 9 - remainingDigits) {
-            int curRemainingDigits = positions.length - removedPos;
-            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
-
-            int row = positions[indexToPick] / 9;
-            int col = positions[indexToPick] % 9;
-
-            int blockRowToRemove = row / 3;
-            int blockColToRemove = col / 3;
-
-            if (removedPerBlock[blockRowToRemove][blockColToRemove] >= maxRemovedPerBlock)
-                continue;
-
-            removedPerBlock[blockRowToRemove][blockColToRemove] += 1;
-
-            int temp = positions[removedPos];
-            positions[removedPos] = positions[indexToPick];
-            positions[indexToPick] = temp;
-
-            int stateIndex = 9 * row + col;
-            startingState.set(stateIndex, 0);
-
-            removedPos += 1;
-        }
+        State startingState = generateStartingState(rng, solutionState);
 
         State state = startingState.copy();
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
         new Board(state).printBoard();
-
-        //endregion
 
         System.out.println();
         System.out.println("=".repeat(80));
@@ -600,6 +565,43 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static State generateStartingState(Random rng, State solutionState) {
+        State startingState = solutionState.copy();
+
+        // Now pick subset of digits as the starting position.
+        int remainingDigits = 30;
+        int maxRemovedPerBlock = 6;
+        int[][] removedPerBlock = new int[3][3];
+        int[] positions = IntStream.range(0, 9 * 9).toArray();
+
+        int removedPos = 0;
+        while (removedPos < 9 * 9 - remainingDigits) {
+            int curRemainingDigits = positions.length - removedPos;
+            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
+
+            int row = positions[indexToPick] / 9;
+            int col = positions[indexToPick] % 9;
+
+            int blockRowToRemove = row / 3;
+            int blockColToRemove = col / 3;
+
+            if (removedPerBlock[blockRowToRemove][blockColToRemove] >= maxRemovedPerBlock)
+                continue;
+
+            removedPerBlock[blockRowToRemove][blockColToRemove] += 1;
+
+            int temp = positions[removedPos];
+            positions[removedPos] = positions[indexToPick];
+            positions[indexToPick] = temp;
+
+            int stateIndex = 9 * row + col;
+            startingState.set(stateIndex, 0);
+
+            removedPos += 1;
+        }
+        return startingState;
     }
 
     private static State constructBoardToBeSolved(Random rng) {
