@@ -41,7 +41,6 @@ public class Program {
             changeMade = false;
 
             Candidates candidates = new Candidates(state);
-            int[] candidateMasks = candidates.getMasks();
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -49,17 +48,17 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                List<Cell> singleCandidateCells = Masks.singleCandidateCells(candidates);
+                List<Candidate> singleCandidates = Masks.singleCandidates(candidates);
 
-                if (singleCandidateCells.size() > 0) {
-                    int pickSingleCandidateIndex = rng.nextInt(singleCandidateCells.size());
-                    Cell singleCandidate = singleCandidateCells.get(pickSingleCandidateIndex);
-                    int digit = Masks.singleBitMaskToDigit.get(candidateMasks[singleCandidate.getIndex()]);
+                if (singleCandidates.size() > 0) {
+                    int pickSingleCandidateIndex = rng.nextInt(singleCandidates.size());
+                    Candidate singleCandidate = singleCandidates.get(pickSingleCandidateIndex);
+                    int digit = Masks.singleBitMaskToDigit.get(singleCandidate.getMask().get());
 
-                    System.out.format("%s can only contain %s.", singleCandidate, digit).println();
+                    System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
 
-                    state.set(singleCandidate, digit);
-                    candidateMasks[singleCandidate.getIndex()] = 0;
+                    state.set(singleCandidate.getCell(), digit);
+                    singleCandidate.setMask(new Mask(0));
                     changeMade = true;
                 }
 
@@ -92,17 +91,17 @@ public class Program {
                                 int blockColIndex = (cellGroup % 3) * 3 + indexInGroup % 3;
                                 int blockStateIndex = blockRowIndex * 9 + blockColIndex;
 
-                                if ((candidateMasks[rowStateIndex] & mask) != 0) {
+                                if ((candidates.get(rowStateIndex).getMask().get() & mask) != 0) {
                                     rowNumberCount += 1;
                                     indexInRow = indexInGroup;
                                 }
 
-                                if ((candidateMasks[colStateIndex] & mask) != 0) {
+                                if ((candidates.get(colStateIndex).getMask().get() & mask) != 0) {
                                     colNumberCount += 1;
                                     indexInCol = indexInGroup;
                                 }
 
-                                if ((candidateMasks[blockStateIndex] & mask) != 0) {
+                                if ((candidates.get(blockStateIndex).getMask().get() & mask) != 0) {
                                     blockNumberCount += 1;
                                     indexInBlock = indexInGroup;
                                 }
@@ -145,8 +144,7 @@ public class Program {
 
                         int stateIndex = 9 * row + col;
                         state.set(stateIndex, digit);
-                        candidateMasks[stateIndex] = 0;
-
+                        candidates.get(stateIndex).setMask(new Mask(0));
                         changeMade = true;
 
                         System.out.println(message);
@@ -159,15 +157,15 @@ public class Program {
                 if (!changeMade) {
 
                     var twoDigitGroups =
-                            Masks.twoDigitMasks(candidateMasks).stream()
+                            Masks.twoDigitMasks(candidates.getMasks()).stream()
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(cell -> candidateMasks[cell.getIndex()] == twoDigitMask)
+                                                            .filter(cell -> candidates.get(cell.getIndex()).getMask().get() == twoDigitMask)
                                                             .count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(cell -> candidateMasks[cell.getIndex()] != twoDigitMask
-                                                                    && (candidateMasks[cell.getIndex()] & twoDigitMask) > 0))
+                                                            .anyMatch(cell -> candidates.get(cell.getIndex()).getMask().get() != twoDigitMask
+                                                                    && (candidates.get(cell.getIndex()).getMask().get() & twoDigitMask) > 0))
                                                     .map(group -> new MaskGroup(twoDigitMask, group))
                                                     .collect(toList()))
                                     .flatMap(Collection::stream)
@@ -178,14 +176,14 @@ public class Program {
                             var cells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidateMasks[cell.getIndex()] != twoDigitGroup.getMask()
-                                                            && (candidateMasks[cell.getIndex()] & twoDigitGroup.getMask()) > 0)
+                                                    candidates.get(cell.getIndex()).getMask().get() != twoDigitGroup.getMask()
+                                                            && (candidates.get(cell.getIndex()).getMask().get() & twoDigitGroup.getMask()) > 0)
                                             .collect(toList());
 
                             var maskCells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidateMasks[cell.getIndex()] == twoDigitGroup.getMask())
+                                                    candidates.get(cell.getIndex()).getMask().get() == twoDigitGroup.getMask())
                                             .collect(toList());
 
                             if (!cells.isEmpty()) {
@@ -209,7 +207,7 @@ public class Program {
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cells) {
-                                    int maskToRemove = candidateMasks[cell.getIndex()] & twoDigitGroup.getMask();
+                                    int maskToRemove = candidates.get(cell.getIndex()).getMask().get() & twoDigitGroup.getMask();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -223,7 +221,7 @@ public class Program {
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidateMasks[cell.getIndex()] &= ~(int) twoDigitGroup.getMask();
+                                    candidates.get(cell.getIndex()).setMask(new Mask(candidates.get(cell.getIndex()).getMask().get() & ~(int) twoDigitGroup.getMask()));
                                     stepChangeMade = true;
                                 }
                             }
@@ -249,10 +247,10 @@ public class Program {
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state.get(cell) == 0) &&
-                                                                    ((candidateMasks[cell.getIndex()] & mask) != 0) &&
-                                                                    ((candidateMasks[cell.getIndex()] & ~mask) != 0))
+                                                                    ((candidates.get(cell.getIndex()).getMask().get() & mask) != 0) &&
+                                                                    ((candidates.get(cell.getIndex()).getMask().get() & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidateMasks).size() == Masks.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == Masks.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -263,8 +261,8 @@ public class Program {
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell ->
-                                        ((candidateMasks[cell.getIndex()] & mask) != 0) &&
-                                                ((candidateMasks[cell.getIndex()] & ~mask) != 0))) {
+                                        ((candidates.get(cell.getIndex()).getMask().get() & mask) != 0) &&
+                                                ((candidates.get(cell.getIndex()).getMask().get() & ~mask) != 0))) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
 
@@ -281,7 +279,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
+                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidates)) {
                                 message.append(" " + cell);
                             }
 
@@ -290,12 +288,12 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidateMasks)) {
-                            int maskToClear = candidateMasks[cell.getIndex()] & ~((Integer) groupWithNMasks.get("Mask"));
+                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidates)) {
+                            int maskToClear = candidates.get(cell.getIndex()).getMask().get() & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
 
-                            candidateMasks[cell.getIndex()] &= ((Integer) groupWithNMasks.get("Mask"));
+                            candidates.get(cell.getIndex()).setMask(new Mask(candidates.get(cell.getIndex()).getMask().get() & ((Integer) groupWithNMasks.get("Mask"))));
                             stepChangeMade = true;
 
                             int valueToClear = 1;
@@ -333,13 +331,13 @@ public class Program {
                 Queue<Integer> candidateDigit1 = new LinkedList<>();
                 Queue<Integer> candidateDigit2 = new LinkedList<>();
 
-                for (int i = 0; i < candidateMasks.length - 1; i++) {
-                    if (Masks.candidatesInMaskCount(candidateMasks[i]) == 2) {
+                for (int i = 0; i < candidates.size() - 1; i++) {
+                    if (Masks.candidatesInMaskCount(candidates.get(i).getMask().get()) == 2) {
                         int row = i / 9;
                         int col = i % 9;
                         int blockIndex = 3 * (row / 3) + col / 3;
 
-                        int temp = candidateMasks[i];
+                        int temp = candidates.get(i).getMask().get();
                         int lower = 0;
                         int upper = 0;
                         for (int digit = 1; temp > 0; digit++) {
@@ -350,8 +348,8 @@ public class Program {
                             temp = temp >> 1;
                         }
 
-                        for (int j = i + 1; j < candidateMasks.length; j++) {
-                            if (candidateMasks[j] == candidateMasks[i]) {
+                        for (int j = i + 1; j < candidates.size(); j++) {
+                            if (candidates.get(j).getMask().get() == candidates.get(i).getMask().get()) {
                                 int row1 = j / 9;
                                 int col1 = j % 9;
                                 int blockIndex1 = 3 * (row1 / 3) + col1 / 3;
@@ -545,8 +543,8 @@ public class Program {
 
                     state.set(index1, solutionState.get(index1));
                     state.set(index2, solutionState.get(index2));
-                    candidateMasks[index1] = 0;
-                    candidateMasks[index2] = 0;
+                    candidates.get(index1).setMask(new Mask(0));
+                    candidates.get(index2).setMask(new Mask(0));
                     changeMade = true;
 
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(index1) + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + solutionState.get(index2) + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
@@ -840,7 +838,7 @@ class NoCandidate extends Candidate {
 
 class Candidate {
     private final Cell cell;
-    private final Mask mask;
+    private Mask mask;
 
     Candidate(Cell cell, Mask mask) {
         this.cell = cell;
@@ -853,6 +851,10 @@ class Candidate {
 
     public Mask getMask() {
         return mask;
+    }
+
+    public void setMask(Mask mask) {
+        this.mask = mask;
     }
 }
 
@@ -890,10 +892,9 @@ class Masks {
                 .collect(toList());
     }
 
-    static List<Cell> singleCandidateCells(Candidates candidates) {
+    static List<Candidate> singleCandidates(Candidates candidates) {
         return candidates.stream()
                 .filter(candidate -> candidatesInMaskCount(candidate.getMask().get()) == 1)
-                .map(candidate -> candidate.getCell())
                 .collect(toList());
     }
 
@@ -1065,9 +1066,9 @@ class CellGroup extends AbstractList<Cell> {
         //endregion
     }
 
-    public List<Cell> cellsWithMask(int mask, State state, int[] candidateMasks) {
+    public List<Cell> cellsWithMask(int mask, State state, Candidates candidates) {
         return this.stream()
-                .filter(cell -> state.get(cell) == 0 && (candidateMasks[cell.getIndex()] & mask) != 0)
+                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell.getIndex()).getMask().get() & mask) != 0)
                 .collect(toList());
     }
 
