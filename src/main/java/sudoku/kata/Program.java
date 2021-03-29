@@ -40,7 +40,8 @@ public class Program {
         while (changeMade) {
             changeMade = false;
 
-            int[] candidateMasks = new Candidates(state).getMasks();
+            Candidates candidates = new Candidates(state);
+            int[] candidateMasks = candidates.getMasks();
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -48,7 +49,7 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                List<Cell> singleCandidateCells = Masks.singleCandidateCells(candidateMasks);
+                List<Cell> singleCandidateCells = Masks.singleCandidateCells(candidates);
 
                 if (singleCandidateCells.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidateCells.size());
@@ -70,7 +71,7 @@ public class Program {
                     List<String> groupDescriptions = new ArrayList<>();
                     List<Integer> candidateRowIndices = new ArrayList<>();
                     List<Integer> candidateColIndices = new ArrayList<>();
-                    List<Integer> candidates = new ArrayList<>();
+                    List<Integer> candidateList = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
                         int mask = Masks.maskForDigit(digit);
@@ -111,14 +112,14 @@ public class Program {
                                 groupDescriptions.add("Row #" + (cellGroup + 1));
                                 candidateRowIndices.add(cellGroup);
                                 candidateColIndices.add(indexInRow);
-                                candidates.add(digit);
+                                candidateList.add(digit);
                             }
 
                             if (colNumberCount == 1) {
                                 groupDescriptions.add("Column #" + (cellGroup + 1));
                                 candidateRowIndices.add(indexInCol);
                                 candidateColIndices.add(cellGroup);
-                                candidates.add(digit);
+                                candidateList.add(digit);
                             }
 
                             if (blockNumberCount == 1) {
@@ -128,17 +129,17 @@ public class Program {
                                 groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
                                 candidateRowIndices.add(blockRow * 3 + indexInBlock / 3);
                                 candidateColIndices.add(blockCol * 3 + indexInBlock % 3);
-                                candidates.add(digit);
+                                candidateList.add(digit);
                             }
                         } // for (cellGroup = 0..8)
                     } // for (digit = 1..9)
 
-                    if (candidates.size() > 0) {
-                        int index = rng.nextInt(candidates.size());
+                    if (candidateList.size() > 0) {
+                        int index = rng.nextInt(candidateList.size());
                         String description = groupDescriptions.get(index);
                         int row = candidateRowIndices.get(index);
                         int col = candidateColIndices.get(index);
-                        int digit = candidates.get(index);
+                        int digit = candidateList.get(index);
 
                         String message = description + " can contain " + digit + " only at (" + (row + 1) + ", " + (col + 1) + ").";
 
@@ -889,11 +890,10 @@ class Masks {
                 .collect(toList());
     }
 
-    static List<Cell> singleCandidateCells(int[] candidateMasks) {
-        return IntStream.range(0, candidateMasks.length)
-                .filter(index -> candidatesInMaskCount(candidateMasks[index]) == 1)
-                .boxed()
-                .map(index -> Cell.of(index))
+    static List<Cell> singleCandidateCells(Candidates candidates) {
+        return candidates.stream()
+                .filter(candidate -> candidatesInMaskCount(candidate.getMask().get()) == 1)
+                .map(candidate -> candidate.getCell())
                 .collect(toList());
     }
 
