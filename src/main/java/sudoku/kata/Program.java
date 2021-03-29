@@ -48,12 +48,12 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                List<Cell> singleCandidateCells = Mask.singleCandidateCells(candidateMasks);
+                List<Cell> singleCandidateCells = Masks.singleCandidateCells(candidateMasks);
 
                 if (singleCandidateCells.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidateCells.size());
                     Cell singleCandidate = singleCandidateCells.get(pickSingleCandidateIndex);
-                    int digit = Mask.singleBitMaskToDigit.get(candidateMasks[singleCandidate.getIndex()]);
+                    int digit = Masks.singleBitMaskToDigit.get(candidateMasks[singleCandidate.getIndex()]);
 
                     System.out.format("%s can only contain %s.", singleCandidate, digit).println();
 
@@ -73,7 +73,7 @@ public class Program {
                     List<Integer> candidates = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
-                        int mask = Mask.maskForDigit(digit);
+                        int mask = Masks.maskForDigit(digit);
                         for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
                             int rowNumberCount = 0;
                             int indexInRow = 0;
@@ -158,7 +158,7 @@ public class Program {
                 if (!changeMade) {
 
                     var twoDigitGroups =
-                            Mask.twoDigitMasks(candidateMasks).stream()
+                            Masks.twoDigitMasks(candidateMasks).stream()
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
@@ -238,10 +238,10 @@ public class Program {
                 if (!changeMade && !stepChangeMade) {
 
                     var groupsWithNMasks =
-                            Mask.nMasks.stream()
+                            Masks.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell ->
-                                                    state.get(cell) == 0 || (mask & (Mask.maskForDigit(state.get(cell)))) == 0))
+                                                    state.get(cell) == 0 || (mask & (Masks.maskForDigit(state.get(cell)))) == 0))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
@@ -251,7 +251,7 @@ public class Program {
                                                                     ((candidateMasks[cell.getIndex()] & mask) != 0) &&
                                                                     ((candidateMasks[cell.getIndex()] & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidateMasks).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidateMasks).size() == Masks.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -333,7 +333,7 @@ public class Program {
                 Queue<Integer> candidateDigit2 = new LinkedList<>();
 
                 for (int i = 0; i < candidateMasks.length - 1; i++) {
-                    if (Mask.candidatesInMaskCount(candidateMasks[i]) == 2) {
+                    if (Masks.candidatesInMaskCount(candidateMasks[i]) == 2) {
                         int row = i / 9;
                         int col = i % 9;
                         int blockIndex = 3 * (row / 3) + col / 3;
@@ -425,13 +425,13 @@ public class Program {
 
                                         var digitUsedMask =
                                                 cell.allSiblings().stream()
-                                                        .mapToInt(sibling -> Mask.maskForDigit(currentState.get(sibling)))
+                                                        .mapToInt(sibling -> Masks.maskForDigit(currentState.get(sibling)))
                                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                                         boolean[] isDigitUsed = new boolean[9];
 
                                         for (int i = 0; i < 9; i++) {
-                                            isDigitUsed[i] = (digitUsedMask & Mask.maskForDigit(i + 1)) != 0;
+                                            isDigitUsed[i] = (digitUsedMask & Masks.maskForDigit(i + 1)) != 0;
                                         }
 
                                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
@@ -604,13 +604,13 @@ public class Program {
 
                         var digitUsedMask =
                                 cell.allSiblings().stream()
-                                        .mapToInt(sibling -> Mask.maskForDigit(currentState.get(sibling)))
+                                        .mapToInt(sibling -> Masks.maskForDigit(currentState.get(sibling)))
                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                         boolean[] isDigitUsed = new boolean[9];
 
                         for (int i = 0; i < 9; i++) {
-                            isDigitUsed[i] = (digitUsedMask & Mask.maskForDigit(i + 1)) != 0;
+                            isDigitUsed[i] = (digitUsedMask & Masks.maskForDigit(i + 1)) != 0;
                         }
 
                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
@@ -812,7 +812,7 @@ class Candidates extends AbstractList<Integer> {
                     }
                     int collidingDigitsMask =
                             Cell.of(i).allSiblings().stream()
-                                    .mapToInt(sibling -> Mask.maskForDigit(state.get(sibling)))
+                                    .mapToInt(sibling -> Masks.maskForDigit(state.get(sibling)))
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                     return allOnes & ~collidingDigitsMask;
                 }).toArray();
@@ -829,7 +829,7 @@ class Candidates extends AbstractList<Integer> {
     }
 }
 
-class Mask {
+class Masks {
     private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
 
