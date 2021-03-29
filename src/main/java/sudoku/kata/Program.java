@@ -76,7 +76,7 @@ public class Program {
                     List<Integer> candidates = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
-                        int mask = maskForDigit(digit);
+                        int mask = Mask.maskForDigit(digit);
                         for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
                             int rowNumberCount = 0;
                             int indexInRow = 0;
@@ -244,7 +244,7 @@ public class Program {
                             Mask.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell ->
-                                                    state.get(cell) == 0 || (mask & (maskForDigit(state.get(cell)))) == 0))
+                                                    state.get(cell) == 0 || (mask & (Mask.maskForDigit(state.get(cell)))) == 0))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
@@ -428,13 +428,13 @@ public class Program {
 
                                         var digitUsedMask =
                                                 cell.allSiblings().stream()
-                                                        .mapToInt(sibling -> maskForDigit(currentState.get(sibling)))
+                                                        .mapToInt(sibling -> Mask.maskForDigit(currentState.get(sibling)))
                                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                                         boolean[] isDigitUsed = new boolean[9];
 
                                         for (int i = 0; i < 9; i++) {
-                                            isDigitUsed[i] = (digitUsedMask & maskForDigit(i + 1)) != 0;
+                                            isDigitUsed[i] = (digitUsedMask & Mask.maskForDigit(i + 1)) != 0;
                                         }
 
                                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
@@ -607,13 +607,13 @@ public class Program {
 
                         var digitUsedMask =
                                 cell.allSiblings().stream()
-                                        .mapToInt(sibling -> maskForDigit(currentState.get(sibling)))
+                                        .mapToInt(sibling -> Mask.maskForDigit(currentState.get(sibling)))
                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                         boolean[] isDigitUsed = new boolean[9];
 
                         for (int i = 0; i < 9; i++) {
-                            isDigitUsed[i] = (digitUsedMask & maskForDigit(i + 1)) != 0;
+                            isDigitUsed[i] = (digitUsedMask & Mask.maskForDigit(i + 1)) != 0;
                         }
 
                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
@@ -739,14 +739,10 @@ public class Program {
                     }
                     int collidingDigitsMask =
                             Cell.of(i).allSiblings().stream()
-                                    .mapToInt(sibling -> maskForDigit(state.get(sibling)))
+                                    .mapToInt(sibling -> Mask.maskForDigit(state.get(sibling)))
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                     return allOnes & ~collidingDigitsMask;
                 }).toArray();
-    }
-
-    private static int maskForDigit(int i) {
-        return 1 << (i - 1);
     }
 
     public static void main(String[] args) throws IOException {
@@ -822,6 +818,10 @@ class Mask {
 
     static int candidatesInMaskCount(int mask) {
         return maskToOnesCount.get(mask);
+    }
+
+    static int maskForDigit(int i) {
+        return 1 << (i - 1);
     }
 
     static List<Integer> twoDigitMasks(int[] candidateMasks) {
