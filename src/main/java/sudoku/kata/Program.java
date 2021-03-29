@@ -53,7 +53,7 @@ public class Program {
                 if (singleCandidates.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidates.size());
                     Candidate singleCandidate = singleCandidates.get(pickSingleCandidateIndex);
-                    int digit = singleDigit(singleCandidate);
+                    int digit = singleCandidate.getMask().singleDigit();
 
                     System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
 
@@ -563,10 +563,6 @@ public class Program {
         }
     }
 
-    private static Integer singleDigit(Candidate singleCandidate) {
-        return Masks.singleBitMaskToDigit.get(singleCandidate.getMask().get());
-    }
-
     private static State constructBoardToBeSolved(Random rng) {
 
         // Top element is current state of the board
@@ -875,6 +871,7 @@ class Candidate {
 }
 
 class Mask {
+    private static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
     static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     private final int mask;
 
@@ -893,22 +890,16 @@ class Mask {
         return maskToOnesCount;
     }
 
+    Integer singleDigit() {
+        return singleBitMaskToDigit.get(get());
+    }
+
     int candidatesCount() {
         return maskToOnesCount.get(get());
     }
 
     public int get() {
         return mask;
-    }
-}
-
-class Masks {
-    static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
-
-    static final List<Integer> nMasks = nMasks();
-
-    static int maskForDigit(int i) {
-        return 1 << (i - 1);
     }
 
     private static Map<Integer, Integer> singleBitMaskToDigit() {
@@ -917,6 +908,14 @@ class Masks {
             singleBitMaskToDigit.put(1 << i, i + 1);
 
         return singleBitMaskToDigit;
+    }
+}
+
+class Masks {
+    static final List<Integer> nMasks = nMasks();
+
+    static int maskForDigit(int i) {
+        return 1 << (i - 1);
     }
 
     // masks that represent two or more candidates
