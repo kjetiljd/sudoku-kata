@@ -18,22 +18,20 @@ public class Program {
 
     static void play(Random rng) {
 
-        State state = constructBoardToBeSolved(rng);
+        State solutionState = constructBoardToBeSolved(rng);
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        new Board(state).printBoard();
-
-        State solutionState = state.copy();
+        new Board(solutionState).printBoard();
 
         //region Generate inital board from the completely solved one
+        State startingState = solutionState.copy();
         // Board is solved at this point.
         // Now pick subset of digits as the starting position.
         int remainingDigits = 30;
         int maxRemovedPerBlock = 6;
         int[][] removedPerBlock = new int[3][3];
         int[] positions = IntStream.range(0, 9 * 9).toArray();
-
 
         int removedPos = 0;
         while (removedPos < 9 * 9 - remainingDigits) {
@@ -56,14 +54,17 @@ public class Program {
             positions[indexToPick] = temp;
 
             int stateIndex = 9 * row + col;
-            state.set(stateIndex, 0);
+            startingState.set(stateIndex, 0);
 
             removedPos += 1;
         }
 
+        State state = startingState.copy();
+
         System.out.println();
         System.out.println("Starting look of the board to solve:");
         new Board(state).printBoard();
+
         //endregion
 
         System.out.println();
