@@ -42,10 +42,12 @@ public class Program {
             String command = "expand";
             while (stateStack.size() <= 9 * 9) {
                 if (command.equals("expand")) {
-                    State currentState = new State(new int[9 * 9]);
+                    final State currentState;
 
                     if (!stateStack.isEmpty()) {
                         currentState = stateStack.peek().copy();
+                    } else {
+                        currentState = new State(new int[9 * 9]);
                     }
 
                     Cell bestCell = null;
@@ -55,28 +57,18 @@ public class Program {
                     boolean containsUnsolvableCells = false;
 
                     for (var cell : Cell.cells()) {
-                        if (currentState.get(cell.getIndex()) == 0) {
+                        if (currentState.get(cell) == 0) {
 
-                            int row = cell.getRow();
-                            int col = cell.getColumn();
-                            int blockRow = cell.getBlockRow();
-                            int blockCol = cell.getBlockCol();
+                            var digitUsedMask =
+                                    cell.allSiblings().stream()
+                                            .mapToInt(sibling -> maskForDigit(currentState.get(sibling)))
+                                            .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                             boolean[] isDigitUsed = new boolean[9];
 
                             for (int i = 0; i < 9; i++) {
-                                int rowDigit = currentState.get(9 * i + col);
-                                if (rowDigit > 0)
-                                    isDigitUsed[rowDigit - 1] = true;
-
-                                int colDigit = currentState.get(9 * row + i);
-                                if (colDigit > 0)
-                                    isDigitUsed[colDigit - 1] = true;
-
-                                int blockDigit = currentState.get((blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3));
-                                if (blockDigit > 0)
-                                    isDigitUsed[blockDigit - 1] = true;
-                            } // for (i = 0..8)
+                                isDigitUsed[i] = (digitUsedMask & maskForDigit(i + 1)) != 0;
+                            }
 
                             int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
                                     .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
@@ -91,7 +83,7 @@ public class Program {
                             if (bestCandidatesCount < 0 ||
                                     candidatesCount < bestCandidatesCount ||
                                     (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                                bestCell = Cell.of(row, col);
+                                bestCell = cell;
                                 bestUsedDigits = isDigitUsed;
                                 bestCandidatesCount = candidatesCount;
                                 bestRandomValue = randomValue;
@@ -585,7 +577,7 @@ public class Program {
 
                         while (!command.equals("complete") && !command.equals("fail")) {
                             if (command.equals("expand")) {
-                                State currentState = new State(new int[9 * 9]);
+                                final State currentState;
 
                                 if (!stateStack.isEmpty()) {
                                     currentState = stateStack.peek().copy();
@@ -601,29 +593,18 @@ public class Program {
                                 boolean containsUnsolvableCells = false;
 
                                 for (var cell : Cell.cells()) {
-                                    if (currentState.get(cell.getIndex()) == 0) {
+                                    if (currentState.get(cell) == 0) {
 
-                                        int row = cell.getRow();
-                                        int col = cell.getColumn();
-                                        int blockRow = cell.getBlockRow();
-                                        int blockCol = cell.getBlockCol();
+                                        var digitUsedMask =
+                                                cell.allSiblings().stream()
+                                                        .mapToInt(sibling -> maskForDigit(currentState.get(sibling)))
+                                                        .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                                         boolean[] isDigitUsed = new boolean[9];
 
                                         for (int i = 0; i < 9; i++) {
-                                            int rowDigit = currentState.get(9 * i + col);
-                                            if (rowDigit > 0)
-                                                isDigitUsed[rowDigit - 1] = true;
-
-                                            int colDigit = currentState.get(9 * row + i);
-                                            if (colDigit > 0)
-                                                isDigitUsed[colDigit - 1] = true;
-
-                                            int blockDigit = currentState.get((blockRow * 3 + i / 3) * 9 + (blockCol * 3 + i % 3));
-                                            if (blockDigit > 0)
-                                                isDigitUsed[blockDigit - 1] = true;
-                                        } // for (i = 0..8)
-
+                                            isDigitUsed[i] = (digitUsedMask & maskForDigit(i + 1)) != 0;
+                                        }
 
                                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
                                                 .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
@@ -638,7 +619,7 @@ public class Program {
                                         if (bestCandidatesCount < 0 ||
                                                 candidatesCount < bestCandidatesCount ||
                                                 (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                                            bestCell = Cell.of(row, col);
+                                            bestCell = cell;
                                             bestUsedDigits = isDigitUsed;
                                             bestCandidatesCount = candidatesCount;
                                             bestRandomValue = randomValue;
