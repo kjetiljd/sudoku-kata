@@ -250,7 +250,7 @@ public class Program {
                                                                     ((candidates.get(cell.getIndex()).getMask().get() & mask) != 0) &&
                                                                     ((candidates.get(cell.getIndex()).getMask().get() & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == Masks.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -332,7 +332,7 @@ public class Program {
                 Queue<Integer> candidateDigit2 = new LinkedList<>();
 
                 for (int i = 0; i < candidates.size() - 1; i++) {
-                    if (Masks.candidatesInMaskCount(candidates.get(i).getMask().get()) == 2) {
+                    if (Mask.candidatesInMaskCount(candidates.get(i).getMask().get()) == 2) {
                         int row = i / 9;
                         int col = i % 9;
                         int blockIndex = 3 * (row / 3) + col / 3;
@@ -801,7 +801,7 @@ class Candidates extends AbstractList<Candidate> {
 
     List<Candidate> singleCandidates() {
         return candidates.stream()
-                .filter(candidate -> Masks.candidatesInMaskCount(candidate.getMask().get()) == 1)
+                .filter(candidate -> Mask.candidatesInMaskCount(candidate.getMask().get()) == 1)
                 .collect(toList());
     }
 
@@ -865,37 +865,15 @@ class Candidate {
 }
 
 class Mask {
+    static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     private final int mask;
 
     Mask(int mask) {
         this.mask = mask;
     }
 
-    public int get() {
-        return mask;
-    }
-}
-
-class Masks {
-    private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
-    static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
-
-    static final List<Integer> nMasks = nMasks();
-
     static int candidatesInMaskCount(int mask) {
         return maskToOnesCount.get(mask);
-    }
-
-    static int maskForDigit(int i) {
-        return 1 << (i - 1);
-    }
-
-    static List<Integer> twoDigitMasks(int[] candidateMasks) {
-        return Arrays.stream(candidateMasks)
-                .filter(mask -> candidatesInMaskCount(mask) == 2)
-                .distinct()
-                .boxed()
-                .collect(toList());
     }
 
     private static Map<Integer, Integer> maskToOnesCount() {
@@ -909,6 +887,28 @@ class Masks {
         return maskToOnesCount;
     }
 
+    public int get() {
+        return mask;
+    }
+}
+
+class Masks {
+    static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
+
+    static final List<Integer> nMasks = nMasks();
+
+    static int maskForDigit(int i) {
+        return 1 << (i - 1);
+    }
+
+    static List<Integer> twoDigitMasks(int[] candidateMasks) {
+        return Arrays.stream(candidateMasks)
+                .filter(mask -> Mask.candidatesInMaskCount(mask) == 2)
+                .distinct()
+                .boxed()
+                .collect(toList());
+    }
+
     private static Map<Integer, Integer> singleBitMaskToDigit() {
         Map<Integer, Integer> singleBitMaskToDigit = new HashMap<>();
         for (int i = 0; i < 9; i++)
@@ -919,7 +919,7 @@ class Masks {
 
     // masks that represent two or more candidates
     private static List<Integer> nMasks() {
-        return maskToOnesCount.entrySet().stream()
+        return Mask.maskToOnesCount.entrySet().stream()
                 .filter(tuple -> tuple.getValue() > 1)
                 .map(tuple -> tuple.getKey())
                 .collect(toList());
