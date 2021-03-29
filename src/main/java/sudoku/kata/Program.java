@@ -813,12 +813,6 @@ class Candidates extends AbstractList<Candidate> {
                 .collect(toList());
     }
 
-    public int[] getMasks() {
-        return candidates.stream()
-                .mapToInt(candidate -> candidate.getMask().get())
-                .toArray();
-    }
-
     private static List<Candidate> calculateFrom(State state) {
         return IntStream.range(0, state.size())
                 .mapToObj(i -> {
