@@ -143,14 +143,14 @@ public class Program {
                 } // if (command == "move")
             }
 
-            System.out.println();
-            System.out.println("Final look of the solved board:");
-            new Board(stateStack.peek().getState()).printBoard();
-
             state = stateStack.peek();
         }
-
         //endregion
+
+        System.out.println();
+        System.out.println("Final look of the solved board:");
+        new Board(state.getState()).printBoard();
+
 
         //region Generate inital board from the completely solved one
         // Board is solved at this point.
