@@ -791,41 +791,49 @@ class State extends AbstractList<Integer> {
     }
 }
 
-class Candidates extends AbstractList<Integer> {
+class Candidates extends AbstractList<Candidate> {
     private static final int allOnes = (1 << 9) - 1;
 
-    private final int[] candidatesMask;
+    private final List<Candidate> candidates;
 
     Candidates(State state) {
-        this.candidatesMask = calculateFrom(state);
+        this.candidates = calculateFrom(state);
     }
 
     public int[] getMasks() {
-        return candidatesMask;
+        return candidates.stream()
+                .mapToInt(candidate -> candidate.getMask().get())
+                .toArray();
     }
 
-    private static int[] calculateFrom(State state) {
+    private static List<Candidate> calculateFrom(State state) {
         return IntStream.range(0, state.size())
-                .map(i -> {
+                .mapToObj(i -> {
                     if (state.hasValue(i)) {
-                        return 0;
+                        return new NoCandidate(Cell.of(i));
                     }
                     int collidingDigitsMask =
                             Cell.of(i).allSiblings().stream()
                                     .mapToInt(sibling -> Masks.maskForDigit(state.get(sibling)))
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
-                    return allOnes & ~collidingDigitsMask;
-                }).toArray();
+                    return new Candidate(Cell.of(i), new Mask(allOnes & ~collidingDigitsMask));
+                }).collect(toList());
     }
 
     @Override
-    public Integer get(int index) {
-        return candidatesMask[index];
+    public Candidate get(int index) {
+        return candidates.get(index);
     }
 
     @Override
     public int size() {
-        return candidatesMask.length;
+        return candidates.size();
+    }
+}
+
+class NoCandidate extends Candidate {
+    NoCandidate(Cell cell) {
+        super(cell, new Mask(0));
     }
 }
 
