@@ -829,6 +829,36 @@ class Candidates extends AbstractList<Integer> {
     }
 }
 
+class Candidate {
+    private final Cell cell;
+    private final Mask mask;
+
+    Candidate(Cell cell, Mask mask) {
+        this.cell = cell;
+        this.mask = mask;
+    }
+
+    public Cell getCell() {
+        return cell;
+    }
+
+    public Mask getMask() {
+        return mask;
+    }
+}
+
+class Mask {
+    private final int mask;
+
+    Mask(int mask) {
+        this.mask = mask;
+    }
+
+    public int get() {
+        return mask;
+    }
+}
+
 class Masks {
     private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
