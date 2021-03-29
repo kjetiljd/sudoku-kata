@@ -157,7 +157,7 @@ public class Program {
                 if (!changeMade) {
 
                     var twoDigitGroups =
-                            Candidates.twoDigitMasks(candidates.getMasks()).stream()
+                            candidates.twoDigitMasks().stream()
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
@@ -799,8 +799,8 @@ class Candidates extends AbstractList<Candidate> {
         this.candidates = calculateFrom(state);
     }
 
-    static List<Integer> twoDigitMasks(int[] candidateMasks) {
-        return Arrays.stream(candidateMasks)
+    List<Integer> twoDigitMasks() {
+        return Arrays.stream(getMasks())
                 .filter(mask -> new Mask(mask).candidatesCount() == 2)
                 .distinct()
                 .boxed()
