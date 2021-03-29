@@ -793,9 +793,9 @@ class State extends AbstractList<Integer> {
 
 class Candidates {
 
-    static int[] calculateFrom(State state) {
-        int allOnes = (1 << 9) - 1;
+    private static final int allOnes = (1 << 9) - 1;
 
+    static int[] calculateFrom(State state) {
         return IntStream.range(0, state.size())
                 .map(i -> {
                     if (state.hasValue(i)) {
