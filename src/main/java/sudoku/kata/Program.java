@@ -26,15 +26,15 @@ public class Program {
 
         State startingState = generateStartingState(rng, solutionState);
 
-        State state = startingState.copy();
-
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        new Board(state).printBoard();
+        new Board(startingState).printBoard();
 
         System.out.println();
         System.out.println("=".repeat(80));
         System.out.println();
+
+        State state = startingState.copy();
 
         boolean changeMade = true;
         while (changeMade) {
