@@ -250,7 +250,7 @@ public class Program {
                                                                     ((candidates.get(cell.getIndex()).getMask().get() & mask) != 0) &&
                                                                     ((candidates.get(cell.getIndex()).getMask().get() & ~mask) != 0))
                                                             .count()))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == Mask.candidatesInMaskCount((Integer) group.get("Mask")))
+                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == Mask.candidatesInMaskCount(new Mask((Integer) group.get("Mask"))))
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -332,7 +332,7 @@ public class Program {
                 Queue<Integer> candidateDigit2 = new LinkedList<>();
 
                 for (int i = 0; i < candidates.size() - 1; i++) {
-                    if (Mask.candidatesInMaskCount(candidates.get(i).getMask().get()) == 2) {
+                    if (Mask.candidatesInMaskCount(candidates.get(i).getMask()) == 2) {
                         int row = i / 9;
                         int col = i % 9;
                         int blockIndex = 3 * (row / 3) + col / 3;
@@ -801,7 +801,7 @@ class Candidates extends AbstractList<Candidate> {
 
     List<Candidate> singleCandidates() {
         return candidates.stream()
-                .filter(candidate -> Mask.candidatesInMaskCount(candidate.getMask().get()) == 1)
+                .filter(candidate -> Mask.candidatesInMaskCount(candidate.getMask()) == 1)
                 .collect(toList());
     }
 
@@ -872,8 +872,8 @@ class Mask {
         this.mask = mask;
     }
 
-    static int candidatesInMaskCount(int mask) {
-        return maskToOnesCount.get(mask);
+    static int candidatesInMaskCount(Mask mask) {
+        return maskToOnesCount.get(mask.get());
     }
 
     private static Map<Integer, Integer> maskToOnesCount() {
@@ -903,7 +903,7 @@ class Masks {
 
     static List<Integer> twoDigitMasks(int[] candidateMasks) {
         return Arrays.stream(candidateMasks)
-                .filter(mask -> Mask.candidatesInMaskCount(mask) == 2)
+                .filter(mask -> Mask.candidatesInMaskCount(new Mask(mask)) == 2)
                 .distinct()
                 .boxed()
                 .collect(toList());
