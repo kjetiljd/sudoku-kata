@@ -22,7 +22,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        new Board(state.getState()).printBoard();
+        new Board(state).printBoard();
 
 
         //region Generate inital board from the completely solved one
@@ -63,7 +63,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        new Board(state.getState()).printBoard();
+        new Board(state).printBoard();
         //endregion
 
         System.out.println();
@@ -592,7 +592,7 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                Board board = new Board(state.getState());
+                Board board = new Board(state);
                 board.printBoard();
                 board.printCode();
                 System.out.println();
@@ -866,9 +866,9 @@ class Mask {
 }
 
 class Board {
-    private final int[] state;
+    private final State state;
 
-    Board(int[] state) {
+    Board(State state) {
         this.state = state;
     }
 
@@ -911,12 +911,12 @@ class Board {
     }
 
     void printCode() {
-        String code = Arrays.stream(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
+        String code = Arrays.stream(state.getState()).mapToObj(Integer::toString).collect(Collectors.joining(""));
         System.out.format("Code: %s", code).println();
     }
 
     void printBoard() {
-        System.out.println(String.join(System.lineSeparator(), board(state)));
+        System.out.println(String.join(System.lineSeparator(), board(state.getState())));
     }
 }
 
