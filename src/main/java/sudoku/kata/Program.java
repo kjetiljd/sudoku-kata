@@ -17,135 +17,8 @@ public class Program {
     }
 
     static void play(Random rng) {
-        //region Construct fully populated board
-        State state;
 
-        {
-            // Construct board to be solved
-
-            // Top element is current state of the board
-            Stack<State> stateStack = new Stack<>();
-
-            // Top elements are (row, col) of cell which has been modified compared to previous state
-            Stack<Cell> cellStack = new Stack<>();
-
-            // Top element indicates candidate digits (those with False) for (row, col)
-            Stack<boolean[]> usedDigitsStack = new Stack<>();
-
-            // Top element is the value that was set on (row, col)
-            Stack<Integer> lastDigitStack = new Stack<>();
-
-            // Indicates operation to perform next
-            // - expand - finds next empty cell and puts new state on stacks
-            // - move - finds next candidate number at current pos and applies it to current state
-            // - collapse - pops current state from stack as it did not yield a solution
-            String command = "expand";
-            while (stateStack.size() <= 9 * 9) {
-                if (command.equals("expand")) {
-                    final State currentState;
-
-                    if (!stateStack.isEmpty()) {
-                        currentState = stateStack.peek().copy();
-                    } else {
-                        currentState = new State(new int[9 * 9]);
-                    }
-
-                    Cell bestCell = null;
-                    boolean[] bestUsedDigits = null;
-                    int bestCandidatesCount = -1;
-                    int bestRandomValue = -1;
-                    boolean containsUnsolvableCells = false;
-
-                    for (var cell : Cell.cells()) {
-                        if (currentState.get(cell) == 0) {
-
-                            var digitUsedMask =
-                                    cell.allSiblings().stream()
-                                            .mapToInt(sibling -> maskForDigit(currentState.get(sibling)))
-                                            .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
-
-                            boolean[] isDigitUsed = new boolean[9];
-
-                            for (int i = 0; i < 9; i++) {
-                                isDigitUsed[i] = (digitUsedMask & maskForDigit(i + 1)) != 0;
-                            }
-
-                            int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
-                                    .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
-
-                            if (candidatesCount == 0) {
-                                containsUnsolvableCells = true;
-                                break;
-                            }
-
-                            int randomValue = rng.nextInt();
-
-                            if (bestCandidatesCount < 0 ||
-                                    candidatesCount < bestCandidatesCount ||
-                                    (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                                bestCell = cell;
-                                bestUsedDigits = isDigitUsed;
-                                bestCandidatesCount = candidatesCount;
-                                bestRandomValue = randomValue;
-                            }
-
-                        } // for (index = 0..81)
-                    }
-
-                    if (!containsUnsolvableCells) {
-                        stateStack.push(currentState);
-                        cellStack.push(bestCell);
-                        usedDigitsStack.push(bestUsedDigits);
-                        lastDigitStack.push(0); // No digit was tried at this position
-                    }
-
-                    // Always try to move after expand
-                    command = "move";
-
-                } // if (command == "expand")
-                else if (command.equals("collapse")) {
-                    stateStack.pop();
-                    cellStack.pop();
-                    usedDigitsStack.pop();
-                    lastDigitStack.pop();
-
-                    command = "move";   // Always try to move after collapse
-                } else if (command.equals("move")) {
-
-                    Cell cellToMove = cellStack.peek();
-                    int digitToMove = lastDigitStack.pop();
-
-                    boolean[] usedDigits = usedDigitsStack.peek();
-                    State currentState = stateStack.peek();
-
-                    int movedToDigit = digitToMove + 1;
-                    while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
-                        movedToDigit += 1;
-
-                    if (digitToMove > 0) {
-                        usedDigits[digitToMove - 1] = false;
-                        currentState.set(cellToMove, 0);
-                    }
-
-                    if (movedToDigit <= 9) {
-                        lastDigitStack.push(movedToDigit);
-                        usedDigits[movedToDigit - 1] = true;
-                        currentState.set(cellToMove, movedToDigit);
-
-                        // Next possible digit was found at current position
-                        // Next step will be to expand the state
-                        command = "expand";
-                    } else {
-                        // No viable candidate was found at current position - pop it in the next iteration
-                        lastDigitStack.push(0);
-                        command = "collapse";
-                    }
-                } // if (command == "move")
-            }
-
-            state = stateStack.peek();
-        }
-        //endregion
+        State state = constructBoardToBeSolved(rng);
 
         System.out.println();
         System.out.println("Final look of the solved board:");
@@ -726,6 +599,131 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static State constructBoardToBeSolved(Random rng) {
+
+        // Top element is current state of the board
+        Stack<State> stateStack = new Stack<>();
+
+        // Top elements are (row, col) of cell which has been modified compared to previous state
+        Stack<Cell> cellStack = new Stack<>();
+
+        // Top element indicates candidate digits (those with False) for (row, col)
+        Stack<boolean[]> usedDigitsStack = new Stack<>();
+
+        // Top element is the value that was set on (row, col)
+        Stack<Integer> lastDigitStack = new Stack<>();
+
+        // Indicates operation to perform next
+        // - expand - finds next empty cell and puts new state on stacks
+        // - move - finds next candidate number at current pos and applies it to current state
+        // - collapse - pops current state from stack as it did not yield a solution
+        String command = "expand";
+        while (stateStack.size() <= 9 * 9) {
+            if (command.equals("expand")) {
+                final State currentState;
+
+                if (!stateStack.isEmpty()) {
+                    currentState = stateStack.peek().copy();
+                } else {
+                    currentState = new State(new int[9 * 9]);
+                }
+
+                Cell bestCell = null;
+                boolean[] bestUsedDigits = null;
+                int bestCandidatesCount = -1;
+                int bestRandomValue = -1;
+                boolean containsUnsolvableCells = false;
+
+                for (var cell : Cell.cells()) {
+                    if (currentState.get(cell) == 0) {
+
+                        var digitUsedMask =
+                                cell.allSiblings().stream()
+                                        .mapToInt(sibling -> maskForDigit(currentState.get(sibling)))
+                                        .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+
+                        boolean[] isDigitUsed = new boolean[9];
+
+                        for (int i = 0; i < 9; i++) {
+                            isDigitUsed[i] = (digitUsedMask & maskForDigit(i + 1)) != 0;
+                        }
+
+                        int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
+                                .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
+
+                        if (candidatesCount == 0) {
+                            containsUnsolvableCells = true;
+                            break;
+                        }
+
+                        int randomValue = rng.nextInt();
+
+                        if (bestCandidatesCount < 0 ||
+                                candidatesCount < bestCandidatesCount ||
+                                (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
+                            bestCell = cell;
+                            bestUsedDigits = isDigitUsed;
+                            bestCandidatesCount = candidatesCount;
+                            bestRandomValue = randomValue;
+                        }
+
+                    } // for (index = 0..81)
+                }
+
+                if (!containsUnsolvableCells) {
+                    stateStack.push(currentState);
+                    cellStack.push(bestCell);
+                    usedDigitsStack.push(bestUsedDigits);
+                    lastDigitStack.push(0); // No digit was tried at this position
+                }
+
+                // Always try to move after expand
+                command = "move";
+
+            } // if (command == "expand")
+            else if (command.equals("collapse")) {
+                stateStack.pop();
+                cellStack.pop();
+                usedDigitsStack.pop();
+                lastDigitStack.pop();
+
+                command = "move";   // Always try to move after collapse
+            } else if (command.equals("move")) {
+
+                Cell cellToMove = cellStack.peek();
+                int digitToMove = lastDigitStack.pop();
+
+                boolean[] usedDigits = usedDigitsStack.peek();
+                State currentState = stateStack.peek();
+
+                int movedToDigit = digitToMove + 1;
+                while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
+                    movedToDigit += 1;
+
+                if (digitToMove > 0) {
+                    usedDigits[digitToMove - 1] = false;
+                    currentState.set(cellToMove, 0);
+                }
+
+                if (movedToDigit <= 9) {
+                    lastDigitStack.push(movedToDigit);
+                    usedDigits[movedToDigit - 1] = true;
+                    currentState.set(cellToMove, movedToDigit);
+
+                    // Next possible digit was found at current position
+                    // Next step will be to expand the state
+                    command = "expand";
+                } else {
+                    // No viable candidate was found at current position - pop it in the next iteration
+                    lastDigitStack.push(0);
+                    command = "collapse";
+                }
+            } // if (command == "move")
+        }
+
+        return stateStack.peek();
     }
 
     private static int[] calculateCandidates(State state) {
