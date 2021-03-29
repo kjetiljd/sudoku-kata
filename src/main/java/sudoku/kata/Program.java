@@ -40,7 +40,7 @@ public class Program {
         while (changeMade) {
             changeMade = false;
 
-            int[] candidateMasks = calculateCandidates(state);
+            int[] candidateMasks = Candidates.calculateCandidates(state);
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -726,22 +726,6 @@ public class Program {
         return startingState;
     }
 
-    private static int[] calculateCandidates(State state) {
-        int allOnes = (1 << 9) - 1;
-
-        return IntStream.range(0, state.size())
-                .map(i -> {
-                    if (state.hasValue(i)) {
-                        return 0;
-                    }
-                    int collidingDigitsMask =
-                            Cell.of(i).allSiblings().stream()
-                                    .mapToInt(sibling -> Mask.maskForDigit(state.get(sibling)))
-                                    .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
-                    return allOnes & ~collidingDigitsMask;
-                }).toArray();
-    }
-
     public static void main(String[] args) throws IOException {
         int seed = new Random().nextInt();
         System.out.println("Seed: " + seed);
@@ -804,6 +788,25 @@ class State extends AbstractList<Integer> {
 
     boolean hasValue(int i) {
         return state[i] != 0;
+    }
+}
+
+class Candidates {
+
+    static int[] calculateCandidates(State state) {
+        int allOnes = (1 << 9) - 1;
+
+        return IntStream.range(0, state.size())
+                .map(i -> {
+                    if (state.hasValue(i)) {
+                        return 0;
+                    }
+                    int collidingDigitsMask =
+                            Cell.of(i).allSiblings().stream()
+                                    .mapToInt(sibling -> Mask.maskForDigit(state.get(sibling)))
+                                    .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+                    return allOnes & ~collidingDigitsMask;
+                }).toArray();
     }
 }
 
