@@ -51,8 +51,7 @@ public class Program {
                 List<Candidate> singleCandidates = candidates.singleCandidates();
 
                 if (!singleCandidates.isEmpty()) {
-                    int pickSingleCandidateIndex = rng.nextInt(singleCandidates.size());
-                    Candidate singleCandidate = singleCandidates.get(pickSingleCandidateIndex);
+                    Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
                     int digit = singleCandidate.getMask().singleDigit();
 
                     System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
