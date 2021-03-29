@@ -216,12 +216,11 @@ public class Program {
 
                 //region Pick cells with only one candidate left
 
-                List<Integer> singleCandidateIndices = Mask.singleCandidateIndices(candidateMasks);
+                List<Cell> singleCandidateCells = Mask.singleCandidateCells(candidateMasks);
 
-                if (singleCandidateIndices.size() > 0) {
-                    int pickSingleCandidateIndex = rng.nextInt(singleCandidateIndices.size());
-                    int singleCandidateIndex = singleCandidateIndices.get(pickSingleCandidateIndex);
-                    Cell singleCandidate = Cell.of(singleCandidateIndex);
+                if (singleCandidateCells.size() > 0) {
+                    int pickSingleCandidateIndex = rng.nextInt(singleCandidateCells.size());
+                    Cell singleCandidate = singleCandidateCells.get(pickSingleCandidateIndex);
                     int digit = singleBitToIndex.get(candidateMasks[singleCandidate.getIndex()]) + 1;
 
                     System.out.format("(%s, %s) can only contain %s.",
@@ -838,10 +837,11 @@ class Mask {
                 .collect(toList());
     }
 
-    static List<Integer> singleCandidateIndices(int[] candidateMasks) {
+    static List<Cell> singleCandidateCells(int[] candidateMasks) {
         return IntStream.range(0, candidateMasks.length)
                 .filter(index -> candidatesInMaskCount(candidateMasks[index]) == 1)
                 .boxed()
+                .map(index -> Cell.of(index))
                 .collect(toList());
     }
 
