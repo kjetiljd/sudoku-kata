@@ -740,6 +740,24 @@ public class Program {
     }
 }
 
+class Change {
+    private final Cell cell;
+    private final int digit;
+
+    Change(Cell cell, int digit) {
+        this.cell = cell;
+        this.digit = digit;
+    }
+
+    public Cell getCell() {
+        return cell;
+    }
+
+    public int getDigit() {
+        return digit;
+    }
+}
+
 class State extends AbstractList<Integer> {
     private final int[] state;
 
