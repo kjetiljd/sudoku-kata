@@ -53,7 +53,7 @@ public class Program {
                 if (singleCandidates.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidates.size());
                     Candidate singleCandidate = singleCandidates.get(pickSingleCandidateIndex);
-                    int digit = Masks.singleBitMaskToDigit.get(singleCandidate.getMask().get());
+                    int digit = singleDigit(singleCandidate);
 
                     System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
 
@@ -561,6 +561,10 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static Integer singleDigit(Candidate singleCandidate) {
+        return Masks.singleBitMaskToDigit.get(singleCandidate.getMask().get());
     }
 
     private static State constructBoardToBeSolved(Random rng) {
