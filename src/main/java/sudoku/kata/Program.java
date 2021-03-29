@@ -27,8 +27,7 @@ public class Program {
             Stack<State> stateStack = new Stack<>();
 
             // Top elements are (row, col) of cell which has been modified compared to previous state
-            Stack<Integer> rowIndexStack = new Stack<>();
-            Stack<Integer> colIndexStack = new Stack<>();
+            Stack<Cell> cellStack = new Stack<>();
 
             // Top element indicates candidate digits (those with False) for (row, col)
             Stack<boolean[]> usedDigitsStack = new Stack<>();
@@ -49,8 +48,7 @@ public class Program {
                         currentState = stateStack.peek().copy();
                     }
 
-                    int bestRow = -1;
-                    int bestCol = -1;
+                    Cell bestCell = null;
                     boolean[] bestUsedDigits = null;
                     int bestCandidatesCount = -1;
                     int bestRandomValue = -1;
@@ -93,8 +91,7 @@ public class Program {
                             if (bestCandidatesCount < 0 ||
                                     candidatesCount < bestCandidatesCount ||
                                     (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                                bestRow = row;
-                                bestCol = col;
+                                bestCell = Cell.of(row, col);
                                 bestUsedDigits = isDigitUsed;
                                 bestCandidatesCount = candidatesCount;
                                 bestRandomValue = randomValue;
@@ -104,8 +101,7 @@ public class Program {
 
                     if (!containsUnsolvableCells) {
                         stateStack.push(currentState);
-                        rowIndexStack.push(bestRow);
-                        colIndexStack.push(bestCol);
+                        cellStack.push(bestCell);
                         usedDigitsStack.push(bestUsedDigits);
                         lastDigitStack.push(0); // No digit was tried at this position
                     }
@@ -116,21 +112,18 @@ public class Program {
                 } // if (command == "expand")
                 else if (command.equals("collapse")) {
                     stateStack.pop();
-                    rowIndexStack.pop();
-                    colIndexStack.pop();
+                    cellStack.pop();
                     usedDigitsStack.pop();
                     lastDigitStack.pop();
 
                     command = "move";   // Always try to move after collapse
                 } else if (command.equals("move")) {
 
-                    int rowToMove = rowIndexStack.peek();
-                    int colToMove = colIndexStack.peek();
+                    Cell cellToMove = cellStack.peek();
                     int digitToMove = lastDigitStack.pop();
 
                     boolean[] usedDigits = usedDigitsStack.peek();
                     State currentState = stateStack.peek();
-                    int currentStateIndex = 9 * rowToMove + colToMove;
 
                     int movedToDigit = digitToMove + 1;
                     while (movedToDigit <= 9 && usedDigits[movedToDigit - 1])
@@ -138,13 +131,13 @@ public class Program {
 
                     if (digitToMove > 0) {
                         usedDigits[digitToMove - 1] = false;
-                        currentState.set(currentStateIndex, 0);
+                        currentState.set(cellToMove, 0);
                     }
 
                     if (movedToDigit <= 9) {
                         lastDigitStack.push(movedToDigit);
                         usedDigits[movedToDigit - 1] = true;
-                        currentState.set(currentStateIndex, movedToDigit);
+                        currentState.set(cellToMove, movedToDigit);
 
                         // Next possible digit was found at current position
                         // Next step will be to expand the state
@@ -599,8 +592,8 @@ public class Program {
                                     currentState = alternateState.copy();
                                 }
 
-                                int bestRow = -1;
-                                int bestCol = -1;
+                                Cell bestCell = null;
+
                                 boolean[] bestUsedDigits = null;
                                 int bestCandidatesCount = -1;
                                 int bestRandomValue = -1;
@@ -644,8 +637,7 @@ public class Program {
                                         if (bestCandidatesCount < 0 ||
                                                 candidatesCount < bestCandidatesCount ||
                                                 (candidatesCount == bestCandidatesCount && randomValue < bestRandomValue)) {
-                                            bestRow = row;
-                                            bestCol = col;
+                                            bestCell = Cell.of(row, col);
                                             bestUsedDigits = isDigitUsed;
                                             bestCandidatesCount = candidatesCount;
                                             bestRandomValue = randomValue;
@@ -655,7 +647,7 @@ public class Program {
 
                                 if (!containsUnsolvableCells) {
                                     stateStack.push(currentState);
-                                    cellStack.push(Cell.of(9 * bestRow + bestCol));
+                                    cellStack.push(bestCell);
                                     usedDigitsStack.push(bestUsedDigits);
                                     lastDigitStack.push(0); // No digit was tried at this position
                                 }
@@ -1058,6 +1050,10 @@ class Cell {
 
     static Cell of(int index) {
         return cells[index];
+    }
+
+    static Cell of(int row, int col) {
+        return Cell.of(9 * row + col);
     }
 
     int getIndex() {
