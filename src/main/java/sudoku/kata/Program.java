@@ -50,7 +50,7 @@ public class Program {
 
                 List<Candidate> singleCandidates = candidates.singleCandidates();
 
-                if (singleCandidates.size() > 0) {
+                if (!singleCandidates.isEmpty()) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidates.size());
                     Candidate singleCandidate = singleCandidates.get(pickSingleCandidateIndex);
                     int digit = singleCandidate.getMask().singleDigit();
