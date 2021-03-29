@@ -161,11 +161,11 @@ public class Program {
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(cell -> candidates.get(cell.getIndex()).getMask().get() == twoDigitMask.get())
+                                                            .filter(cell -> candidates.get(cell).getMask().get() == twoDigitMask.get())
                                                             .count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(cell -> candidates.get(cell.getIndex()).getMask().get() != twoDigitMask.get()
-                                                                    && (candidates.get(cell.getIndex()).getMask().get() & twoDigitMask.get()) > 0))
+                                                            .anyMatch(cell -> candidates.get(cell).getMask().get() != twoDigitMask.get()
+                                                                    && (candidates.get(cell).getMask().get() & twoDigitMask.get()) > 0))
                                                     .map(group -> new MaskGroup(twoDigitMask.get(), group))
                                                     .collect(toList()))
                                     .flatMap(Collection::stream)
@@ -176,14 +176,14 @@ public class Program {
                             var cells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidates.get(cell.getIndex()).getMask().get() != twoDigitGroup.getMask()
-                                                            && (candidates.get(cell.getIndex()).getMask().get() & twoDigitGroup.getMask()) > 0)
+                                                    candidates.get(cell).getMask().get() != twoDigitGroup.getMask()
+                                                            && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask()) > 0)
                                             .collect(toList());
 
                             var maskCells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidates.get(cell.getIndex()).getMask().get() == twoDigitGroup.getMask())
+                                                    candidates.get(cell).getMask().get() == twoDigitGroup.getMask())
                                             .collect(toList());
 
                             if (!cells.isEmpty()) {
@@ -207,7 +207,7 @@ public class Program {
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cells) {
-                                    int maskToRemove = candidates.get(cell.getIndex()).getMask().get() & twoDigitGroup.getMask();
+                                    int maskToRemove = candidates.get(cell).getMask().get() & twoDigitGroup.getMask();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -221,7 +221,7 @@ public class Program {
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidates.get(cell.getIndex()).setMask(new Mask(candidates.get(cell.getIndex()).getMask().get() & ~(int) twoDigitGroup.getMask()));
+                                    candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ~(int) twoDigitGroup.getMask()));
                                     stepChangeMade = true;
                                 }
                             }
@@ -247,8 +247,8 @@ public class Program {
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state.get(cell) == 0) &&
-                                                                    ((candidates.get(cell.getIndex()).getMask().get() & mask) != 0) &&
-                                                                    ((candidates.get(cell.getIndex()).getMask().get() & ~mask) != 0))
+                                                                    ((candidates.get(cell).getMask().get() & mask) != 0) &&
+                                                                    ((candidates.get(cell).getMask().get() & ~mask) != 0))
                                                             .count()))
                                             .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == new Mask((Integer) group.get("Mask")).candidatesCount())
                                             .collect(toList()))
@@ -261,8 +261,8 @@ public class Program {
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell ->
-                                        ((candidates.get(cell.getIndex()).getMask().get() & mask) != 0) &&
-                                                ((candidates.get(cell.getIndex()).getMask().get() & ~mask) != 0))) {
+                                        ((candidates.get(cell).getMask().get() & mask) != 0) &&
+                                                ((candidates.get(cell).getMask().get() & ~mask) != 0))) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
 
@@ -289,11 +289,11 @@ public class Program {
                         }
 
                         for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidates)) {
-                            int maskToClear = candidates.get(cell.getIndex()).getMask().get() & ~((Integer) groupWithNMasks.get("Mask"));
+                            int maskToClear = candidates.get(cell).getMask().get() & ~((Integer) groupWithNMasks.get("Mask"));
                             if (maskToClear == 0)
                                 continue;
 
-                            candidates.get(cell.getIndex()).setMask(new Mask(candidates.get(cell.getIndex()).getMask().get() & ((Integer) groupWithNMasks.get("Mask"))));
+                            candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ((Integer) groupWithNMasks.get("Mask"))));
                             stepChangeMade = true;
 
                             int valueToClear = 1;
@@ -842,6 +842,10 @@ class Candidates extends AbstractList<Candidate> {
     public int size() {
         return candidates.size();
     }
+
+    public Candidate get(Cell cell) {
+        return candidates.get(cell.getIndex());
+    }
 }
 
 class NoCandidate extends Candidate {
@@ -1068,7 +1072,7 @@ class CellGroup extends AbstractList<Cell> {
 
     public List<Cell> cellsWithMask(int mask, State state, Candidates candidates) {
         return this.stream()
-                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell.getIndex()).getMask().get() & mask) != 0)
+                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().get() & mask) != 0)
                 .collect(toList());
     }
 
