@@ -193,16 +193,9 @@ public class Program {
         new Board(state.getState()).printBoard();
         //endregion
 
-        //region Prepare lookup structures that will be used in further execution
         System.out.println();
         System.out.println("=".repeat(80));
         System.out.println();
-
-        Map<Integer, Integer> singleBitToIndex = new HashMap<>();
-        for (int i = 0; i < 9; i++)
-            singleBitToIndex.put(1 << i, i);
-
-        //endregion
 
         boolean changeMade = true;
         while (changeMade) {
@@ -221,7 +214,7 @@ public class Program {
                 if (singleCandidateCells.size() > 0) {
                     int pickSingleCandidateIndex = rng.nextInt(singleCandidateCells.size());
                     Cell singleCandidate = singleCandidateCells.get(pickSingleCandidateIndex);
-                    int digit = singleBitToIndex.get(candidateMasks[singleCandidate.getIndex()]) + 1;
+                    int digit = Mask.singleBitToIndex.get(candidateMasks[singleCandidate.getIndex()]) + 1;
 
                     System.out.format("(%s, %s) can only contain %s.",
                             singleCandidate.getRow() + 1,
@@ -822,6 +815,7 @@ class State extends AbstractList<Integer> {
 
 class Mask {
     private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
+    static final Map<Integer, Integer> singleBitToIndex = singleBitToIndex();
 
     static final List<Integer> nMasks = nMasks();
 
@@ -854,6 +848,14 @@ class Mask {
             maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
         }
         return maskToOnesCount;
+    }
+
+    private static Map<Integer, Integer> singleBitToIndex() {
+        Map<Integer, Integer> singleBitToIndex = new HashMap<>();
+        for (int i = 0; i < 9; i++)
+            singleBitToIndex.put(1 << i, i);
+
+        return singleBitToIndex;
     }
 
     // masks that represent two or more candidates
