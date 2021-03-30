@@ -38,7 +38,7 @@ public class Program {
             while (stepChangeMade) {
                 stepChangeMade = false;
 
-                Change change = pickCellWithOnlyOneCandidateLeft(rng, candidates);
+                CandidateChange change = pickCellWithOnlyOneCandidateLeft(rng, candidates);
 
                 if (change != null) {
                     state.set(change.getCell(), change.getDigit());
@@ -50,7 +50,7 @@ public class Program {
 
                 if (!changeMade) {
                     List<String> groupDescriptions = new ArrayList<>();
-                    List<Change> candidateChange = new ArrayList<>();
+                    List<CandidateChange> candidateChange = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
                         int mask = Masks.maskForDigit(digit);
@@ -87,12 +87,12 @@ public class Program {
 
                             if (rowNumberCount == 1) {
                                 groupDescriptions.add("Row #" + (cellGroup + 1));
-                                candidateChange.add(Change.setDigit(rowCandidate, digit));
+                                candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
                             }
 
                             if (colNumberCount == 1) {
                                 groupDescriptions.add("Column #" + (cellGroup + 1));
-                                candidateChange.add(Change.setDigit(colCandidate, digit));
+                                candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
                             }
 
                             if (blockNumberCount == 1) {
@@ -100,7 +100,7 @@ public class Program {
                                 int blockCol = cellGroup % 3;
 
                                 groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                                candidateChange.add(Change.setDigit(blockCandidate, digit));
+                                candidateChange.add(CandidateChange.setDigit(blockCandidate, digit));
                             }
                         } // for (cellGroup = 0..8)
                     } // for (digit = 1..9)
@@ -108,7 +108,7 @@ public class Program {
                     if (candidateChange.size() > 0) {
                         int index = rng.nextInt(candidateChange.size());
                         String description = groupDescriptions.get(index);
-                        Change chosenChange = candidateChange.get(index);
+                        CandidateChange chosenChange = candidateChange.get(index);
 
                         String message = description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".";
 
@@ -552,7 +552,7 @@ public class Program {
         new Board(startingState).printBoard();
     }
 
-    private static Change pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
+    private static CandidateChange pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
         List<Candidate> singleCandidates = candidates.singleCandidates();
         if (singleCandidates.isEmpty()) {
             return null;
@@ -563,7 +563,7 @@ public class Program {
 
         System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
 
-        return Change.setDigit(singleCandidate.getCell(), digit);
+        return CandidateChange.setDigit(singleCandidate.getCell(), digit);
     }
 
     private static State constructBoardToBeSolved(Random rng) {
@@ -744,17 +744,17 @@ public class Program {
     }
 }
 
-class Change {
+class CandidateChange {
     private final Cell cell;
     private final int digit;
 
-    private Change(Cell cell, int digit) {
+    private CandidateChange(Cell cell, int digit) {
         this.cell = cell;
         this.digit = digit;
     }
 
-    static Change setDigit(Cell cell, int digit) {
-        return new Change(cell, digit);
+    static CandidateChange setDigit(Cell cell, int digit) {
+        return new CandidateChange(cell, digit);
     }
 
     public Cell getCell() {
