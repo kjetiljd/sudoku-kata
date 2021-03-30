@@ -50,8 +50,7 @@ public class Program {
 
                 if (!changeMade) {
                     List<String> groupDescriptions = new ArrayList<>();
-                    List<Cell> candidateCells = new ArrayList<>();
-                    List<Integer> candidateList = new ArrayList<>();
+                    List<Change> candidateChange = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
                         int mask = Masks.maskForDigit(digit);
@@ -88,14 +87,12 @@ public class Program {
 
                             if (rowNumberCount == 1) {
                                 groupDescriptions.add("Row #" + (cellGroup + 1));
-                                candidateCells.add(rowCandidate);
-                                candidateList.add(digit);
+                                candidateChange.add(Change.setDigit(rowCandidate, digit));
                             }
 
                             if (colNumberCount == 1) {
                                 groupDescriptions.add("Column #" + (cellGroup + 1));
-                                candidateCells.add(colCandidate);
-                                candidateList.add(digit);
+                                candidateChange.add(Change.setDigit(colCandidate, digit));
                             }
 
                             if (blockNumberCount == 1) {
@@ -103,22 +100,20 @@ public class Program {
                                 int blockCol = cellGroup % 3;
 
                                 groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                                candidateCells.add(blockCandidate);
-                                candidateList.add(digit);
+                                candidateChange.add(Change.setDigit(blockCandidate, digit));
                             }
                         } // for (cellGroup = 0..8)
                     } // for (digit = 1..9)
 
-                    if (candidateList.size() > 0) {
-                        int index = rng.nextInt(candidateList.size());
+                    if (candidateChange.size() > 0) {
+                        int index = rng.nextInt(candidateChange.size());
                         String description = groupDescriptions.get(index);
-                        Cell cell = candidateCells.get(index);
-                        int digit = candidateList.get(index);
+                        Change chosenChange = candidateChange.get(index);
 
-                        String message = description + " can contain " + digit + " only at " + cell + ".";
+                        String message = description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".";
 
-                        state.set(cell, digit);
-                        candidates.get(cell).setNoCandidates();
+                        state.set(chosenChange.getCell(), chosenChange.getDigit());
+                        candidates.get(chosenChange.getCell()).setNoCandidates();
                         changeMade = true;
 
                         System.out.println(message);
