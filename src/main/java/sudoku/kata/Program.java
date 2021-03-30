@@ -46,24 +46,13 @@ public class Program {
             while (stepChangeMade) {
                 stepChangeMade = false;
 
-                //region Pick cells with only one candidate left
+                Change change = pickCellWithOnlyOneCandidateLeft(rng, candidates);
 
-                List<Candidate> singleCandidates = candidates.singleCandidates();
-
-                if (!singleCandidates.isEmpty()) {
-                    Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
-                    int digit = singleCandidate.getMask().singleDigit();
-
-                    System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
-
-                    Change change = new Change(singleCandidate.getCell(), digit);
+                if (change != null) {
                     state.set(change.getCell(), change.getDigit());
                     candidates.get(change.getCell()).setNoCandidates();
                     changeMade = true;
                 }
-
-
-                //endregion
 
                 //region Try to find a number which can only appear in one place in a row/column/block
 
@@ -564,6 +553,20 @@ public class Program {
         }
     }
 
+    private static Change pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
+        List<Candidate> singleCandidates = candidates.singleCandidates();
+        if (singleCandidates.isEmpty()) {
+            return null;
+        }
+
+        Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
+        int digit = singleCandidate.getMask().singleDigit();
+
+        System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
+
+        return Change.setDigit(singleCandidate.getCell(), digit);
+    }
+
     private static State constructBoardToBeSolved(Random rng) {
 
         // Top element is current state of the board
@@ -746,9 +749,13 @@ class Change {
     private final Cell cell;
     private final int digit;
 
-    Change(Cell cell, int digit) {
+    private Change(Cell cell, int digit) {
         this.cell = cell;
         this.digit = digit;
+    }
+
+    static Change setDigit(Cell cell, int digit) {
+        return new Change(cell, digit);
     }
 
     public Cell getCell() {
