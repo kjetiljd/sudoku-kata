@@ -688,7 +688,6 @@ public class Program {
     }
 
     private static State generateStartingState(Random rng, State solutionState) {
-        State startingState = solutionState.copy();
 
         // Now pick subset of digits as the starting position.
         int remainingDigits = 30;
@@ -701,27 +700,28 @@ public class Program {
             int curRemainingDigits = positions.length - removedPos;
             int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
 
-            int row = positions[indexToPick] / 9;
-            int col = positions[indexToPick] % 9;
-
-            int blockRowToRemove = row / 3;
-            int blockColToRemove = col / 3;
-
-            if (removedPerBlock[blockRowToRemove][blockColToRemove] >= maxRemovedPerBlock)
+            Cell cell = Cell.of(positions[indexToPick]);
+            if (removedPerBlock[cell.getBlockRow()][cell.getBlockCol()] >= maxRemovedPerBlock)
                 continue;
+            removedPerBlock[cell.getBlockRow()][cell.getBlockCol()] += 1;
 
-            removedPerBlock[blockRowToRemove][blockColToRemove] += 1;
+            swap(positions, removedPos, indexToPick);
 
-            int temp = positions[removedPos];
-            positions[removedPos] = positions[indexToPick];
-            positions[indexToPick] = temp;
+            removedPos++;
+        }
 
-            int stateIndex = 9 * row + col;
-            startingState.set(stateIndex, 0);
+        State startingState = solutionState.copy();
 
-            removedPos += 1;
+        for (int i = 0; i < removedPos; i++) {
+            startingState.set(positions[i], 0);
         }
         return startingState;
+    }
+
+    private static void swap(int[] positions, int pos1, int pos2) {
+        int temp = positions[pos1];
+        positions[pos1] = positions[pos2];
+        positions[pos2] = temp;
     }
 
     public static void main(String[] args) throws IOException {
