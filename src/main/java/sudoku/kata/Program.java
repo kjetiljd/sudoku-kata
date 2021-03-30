@@ -56,10 +56,12 @@ public class Program {
 
                     System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
 
-                    state.set(singleCandidate.getCell(), digit);
-                    singleCandidate.setNoCandidates();
+                    Change change = new Change(singleCandidate.getCell(), digit);
+                    state.set(change.getCell(), change.getDigit());
+                    candidates.get(change.getCell()).setNoCandidates();
                     changeMade = true;
                 }
+
 
                 //endregion
 
