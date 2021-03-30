@@ -38,11 +38,12 @@ public class Program {
             while (stepChangeMade) {
                 stepChangeMade = false;
 
-                CandidateChange change = pickCellWithOnlyOneCandidateLeft(rng, candidates);
+                Change change = pickCellWithOnlyOneCandidateLeft(rng, candidates);
 
                 if (change != null) {
                     state.set(change.getCell(), change.getDigit());
                     candidates.get(change.getCell()).setNoCandidates();
+                    System.out.println(change.getReason());
                     changeMade = true;
                 }
 
@@ -552,7 +553,7 @@ public class Program {
         new Board(startingState).printBoard();
     }
 
-    private static CandidateChange pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
+    private static Change pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
         List<Candidate> singleCandidates = candidates.singleCandidates();
         if (singleCandidates.isEmpty()) {
             return null;
@@ -561,9 +562,9 @@ public class Program {
         Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
         int digit = singleCandidate.getMask().singleDigit();
 
-        System.out.format("%s can only contain %s.", singleCandidate.getCell(), digit).println();
+        String reason = String.format("%s can only contain %s.", singleCandidate.getCell(), digit);
 
-        return CandidateChange.setDigit(singleCandidate.getCell(), digit);
+        return Change.changeWithReason(CandidateChange.setDigit(singleCandidate.getCell(), digit), reason);
     }
 
     private static State constructBoardToBeSolved(Random rng) {
@@ -787,6 +788,10 @@ class Change {
 
     public int getDigit() {
         return digit;
+    }
+
+    public String getReason() {
+        return reason;
     }
 }
 
