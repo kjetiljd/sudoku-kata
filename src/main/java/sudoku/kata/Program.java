@@ -766,6 +766,30 @@ class CandidateChange {
     }
 }
 
+class Change {
+    private final String reason;
+    private final Cell cell;
+    private final int digit;
+
+    private Change(Cell cell, int digit, String reason) {
+        this.reason = reason;
+        this.cell = cell;
+        this.digit = digit;
+    }
+
+    static Change changeWithReason(CandidateChange candidateChange, String reason) {
+        return new Change(candidateChange.getCell(), candidateChange.getDigit(), reason);
+    }
+
+    public Cell getCell() {
+        return cell;
+    }
+
+    public int getDigit() {
+        return digit;
+    }
+}
+
 class State extends AbstractList<Integer> {
     private final int[] state;
 
