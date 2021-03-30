@@ -50,21 +50,20 @@ public class Program {
 
                 if (!changeMade) {
                     List<String> groupDescriptions = new ArrayList<>();
-                    List<Integer> candidateRowIndices = new ArrayList<>();
-                    List<Integer> candidateColIndices = new ArrayList<>();
+                    List<Cell> candidateCells = new ArrayList<>();
                     List<Integer> candidateList = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
                         int mask = Masks.maskForDigit(digit);
                         for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
                             int rowNumberCount = 0;
-                            int indexInRow = 0;
+                            Cell rowCandidate = null;
 
                             int colNumberCount = 0;
-                            int indexInCol = 0;
+                            Cell colCandidate = null;
 
                             int blockNumberCount = 0;
-                            int indexInBlock = 0;
+                            Cell blockCandidate = null;
 
                             for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
                                 Cell rowCell = Cell.of(cellGroup, indexInGroup);
@@ -73,31 +72,29 @@ public class Program {
 
                                 if ((candidates.get(rowCell).getMask().get() & mask) != 0) {
                                     rowNumberCount += 1;
-                                    indexInRow = indexInGroup;
+                                    rowCandidate = rowCell;
                                 }
 
                                 if ((candidates.get(colCell).getMask().get() & mask) != 0) {
                                     colNumberCount += 1;
-                                    indexInCol = indexInGroup;
+                                    colCandidate = colCell;
                                 }
 
                                 if ((candidates.get(blockCell).getMask().get() & mask) != 0) {
                                     blockNumberCount += 1;
-                                    indexInBlock = indexInGroup;
+                                    blockCandidate = blockCell;
                                 }
                             }
 
                             if (rowNumberCount == 1) {
                                 groupDescriptions.add("Row #" + (cellGroup + 1));
-                                candidateRowIndices.add(cellGroup);
-                                candidateColIndices.add(indexInRow);
+                                candidateCells.add(rowCandidate);
                                 candidateList.add(digit);
                             }
 
                             if (colNumberCount == 1) {
                                 groupDescriptions.add("Column #" + (cellGroup + 1));
-                                candidateRowIndices.add(indexInCol);
-                                candidateColIndices.add(cellGroup);
+                                candidateCells.add(colCandidate);
                                 candidateList.add(digit);
                             }
 
@@ -106,8 +103,7 @@ public class Program {
                                 int blockCol = cellGroup % 3;
 
                                 groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                                candidateRowIndices.add(blockRow * 3 + indexInBlock / 3);
-                                candidateColIndices.add(blockCol * 3 + indexInBlock % 3);
+                                candidateCells.add(blockCandidate);
                                 candidateList.add(digit);
                             }
                         } // for (cellGroup = 0..8)
@@ -116,15 +112,13 @@ public class Program {
                     if (candidateList.size() > 0) {
                         int index = rng.nextInt(candidateList.size());
                         String description = groupDescriptions.get(index);
-                        int row = candidateRowIndices.get(index);
-                        int col = candidateColIndices.get(index);
+                        Cell cell = candidateCells.get(index);
                         int digit = candidateList.get(index);
 
-                        String message = description + " can contain " + digit + " only at (" + (row + 1) + ", " + (col + 1) + ").";
+                        String message = description + " can contain " + digit + " only at " + cell + ".";
 
-                        int stateIndex = 9 * row + col;
-                        state.set(stateIndex, digit);
-                        candidates.get(stateIndex).setNoCandidates();
+                        state.set(cell, digit);
+                        candidates.get(cell).setNoCandidates();
                         changeMade = true;
 
                         System.out.println(message);
