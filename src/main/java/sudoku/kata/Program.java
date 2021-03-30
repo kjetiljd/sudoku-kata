@@ -19,20 +19,12 @@ public class Program {
     static void play(Random rng) {
 
         State solutionState = constructBoardToBeSolved(rng);
-
-        System.out.println();
-        System.out.println("Final look of the solved board:");
-        new Board(solutionState).printBoard();
+        printSolutionState(solutionState);
 
         State startingState = generateStartingState(rng, solutionState);
+        printStartingState(startingState);
 
-        System.out.println();
-        System.out.println("Starting look of the board to solve:");
-        new Board(startingState).printBoard();
-
-        System.out.println();
-        System.out.println("=".repeat(80));
-        System.out.println();
+        printDivider();
 
         State state = startingState.copy();
 
@@ -543,14 +535,34 @@ public class Program {
             //endregion
 
             if (changeMade) {
-                //region Print the board as it looks after one change was made to it
-                Board board = new Board(state);
-                board.printBoard();
-                board.printCode();
-                System.out.println();
-                //endregion
+                printState(state);
             }
         }
+    }
+
+    private static void printDivider() {
+        System.out.println();
+        System.out.println("=".repeat(80));
+        System.out.println();
+    }
+
+    private static void printState(State state) {
+        Board board = new Board(state);
+        board.printBoard();
+        board.printCode();
+        System.out.println();
+    }
+
+    private static void printSolutionState(State solutionState) {
+        System.out.println();
+        System.out.println("Final look of the solved board:");
+        new Board(solutionState).printBoard();
+    }
+
+    private static void printStartingState(State startingState) {
+        System.out.println();
+        System.out.println("Starting look of the board to solve:");
+        new Board(startingState).printBoard();
     }
 
     private static Change pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
