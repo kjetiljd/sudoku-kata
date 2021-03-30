@@ -67,23 +67,21 @@ public class Program {
                             int indexInBlock = 0;
 
                             for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
-                                int rowStateIndex = 9 * cellGroup + indexInGroup;
-                                int colStateIndex = 9 * indexInGroup + cellGroup;
-                                int blockRowIndex = (cellGroup / 3) * 3 + indexInGroup / 3;
-                                int blockColIndex = (cellGroup % 3) * 3 + indexInGroup % 3;
-                                int blockStateIndex = blockRowIndex * 9 + blockColIndex;
+                                Cell rowCell = Cell.of(cellGroup, indexInGroup);
+                                Cell colCell = Cell.of(indexInGroup, cellGroup);
+                                Cell blockCell = Cell.ofBlock(cellGroup, indexInGroup);
 
-                                if ((candidates.get(rowStateIndex).getMask().get() & mask) != 0) {
+                                if ((candidates.get(rowCell).getMask().get() & mask) != 0) {
                                     rowNumberCount += 1;
                                     indexInRow = indexInGroup;
                                 }
 
-                                if ((candidates.get(colStateIndex).getMask().get() & mask) != 0) {
+                                if ((candidates.get(colCell).getMask().get() & mask) != 0) {
                                     colNumberCount += 1;
                                     indexInCol = indexInGroup;
                                 }
 
-                                if ((candidates.get(blockStateIndex).getMask().get() & mask) != 0) {
+                                if ((candidates.get(blockCell).getMask().get() & mask) != 0) {
                                     blockNumberCount += 1;
                                     indexInBlock = indexInGroup;
                                 }
@@ -1141,6 +1139,13 @@ class Cell {
 
     static Cell of(int row, int col) {
         return Cell.of(9 * row + col);
+    }
+
+    static Cell ofBlock(int block, int indexInBlock) {
+        int blockRowIndex = (block / 3) * 3 + indexInBlock / 3;
+        int blockColIndex = (block % 3) * 3 + indexInBlock % 3;
+        int index = blockRowIndex * 9 + blockColIndex;
+        return Cell.of(index);
     }
 
     int getIndex() {
