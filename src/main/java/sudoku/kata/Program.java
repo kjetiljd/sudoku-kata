@@ -2,13 +2,13 @@ package sudoku.kata;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 public class Program {
 
@@ -855,21 +855,21 @@ class State extends AbstractList<Integer> {
 class Candidates extends AbstractList<Candidate> {
     private static final int allOnes = (1 << 9) - 1;
 
-    private final List<Candidate> candidates;
+    private final Map<Integer, Candidate> candidates;
 
     Candidates(State state) {
         this.candidates = calculateFrom(state);
     }
 
     List<Mask> twoDigitMasks() {
-        return candidates.stream()
+        return candidates.values().stream()
                 .map(candidate -> candidate.getMask())
                 .filter(mask -> mask.candidatesCount() == 2)
                 .distinct()
                 .collect(toList());
     }
 
-    private static List<Candidate> calculateFrom(State state) {
+    private static Map<Integer, Candidate> calculateFrom(State state) {
         return IntStream.range(0, state.size())
                 .mapToObj(i -> {
                     if (state.hasValue(i)) {
@@ -880,12 +880,14 @@ class Candidates extends AbstractList<Candidate> {
                                     .mapToInt(sibling -> Masks.maskForDigit(state.get(sibling)))
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                     return new Candidate(Cell.of(i), new Mask(allOnes & ~collidingDigitsMask));
-                }).collect(toList());
+                }).collect(toMap(
+                        candidate -> candidate.getCell().getIndex(), Function.identity()
+                ));
     }
 
     @Override
     public Candidate get(int index) {
-        return candidates.get(index);
+        return candidates.get(Cell.of(index).getIndex());
     }
 
     @Override
