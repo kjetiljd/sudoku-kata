@@ -146,24 +146,22 @@ public class Program {
                             Masks.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !new Mask(mask).matches(Masks.maskForDigit(state.get(cell)))))
-                                            .map(group -> Map.of(
-                                                    "Mask", mask,
-                                                    "Cells", group))
-                                            .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == new Mask((Integer) group.get("Mask")).candidatesCount())
+                                            .map(group -> new MaskGroup(new Mask(mask), group))
+                                            .filter(group -> group.getGroup().cellsWithMask(mask, state, candidates).size() == group.getMask().candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
 
 
                     for (var groupWithNMasks : groupsWithNMasks) {
-                        int mask = (int) groupWithNMasks.get("Mask");
+                        int mask = groupWithNMasks.getMask().get();
 
-                        if (((CellGroup) groupWithNMasks.get("Cells")).stream()
+                        if (groupWithNMasks.getGroup().stream()
                                 .anyMatch(cell ->
                                         candidates.get(cell).matchesMask(new Mask(mask))
                                                 && candidates.get(cell).matchesMask(new Mask(~mask)))) {
                             StringBuilder message = new StringBuilder();
-                            message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
+                            message.append("In " + groupWithNMasks.getGroup().getDescription() + " values ");
 
                             String separator = "";
                             int temp = mask;
@@ -178,7 +176,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidates)) {
+                            for (var cell : groupWithNMasks.getGroup().cellsWithMask(mask, state, candidates)) {
                                 message.append(" " + cell);
                             }
 
@@ -187,12 +185,12 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : ((CellGroup) groupWithNMasks.get("Cells")).cellsWithMask(mask, state, candidates)) {
-                            int maskToClear = candidates.get(cell).getMask().get() & ~((Integer) groupWithNMasks.get("Mask"));
+                        for (var cell : groupWithNMasks.getGroup().cellsWithMask(mask, state, candidates)) {
+                            int maskToClear = candidates.get(cell).getMask().get() & ~groupWithNMasks.getMask().get();
                             if (maskToClear == 0)
                                 continue;
 
-                            candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ((Integer) groupWithNMasks.get("Mask"))));
+                            candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & groupWithNMasks.getMask().get()));
                             stepChangeMade = true;
 
                             int valueToClear = 1;
