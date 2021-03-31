@@ -85,22 +85,22 @@ public class Program {
                                                     candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
                                             .collect(toList());
 
-                            var cells =
+                            var cellsToCleanUp =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
                                                     !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
                                                             && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get()) > 0)
                                             .collect(toList());
 
-                            if (!cells.isEmpty()) {
-                                List<Integer> digits = twoDigitGroup.getMask().digits();
+                            if (!cellsToCleanUp.isEmpty()) {
+                                List<Integer> digitsToRemove = twoDigitGroup.getMask().digits();
 
                                 System.out.println(
-                                        "Values " + digits.get(0) + " and " + digits.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
+                                        "Values " + digitsToRemove.get(0) + " and " + digitsToRemove.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
                                                 " are in cells " + maskCells.get(0) +
                                                 " and " + maskCells.get(1) + ".");
 
-                                for (var cell : cells) {
+                                for (var cell : cellsToCleanUp) {
                                     int maskToRemove = candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
