@@ -69,17 +69,17 @@ public class Program {
                                 Cell colCell = Cell.of(indexInGroup, cellGroup);
                                 Cell blockCell = Cell.ofBlock(cellGroup, indexInGroup);
 
-                                if (candidates.get(rowCell).isCandidateDigit(mask)) {
+                                if (candidates.get(rowCell).hasCandidateDigit(mask)) {
                                     rowNumberCount += 1;
                                     rowCandidate = rowCell;
                                 }
 
-                                if (candidates.get(colCell).isCandidateDigit(mask)) {
+                                if (candidates.get(colCell).hasCandidateDigit(mask)) {
                                     colNumberCount += 1;
                                     colCandidate = colCell;
                                 }
 
-                                if (candidates.get(blockCell).isCandidateDigit(mask)) {
+                                if (candidates.get(blockCell).hasCandidateDigit(mask)) {
                                     blockNumberCount += 1;
                                     blockCandidate = blockCell;
                                 }
@@ -218,8 +218,8 @@ public class Program {
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state.get(cell) == 0) &&
-                                                                    (candidates.get(cell).isCandidateDigit(mask)) &&
-                                                                    (candidates.get(cell).isCandidateDigit(~mask)))
+                                                                    (candidates.get(cell).hasCandidateDigit(mask)) &&
+                                                                    (candidates.get(cell).hasCandidateDigit(~mask)))
                                                             .count()))
                                             .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == new Mask((Integer) group.get("Mask")).candidatesCount())
                                             .collect(toList()))
@@ -232,7 +232,7 @@ public class Program {
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell -> {
-                                    return (candidates.get(cell).isCandidateDigit(mask)) &&
+                                    return (candidates.get(cell).hasCandidateDigit(mask)) &&
                                             candidates.get(cell).hasOtherCandidateDigitsThan(mask);
                                 })) {
                             StringBuilder message = new StringBuilder();
@@ -913,7 +913,7 @@ class Candidate {
         this.mask = mask;
     }
 
-    boolean isCandidateDigit(int mask) {
+    boolean hasCandidateDigit(int mask) {
         return (getMask().get() & mask) != 0;
     }
 
