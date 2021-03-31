@@ -48,69 +48,7 @@ public class Program {
                 }
 
                 if (!changeMade) {
-                    //region Try to find a number which can only appear in one place in a row/column/block
-                    List<String> groupDescriptions = new ArrayList<>();
-                    List<CandidateChange> candidateChange = new ArrayList<>();
-
-                    for (int digit = 1; digit <= 9; digit++) {
-                        for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
-
-                            int rowNumberCount = 0;
-                            Cell rowCandidate = null;
-                            for (Cell cell : CellGroup.rows().get(cellGroup)) {
-                                if (candidates.get(cell).hasCandidateDigit(digit)) {
-                                    rowNumberCount += 1;
-                                    rowCandidate = cell;
-                                }
-                            }
-
-                            if (rowNumberCount == 1) {
-                                groupDescriptions.add("Row #" + (cellGroup + 1));
-                                candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
-                            }
-
-                            int colNumberCount = 0;
-                            Cell colCandidate = null;
-                            for (Cell cell : CellGroup.columns().get(cellGroup)) {
-                                if (candidates.get(cell).hasCandidateDigit(digit)) {
-                                    colNumberCount += 1;
-                                    colCandidate = cell;
-                                }
-                            }
-
-                            if (colNumberCount == 1) {
-                                groupDescriptions.add("Column #" + (cellGroup + 1));
-                                candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
-                            }
-
-                            int blockNumberCount = 0;
-                            Cell blockCandidate = null;
-                            for (Cell cell : CellGroup.blocks().get(cellGroup)) {
-                                if (candidates.get(cell).hasCandidateDigit(digit)) {
-                                    blockNumberCount += 1;
-                                    blockCandidate = cell;
-                                }
-                            }
-
-                            if (blockNumberCount == 1) {
-                                int blockRow = cellGroup / 3;
-                                int blockCol = cellGroup % 3;
-
-                                groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                                candidateChange.add(CandidateChange.setDigit(blockCandidate, digit));
-                            }
-                        } // for (cellGroup = 0..8)
-                    } // for (digit = 1..9)
-
-                    if (candidateChange.size() > 0) {
-                        int index = rng.nextInt(candidateChange.size());
-                        String description = groupDescriptions.get(index);
-                        CandidateChange chosenChange = candidateChange.get(index);
-
-                        change = Change.changeWithReason(chosenChange,
-                                description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
-                    }
-                    //endregion
+                    change = pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(rng, candidates);
 
                     if (change != null) {
                         state.set(change.getCell(), change.getDigit());
@@ -525,6 +463,72 @@ public class Program {
                 printState(state);
             }
         }
+    }
+
+    private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
+        //region Try to find a number which can only appear in one place in a row/column/block
+        List<String> groupDescriptions = new ArrayList<>();
+        List<CandidateChange> candidateChange = new ArrayList<>();
+
+        for (int digit = 1; digit <= 9; digit++) {
+            for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
+
+                int rowNumberCount = 0;
+                Cell rowCandidate = null;
+                for (Cell cell : CellGroup.rows().get(cellGroup)) {
+                    if (candidates.get(cell).hasCandidateDigit(digit)) {
+                        rowNumberCount += 1;
+                        rowCandidate = cell;
+                    }
+                }
+
+                if (rowNumberCount == 1) {
+                    groupDescriptions.add("Row #" + (cellGroup + 1));
+                    candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
+                }
+
+                int colNumberCount = 0;
+                Cell colCandidate = null;
+                for (Cell cell : CellGroup.columns().get(cellGroup)) {
+                    if (candidates.get(cell).hasCandidateDigit(digit)) {
+                        colNumberCount += 1;
+                        colCandidate = cell;
+                    }
+                }
+
+                if (colNumberCount == 1) {
+                    groupDescriptions.add("Column #" + (cellGroup + 1));
+                    candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
+                }
+
+                int blockNumberCount = 0;
+                Cell blockCandidate = null;
+                for (Cell cell : CellGroup.blocks().get(cellGroup)) {
+                    if (candidates.get(cell).hasCandidateDigit(digit)) {
+                        blockNumberCount += 1;
+                        blockCandidate = cell;
+                    }
+                }
+
+                if (blockNumberCount == 1) {
+                    int blockRow = cellGroup / 3;
+                    int blockCol = cellGroup % 3;
+
+                    groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
+                    candidateChange.add(CandidateChange.setDigit(blockCandidate, digit));
+                }
+            } // for (cellGroup = 0..8)
+        } // for (digit = 1..9)
+
+        if (candidateChange.size() > 0) {
+            int index = rng.nextInt(candidateChange.size());
+            String description = groupDescriptions.get(index);
+            CandidateChange chosenChange = candidateChange.get(index);
+
+            return Change.changeWithReason(chosenChange,
+                    description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
+        } else return null;
+        //endregion
     }
 
     private static void printDivider() {
