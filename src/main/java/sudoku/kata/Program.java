@@ -989,6 +989,17 @@ class Mask {
     boolean matches(Mask other) {
         return (get() & other.get()) != 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        return mask == ((Mask) o).mask;
+    }
+
+    @Override
+    public int hashCode() {
+        return mask;
+    }
 }
 
 class Masks {
