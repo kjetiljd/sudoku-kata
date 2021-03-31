@@ -362,32 +362,27 @@ public class Program {
 
                 if (!cellList1.isEmpty()) {
                     int pos = rng.nextInt(cellList1.size());
-                    int index1 = cellList1.get(pos).getIndex();
-                    int index2 = cellList2.get(pos).getIndex();
-                    int digit1 = value1.get(pos);
-                    int digit2 = value2.get(pos);
-                    int row1 = index1 / 9;
-                    int col1 = index1 % 9;
-                    int row2 = index2 / 9;
-                    int col2 = index2 % 9;
+
+                    Cell cell1 = cellList1.get(pos);
+                    Cell cell2 = cellList2.get(pos);
 
                     String description = "";
 
-                    if (index1 / 9 == index2 / 9) {
-                        description = "row #" + (index1 / 9 + 1);
-                    } else if (index1 % 9 == index2 % 9) {
-                        description = "column #" + (index1 % 9 + 1);
+                    if (cell1.getRow() == cell2.getRow()) {
+                        description = "row #" + (cell1.getRow() + 1);
+                    } else if (cell1.getColumn() == cell2.getColumn()) {
+                        description = "column #" + (cell1.getColumn() + 1);
                     } else {
-                        description = "block (" + (row1 / 3 + 1) + ", " + (col1 / 3 + 1) + ")";
+                        description = "block (" + (cell1.getBlockRow() + 1) + ", " + (cell1.getBlockCol() + 1) + ")";
                     }
 
-                    state.set(index1, solutionState.get(index1));
-                    state.set(index2, solutionState.get(index2));
-                    candidates.get(index1).setNoCandidates();
-                    candidates.get(index2).setNoCandidates();
+                    state.set(cell1, solutionState.get(cell1));
+                    state.set(cell2, solutionState.get(cell2));
+                    candidates.get(cell1).setNoCandidates();
+                    candidates.get(cell2).setNoCandidates();
                     changeMade = true;
 
-                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(index1) + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + solutionState.get(index2) + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
+                    System.out.println("Guessing that " + value1.get(pos) + " and " + value2.get(pos) + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(cell1) + "->" + cell1 + ", " + solutionState.get(cell2) + "->" + cell2 + ".");
                 }
             }
             //endregion
