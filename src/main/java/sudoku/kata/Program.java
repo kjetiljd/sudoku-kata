@@ -159,10 +159,9 @@ public class Program {
                         int mask = (int) groupWithNMasks.get("Mask");
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
-                                .anyMatch(cell -> {
-                                    return (candidates.get(cell).matchesMask(new Mask(mask))) &&
-                                            candidates.get(cell).matchesMask(new Mask(~mask));
-                                })) {
+                                .anyMatch(cell ->
+                                        candidates.get(cell).matchesMask(new Mask(mask))
+                                                && candidates.get(cell).matchesMask(new Mask(~mask)))) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
 
