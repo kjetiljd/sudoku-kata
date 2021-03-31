@@ -66,12 +66,6 @@ public class Program {
 
                     if (!twoDigitGroups.isEmpty()) {
                         for (var twoDigitGroup : twoDigitGroups) {
-                            var maskCells =
-                                    twoDigitGroup.getGroup().stream()
-                                            .filter(cell ->
-                                                    candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
-                                            .collect(toList());
-
                             var cellsToCleanUp =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell -> !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
@@ -80,6 +74,12 @@ public class Program {
 
                             if (!cellsToCleanUp.isEmpty()) {
                                 List<Integer> digitsInGroup = twoDigitGroup.getMask().digits();
+
+                                var maskCells =
+                                        twoDigitGroup.getGroup().stream()
+                                                .filter(cell ->
+                                                        candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
+                                                .collect(toList());
 
                                 System.out.println(
                                         "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
@@ -422,88 +422,16 @@ public class Program {
         }
     }
 
-    private static List<MaskGroup> groupsWithPairsOfCellsWithSameTwoDigitCandidates(Candidates candidates) {
-        var twoDigitGroups =
-                candidates.twoDigitMasks().stream()
-                        .map(twoDigitMask ->
-                                CellGroup.all().stream()
-                                        .filter(cellGroup -> cellGroup.stream()
-                                                .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
-                                                .count() == 2)
-                                        .filter(cellGroup -> cellGroup.stream()
-                                                .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
-                                                        && (candidates.get(cell).getMask().overlappingWith(twoDigitMask).get()) > 0))
-                                        .map(group -> new MaskGroup(twoDigitMask, group))
-                                        .collect(toList()))
-                        .flatMap(Collection::stream)
-                        .collect(toList());
-        return twoDigitGroups;
+    private static void printSolutionState(State solutionState) {
+        System.out.println();
+        System.out.println("Final look of the solved board:");
+        new Board(solutionState).printBoard();
     }
 
-    private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
-        //region Try to find a number which can only appear in one place in a row/column/block
-        List<String> groupDescriptions = new ArrayList<>();
-        List<CandidateChange> candidateChange = new ArrayList<>();
-
-        for (int digit = 1; digit <= 9; digit++) {
-            for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
-
-                int rowNumberCount = 0;
-                Cell rowCandidate = null;
-                for (Cell cell : CellGroup.rows().get(cellGroup)) {
-                    if (candidates.get(cell).hasCandidateDigit(digit)) {
-                        rowNumberCount += 1;
-                        rowCandidate = cell;
-                    }
-                }
-
-                if (rowNumberCount == 1) {
-                    groupDescriptions.add("Row #" + (cellGroup + 1));
-                    candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
-                }
-
-                int colNumberCount = 0;
-                Cell colCandidate = null;
-                for (Cell cell : CellGroup.columns().get(cellGroup)) {
-                    if (candidates.get(cell).hasCandidateDigit(digit)) {
-                        colNumberCount += 1;
-                        colCandidate = cell;
-                    }
-                }
-
-                if (colNumberCount == 1) {
-                    groupDescriptions.add("Column #" + (cellGroup + 1));
-                    candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
-                }
-
-                int blockNumberCount = 0;
-                Cell blockCandidate = null;
-                for (Cell cell : CellGroup.blocks().get(cellGroup)) {
-                    if (candidates.get(cell).hasCandidateDigit(digit)) {
-                        blockNumberCount += 1;
-                        blockCandidate = cell;
-                    }
-                }
-
-                if (blockNumberCount == 1) {
-                    int blockRow = cellGroup / 3;
-                    int blockCol = cellGroup % 3;
-
-                    groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                    candidateChange.add(CandidateChange.setDigit(blockCandidate, digit));
-                }
-            } // for (cellGroup = 0..8)
-        } // for (digit = 1..9)
-
-        if (candidateChange.size() > 0) {
-            int index = rng.nextInt(candidateChange.size());
-            String description = groupDescriptions.get(index);
-            CandidateChange chosenChange = candidateChange.get(index);
-
-            return Change.changeWithReason(chosenChange,
-                    description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
-        } else return null;
-        //endregion
+    private static void printStartingState(State startingState) {
+        System.out.println();
+        System.out.println("Starting look of the board to solve:");
+        new Board(startingState).printBoard();
     }
 
     private static void printDivider() {
@@ -519,34 +447,35 @@ public class Program {
         System.out.println();
     }
 
-    private static void printSolutionState(State solutionState) {
-        System.out.println();
-        System.out.println("Final look of the solved board:");
-        new Board(solutionState).printBoard();
-    }
+    private static State generateStartingState(Random rng, State solutionState) {
 
-    private static void printStartingState(State startingState) {
-        System.out.println();
-        System.out.println("Starting look of the board to solve:");
-        new Board(startingState).printBoard();
-    }
+        // Now pick subset of digits as the starting position.
+        int remainingDigits = 30;
+        int maxRemovedPerBlock = 6;
+        int[][] removedPerBlock = new int[3][3];
+        int[] positions = IntStream.range(0, 9 * 9).toArray();
 
-    private static Change pickACellWithOnlyOneCandidateDigitLeft(Random rng, Candidates candidates) {
+        int removedPos = 0;
+        while (removedPos < 9 * 9 - remainingDigits) {
+            int curRemainingDigits = positions.length - removedPos;
+            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
 
-        List<Candidate> singleCandidates = candidates.stream()
-                .filter(candidate -> candidate.candidateDigitsCount() == 1)
-                .collect(toList());
+            Cell cell = Cell.of(positions[indexToPick]);
+            if (removedPerBlock[cell.getBlockRow()][cell.getBlockCol()] >= maxRemovedPerBlock)
+                continue;
+            removedPerBlock[cell.getBlockRow()][cell.getBlockCol()] += 1;
 
-        if (singleCandidates.isEmpty()) {
-            return null;
+            swap(positions, removedPos, indexToPick);
+
+            removedPos++;
         }
 
-        Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
-        int digit = singleCandidate.singleDigit();
+        State startingState = solutionState.copy();
 
-        String reason = String.format("%s can only contain %s.", singleCandidate.getCell(), digit);
-
-        return Change.changeWithReason(CandidateChange.setDigit(singleCandidate.getCell(), digit), reason);
+        for (int i = 0; i < removedPos; i++) {
+            startingState.set(positions[i], 0);
+        }
+        return startingState;
     }
 
     private static State constructBoardToBeSolved(Random rng) {
@@ -674,36 +603,108 @@ public class Program {
         return stateStack.peek();
     }
 
-    private static State generateStartingState(Random rng, State solutionState) {
+    private static Change pickACellWithOnlyOneCandidateDigitLeft(Random rng, Candidates candidates) {
 
-        // Now pick subset of digits as the starting position.
-        int remainingDigits = 30;
-        int maxRemovedPerBlock = 6;
-        int[][] removedPerBlock = new int[3][3];
-        int[] positions = IntStream.range(0, 9 * 9).toArray();
+        List<Candidate> singleCandidates = candidates.stream()
+                .filter(candidate -> candidate.candidateDigitsCount() == 1)
+                .collect(toList());
 
-        int removedPos = 0;
-        while (removedPos < 9 * 9 - remainingDigits) {
-            int curRemainingDigits = positions.length - removedPos;
-            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
-
-            Cell cell = Cell.of(positions[indexToPick]);
-            if (removedPerBlock[cell.getBlockRow()][cell.getBlockCol()] >= maxRemovedPerBlock)
-                continue;
-            removedPerBlock[cell.getBlockRow()][cell.getBlockCol()] += 1;
-
-            swap(positions, removedPos, indexToPick);
-
-            removedPos++;
+        if (singleCandidates.isEmpty()) {
+            return null;
         }
 
-        State startingState = solutionState.copy();
+        Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
+        int digit = singleCandidate.singleDigit();
 
-        for (int i = 0; i < removedPos; i++) {
-            startingState.set(positions[i], 0);
-        }
-        return startingState;
+        String reason = String.format("%s can only contain %s.", singleCandidate.getCell(), digit);
+
+        return Change.changeWithReason(CandidateChange.setDigit(singleCandidate.getCell(), digit), reason);
     }
+
+    private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
+        //region Try to find a number which can only appear in one place in a row/column/block
+        List<String> groupDescriptions = new ArrayList<>();
+        List<CandidateChange> candidateChange = new ArrayList<>();
+
+        for (int digit = 1; digit <= 9; digit++) {
+            for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
+
+                int rowNumberCount = 0;
+                Cell rowCandidate = null;
+                for (Cell cell : CellGroup.rows().get(cellGroup)) {
+                    if (candidates.get(cell).hasCandidateDigit(digit)) {
+                        rowNumberCount += 1;
+                        rowCandidate = cell;
+                    }
+                }
+
+                if (rowNumberCount == 1) {
+                    groupDescriptions.add("Row #" + (cellGroup + 1));
+                    candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
+                }
+
+                int colNumberCount = 0;
+                Cell colCandidate = null;
+                for (Cell cell : CellGroup.columns().get(cellGroup)) {
+                    if (candidates.get(cell).hasCandidateDigit(digit)) {
+                        colNumberCount += 1;
+                        colCandidate = cell;
+                    }
+                }
+
+                if (colNumberCount == 1) {
+                    groupDescriptions.add("Column #" + (cellGroup + 1));
+                    candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
+                }
+
+                int blockNumberCount = 0;
+                Cell blockCandidate = null;
+                for (Cell cell : CellGroup.blocks().get(cellGroup)) {
+                    if (candidates.get(cell).hasCandidateDigit(digit)) {
+                        blockNumberCount += 1;
+                        blockCandidate = cell;
+                    }
+                }
+
+                if (blockNumberCount == 1) {
+                    int blockRow = cellGroup / 3;
+                    int blockCol = cellGroup % 3;
+
+                    groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
+                    candidateChange.add(CandidateChange.setDigit(blockCandidate, digit));
+                }
+            } // for (cellGroup = 0..8)
+        } // for (digit = 1..9)
+
+        if (candidateChange.size() > 0) {
+            int index = rng.nextInt(candidateChange.size());
+            String description = groupDescriptions.get(index);
+            CandidateChange chosenChange = candidateChange.get(index);
+
+            return Change.changeWithReason(chosenChange,
+                    description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
+        } else return null;
+        //endregion
+    }
+
+    private static List<MaskGroup> groupsWithPairsOfCellsWithSameTwoDigitCandidates(Candidates candidates) {
+        var twoDigitGroups =
+                candidates.twoDigitMasks().stream()
+                        .map(twoDigitMask ->
+                                CellGroup.all().stream()
+                                        .filter(cellGroup -> cellGroup.stream()
+                                                .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
+                                                .count() == 2)
+                                        .filter(cellGroup -> cellGroup.stream()
+                                                .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
+                                                        && (candidates.get(cell).getMask().overlappingWith(twoDigitMask).get()) > 0))
+                                        .map(group -> new MaskGroup(twoDigitMask, group))
+                                        .collect(toList()))
+                        .flatMap(Collection::stream)
+                        .collect(toList());
+        return twoDigitGroups;
+    }
+
 
     private static void swap(int[] positions, int pos1, int pos2) {
         int temp = positions[pos1];
