@@ -222,12 +222,12 @@ public class Program {
 
                     State alternateState = state.copy();
 
-                    if (solutionState.get(candidate1.getCell().getIndex()) == digit1) {
-                        alternateState.set(candidate1.getCell().getIndex(), digit2);
-                        alternateState.set(candidate2.getCell().getIndex(), digit1);
+                    if (solutionState.get(candidate1.getCell()) == digit1) {
+                        alternateState.set(candidate1.getCell(), digit2);
+                        alternateState.set(candidate2.getCell(), digit1);
                     } else {
-                        alternateState.set(candidate1.getCell().getIndex(), digit1);
-                        alternateState.set(candidate2.getCell().getIndex(), digit2);
+                        alternateState.set(candidate1.getCell(), digit1);
+                        alternateState.set(candidate2.getCell(), digit2);
                     }
 
                     {
