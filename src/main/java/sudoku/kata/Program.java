@@ -62,20 +62,7 @@ public class Program {
                 if (!changeMade) {
 
                     //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
-                    var twoDigitGroups =
-                            candidates.twoDigitMasks().stream()
-                                    .map(twoDigitMask ->
-                                            CellGroup.all().stream()
-                                                    .filter(cellGroup -> cellGroup.stream()
-                                                            .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
-                                                            .count() == 2)
-                                                    .filter(cellGroup -> cellGroup.stream()
-                                                            .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
-                                                                    && (candidates.get(cell).getMask().overlappingWith(twoDigitMask).get()) > 0))
-                                                    .map(group -> new MaskGroup(twoDigitMask, group))
-                                                    .collect(toList()))
-                                    .flatMap(Collection::stream)
-                                    .collect(toList());
+                    List<MaskGroup> twoDigitGroups = groupsWithPairsOfCellsWithSameTwoDigitCandidates(candidates);
 
                     if (!twoDigitGroups.isEmpty()) {
                         for (var twoDigitGroup : twoDigitGroups) {
@@ -433,6 +420,24 @@ public class Program {
                 printState(state);
             }
         }
+    }
+
+    private static List<MaskGroup> groupsWithPairsOfCellsWithSameTwoDigitCandidates(Candidates candidates) {
+        var twoDigitGroups =
+                candidates.twoDigitMasks().stream()
+                        .map(twoDigitMask ->
+                                CellGroup.all().stream()
+                                        .filter(cellGroup -> cellGroup.stream()
+                                                .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
+                                                .count() == 2)
+                                        .filter(cellGroup -> cellGroup.stream()
+                                                .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
+                                                        && (candidates.get(cell).getMask().overlappingWith(twoDigitMask).get()) > 0))
+                                        .map(group -> new MaskGroup(twoDigitMask, group))
+                                        .collect(toList()))
+                        .flatMap(Collection::stream)
+                        .collect(toList());
+        return twoDigitGroups;
     }
 
     private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
