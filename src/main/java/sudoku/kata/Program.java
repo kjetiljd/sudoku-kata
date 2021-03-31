@@ -148,13 +148,7 @@ public class Program {
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !new Mask(mask).matches(Masks.maskForDigit(state.get(cell)))))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
-                                                    "Cells", group,
-                                                    "CleanableCellsCount",
-                                                    (int) group.stream()
-                                                            .filter(cell -> (state.get(cell) == 0) &&
-                                                                    (candidates.get(cell).matchesMask(new Mask(mask))) &&
-                                                                    (candidates.get(cell).matchesMask(new Mask(~mask))))
-                                                            .count()))
+                                                    "Cells", group))
                                             .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == new Mask((Integer) group.get("Mask")).candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
