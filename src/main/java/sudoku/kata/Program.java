@@ -100,13 +100,14 @@ public class Program {
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cellsToCleanUp) {
-                                    Mask maskToRemove = candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask());
+                                    Candidate candidate = candidates.get(cell);
+                                    Mask maskToRemove = candidate.getMask().overlappingWith(twoDigitGroup.getMask());
 
                                     List<Integer> digitsToRemove = maskToRemove.digits();
                                     String valuesReport = String.join(", ", digitsToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidates.get(cell).setMask(candidates.get(cell).getMask().overlappingWith(maskToRemove.inverted()));
+                                    candidate.setMask(candidate.getMask().overlappingWith(maskToRemove.inverted()));
                                     stepChangeMade = true;
                                 }
                             }
