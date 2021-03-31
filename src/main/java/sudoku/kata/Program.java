@@ -100,14 +100,15 @@ public class Program {
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cellsToCleanUp) {
-                                    int maskToRemove = candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).get();
+                                    Mask maskToRemove = candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask());
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
-                                    while (maskToRemove > 0) {
-                                        if ((maskToRemove & 1) > 0) {
+                                    int maskRemaining = maskToRemove.get();
+                                    while (maskRemaining > 0) {
+                                        if ((maskRemaining & 1) > 0) {
                                             valuesToRemove.add(curValue);
                                         }
-                                        maskToRemove = maskToRemove >> 1;
+                                        maskRemaining = maskRemaining >> 1;
                                         curValue += 1;
                                     }
 
@@ -177,7 +178,7 @@ public class Program {
                             if (maskToClear == 0)
                                 continue;
 
-                            candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().overlappingWith(groupWithNMasks.getMask()).get()));
+                            candidates.get(cell).setMask(candidates.get(cell).getMask().overlappingWith(groupWithNMasks.getMask()));
                             stepChangeMade = true;
 
                             int valueToClear = 1;
