@@ -67,10 +67,10 @@ public class Program {
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
                                                     .filter(group -> group.stream()
-                                                            .filter(cell -> candidates.get(cell).getMask().get() == twoDigitMask.get())
+                                                            .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
                                                             .count() == 2)
                                                     .filter(group -> group.stream()
-                                                            .anyMatch(cell -> candidates.get(cell).getMask().get() != twoDigitMask.get()
+                                                            .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
                                                                     && (candidates.get(cell).getMask().get() & twoDigitMask.get()) > 0))
                                                     .map(group -> new MaskGroup(twoDigitMask, group))
                                                     .collect(toList()))
@@ -82,14 +82,14 @@ public class Program {
                             var cells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidates.get(cell).getMask().get() != twoDigitGroup.getMask().get()
+                                                    !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
                                                             && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get()) > 0)
                                             .collect(toList());
 
                             var maskCells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidates.get(cell).getMask().get() == twoDigitGroup.getMask().get())
+                                                    candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
                                             .collect(toList());
 
                             if (!cells.isEmpty()) {
