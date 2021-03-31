@@ -47,9 +47,8 @@ public class Program {
                     changeMade = true;
                 }
 
-                //region Try to find a number which can only appear in one place in a row/column/block
-
                 if (!changeMade) {
+                    //region Try to find a number which can only appear in one place in a row/column/block
                     List<String> groupDescriptions = new ArrayList<>();
                     List<CandidateChange> candidateChange = new ArrayList<>();
 
@@ -114,6 +113,8 @@ public class Program {
                         change = Change.changeWithReason(chosenChange,
                                 description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
                     }
+                    //endregion
+
                     if (change != null) {
                         state.set(change.getCell(), change.getDigit());
                         candidates.get(change.getCell()).setNoCandidates();
@@ -122,7 +123,6 @@ public class Program {
                     }
                 }
 
-                //endregion
 
                 //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
                 if (!changeMade) {
