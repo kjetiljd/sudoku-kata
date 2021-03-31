@@ -93,19 +93,9 @@ public class Program {
                                             .collect(toList());
 
                             if (!cells.isEmpty()) {
-                                int upper = 0;
-                                int lower = 0;
-                                int temp = twoDigitGroup.getMask().get();
-
-                                int value = 1;
-                                while (temp > 0) {
-                                    if ((temp & 1) > 0) {
-                                        lower = upper;
-                                        upper = value;
-                                    }
-                                    temp = temp >> 1;
-                                    value += 1;
-                                }
+                                List<Integer> digits = twoDigitGroup.getMask().digits();
+                                int lower = digits.get(0);
+                                int upper = digits.get(1);
 
                                 System.out.println(
                                         "Values " + lower + " and " + upper + " in " + twoDigitGroup.getGroup().getDescription() +
