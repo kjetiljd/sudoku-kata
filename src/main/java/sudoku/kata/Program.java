@@ -189,12 +189,11 @@ public class Program {
                 for (Candidate candidateI : candidates) {
                     if (candidateI.candidateDigitsCount() == 2) {
 
-                        var digits = candidateI.getMask().digits();
+                        var digits = candidateI.digits();
 
                         for (int j = candidates.indexOf(candidateI) + 1; j < candidates.size(); j++) {
                             Candidate candidateJ = candidates.get(j);
-                            if (candidates.get(j).getMask().equals(candidateI.getMask())) {
-
+                            if (candidateJ.digits().equals(candidateI.digits())) {
                                 if (Cell.sharesACellGroup(candidateI.getCell(), candidateJ.getCell())) {
                                     candidateQueue1.add(candidateI);
                                     candidateQueue2.add(candidateJ);
@@ -859,6 +858,10 @@ class Candidate {
     Candidate(Cell cell, Mask mask) {
         this.cell = cell;
         this.mask = mask;
+    }
+
+    List<Integer> digits() {
+        return getMask().digits();
     }
 
     Integer singleDigit() {
