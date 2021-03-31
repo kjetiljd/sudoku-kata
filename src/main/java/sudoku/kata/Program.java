@@ -471,10 +471,10 @@ public class Program {
             if (command.equals("expand")) {
                 final State currentState;
 
-                if (!stateStack.isEmpty()) {
-                    currentState = stateStack.peek().copy();
-                } else {
+                if (stateStack.isEmpty()) {
                     currentState = new State(new int[9 * 9]);
+                } else {
+                    currentState = stateStack.peek().copy();
                 }
 
                 Cell bestCell = null;
