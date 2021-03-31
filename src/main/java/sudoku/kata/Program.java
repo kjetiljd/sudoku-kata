@@ -558,7 +558,11 @@ public class Program {
     }
 
     private static Change pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
-        List<Candidate> singleCandidates = candidates.singleCandidates();
+
+        List<Candidate> singleCandidates = candidates.stream()
+                .filter(candidate -> candidate.candidateDigitsCount() == 1)
+                .collect(toList());
+
         if (singleCandidates.isEmpty()) {
             return null;
         }
@@ -865,12 +869,6 @@ class Candidates extends AbstractList<Candidate> {
                 .collect(toList());
     }
 
-    List<Candidate> singleCandidates() {
-        return candidates.stream()
-                .filter(candidate -> candidate.getMask().candidatesCount() == 1)
-                .collect(toList());
-    }
-
     private static List<Candidate> calculateFrom(State state) {
         return IntStream.range(0, state.size())
                 .mapToObj(i -> {
@@ -937,6 +935,10 @@ class Candidate {
 
     public void setMask(Mask mask) {
         this.mask = mask;
+    }
+
+    int candidateDigitsCount() {
+        return getMask().candidatesCount();
     }
 }
 
