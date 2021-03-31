@@ -60,7 +60,7 @@ public class Program {
                     if (!twoDigitGroups.isEmpty()) {
                         for (var twoDigitGroup : twoDigitGroups) {
                             var cellsToCleanUp =
-                                    twoDigitGroup.getGroup().stream()
+                                    twoDigitGroup.stream()
                                             .filter(cell -> !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
                                                     && (candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).get()) > 0)
                                             .collect(toList());
@@ -69,13 +69,13 @@ public class Program {
                                 List<Integer> digitsInGroup = twoDigitGroup.getMask().digits();
 
                                 var maskCells =
-                                        twoDigitGroup.getGroup().stream()
+                                        twoDigitGroup.stream()
                                                 .filter(cell ->
                                                         candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
                                                 .collect(toList());
 
                                 System.out.println(
-                                        "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
+                                        "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getDescription() +
                                                 " are in cells " + maskCells.get(0) +
                                                 " and " + maskCells.get(1) + ".");
 
@@ -107,7 +107,7 @@ public class Program {
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(Masks.maskForDigit(state.get(cell)))))
                                             .map(group -> new MaskGroup(mask, group))
-                                            .filter(group -> group.getGroup().cellsWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
+                                            .filter(group -> group.cellsWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -116,12 +116,12 @@ public class Program {
                     for (var groupWithNMasks : groupsWithNMasks) {
                         Mask mask = groupWithNMasks.getMask();
 
-                        if (groupWithNMasks.getGroup().stream()
+                        if (groupWithNMasks.stream()
                                 .anyMatch(cell ->
                                         candidates.get(cell).matchesMask(mask)
                                                 && candidates.get(cell).matchesMask(mask.inverted()))) {
                             StringBuilder message = new StringBuilder();
-                            message.append("In " + groupWithNMasks.getGroup().getDescription() + " values ");
+                            message.append("In " + groupWithNMasks.getDescription() + " values ");
 
                             String separator = "";
                             int temp = mask.get();
@@ -136,7 +136,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, mask)) {
+                            for (var cell : groupWithNMasks.cellsWithMask(state, candidates, mask)) {
                                 message.append(" " + cell);
                             }
 
@@ -145,7 +145,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, mask)) {
+                        for (var cell : groupWithNMasks.cellsWithMask(state, candidates, mask)) {
                             int maskToClear = candidates.get(cell).getMask().get() & ~groupWithNMasks.getMask().get();
                             if (maskToClear == 0)
                                 continue;
@@ -1075,10 +1075,6 @@ class MaskGroup extends AbstractList<Cell> {
         return mask;
     }
 
-    public CellGroup getGroup() {
-        return group;
-    }
-
     public String getDescription() {
         return group.getDescription();
     }
@@ -1091,6 +1087,10 @@ class MaskGroup extends AbstractList<Cell> {
     @Override
     public int size() {
         return group.size();
+    }
+
+    public List<Cell> cellsWithMask(State state, Candidates candidates, Mask mask) {
+        return group.cellsWithMask(state, candidates, mask);
     }
 }
 
