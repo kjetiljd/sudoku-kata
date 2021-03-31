@@ -59,9 +59,9 @@ public class Program {
                 }
 
 
-                //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
                 if (!changeMade) {
 
+                    //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
                     var twoDigitGroups =
                             candidates.twoDigitMasks().stream()
                                     .map(twoDigitMask ->
@@ -133,8 +133,8 @@ public class Program {
                             }
                         }
                     }
+                    //endregion
                 }
-                //endregion
 
                 //region Try to find groups of digits of size N which only appear in N cells within row/column/block
                 // When a set of N digits only appears in N cells within row/column/block, then no other digit can appear in the same set of cells
