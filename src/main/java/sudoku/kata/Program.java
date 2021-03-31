@@ -231,9 +231,10 @@ public class Program {
                         int mask = (int) groupWithNMasks.get("Mask");
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
-                                .anyMatch(cell ->
-                                        (isCandidateDigit(candidates, mask, cell)) &&
-                                                (isCandidateDigit(candidates, ~mask, cell)))) {
+                                .anyMatch(cell -> {
+                                    return (isCandidateDigit(candidates, mask, cell)) &&
+                                            hasOtherCandidateDigitsThan(candidates, mask, cell);
+                                })) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
 
@@ -527,6 +528,10 @@ public class Program {
                 printState(state);
             }
         }
+    }
+
+    private static boolean hasOtherCandidateDigitsThan(Candidates candidates, int mask, Cell cell) {
+        return (candidates.get(cell).getMask().get() & ~mask) != 0;
     }
 
     private static boolean isCandidateDigit(Candidates candidates, int mask, Cell rowCell) {
