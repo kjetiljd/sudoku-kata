@@ -94,11 +94,9 @@ public class Program {
 
                             if (!cells.isEmpty()) {
                                 List<Integer> digits = twoDigitGroup.getMask().digits();
-                                int lower = digits.get(0);
-                                int upper = digits.get(1);
 
                                 System.out.println(
-                                        "Values " + lower + " and " + upper + " in " + twoDigitGroup.getGroup().getDescription() +
+                                        "Values " + digits.get(0) + " and " + digits.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
                                                 " are in cells " + maskCells.get(0) +
                                                 " and " + maskCells.get(1) + ".");
 
