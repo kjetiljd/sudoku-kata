@@ -153,8 +153,8 @@ public class Program {
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state.get(cell) == 0) &&
-                                                                    (candidates.get(cell).matchesMask(mask)) &&
-                                                                    (candidates.get(cell).matchesMask(~mask)))
+                                                                    (candidates.get(cell).matchesMask(new Mask(mask))) &&
+                                                                    (candidates.get(cell).matchesMask(new Mask(~mask))))
                                                             .count()))
                                             .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == new Mask((Integer) group.get("Mask")).candidatesCount())
                                             .collect(toList()))
@@ -167,8 +167,8 @@ public class Program {
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell -> {
-                                    return (candidates.get(cell).matchesMask(mask)) &&
-                                            candidates.get(cell).matchesMask(~mask);
+                                    return (candidates.get(cell).matchesMask(new Mask(mask))) &&
+                                            candidates.get(cell).matchesMask(new Mask(~mask));
                                 })) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
@@ -918,12 +918,12 @@ class Candidate {
         return getMask().singleDigit();
     }
 
-    boolean matchesMask(int mask) {
-        return (getMask().get() & mask) != 0;
+    boolean matchesMask(Mask other) {
+        return getMask().matches(other);
     }
 
     boolean hasCandidateDigit(int digit) {
-        return matchesMask(Masks.maskForDigit(digit));
+        return matchesMask(new Mask(Masks.maskForDigit(digit)));
     }
 
     void setNoCandidates() {
@@ -985,6 +985,10 @@ class Mask {
             singleBitMaskToDigit.put(1 << i, i + 1);
 
         return singleBitMaskToDigit;
+    }
+
+    boolean matches(Mask other) {
+        return (get() & other.get()) != 0;
     }
 }
 
