@@ -195,9 +195,7 @@ public class Program {
                             Candidate candidateJ = candidates.get(j);
                             if (candidates.get(j).getMask().equals(candidateI.getMask())) {
 
-                                if (candidateI.getCell().getRow() == candidateJ.getCell().getRow()
-                                        || candidateI.getCell().getColumn() == candidateJ.getCell().getColumn()
-                                        || candidateI.getCell().getBlock() == candidateJ.getCell().getBlock()) {
+                                if (Cell.sharesACellGroup(candidateI.getCell(), candidateJ.getCell())) {
                                     candidateQueue1.add(candidateI);
                                     candidateQueue2.add(candidateJ);
                                     candidateDigit1.add(digits.get(0));
@@ -1205,6 +1203,12 @@ class Cell {
         int blockColIndex = (block % 3) * 3 + indexInBlock % 3;
         int index = blockRowIndex * 9 + blockColIndex;
         return Cell.of(index);
+    }
+
+    static boolean sharesACellGroup(Cell cell1, Cell cell2) {
+        return cell1.getRow() == cell2.getRow()
+                || cell1.getColumn() == cell2.getColumn()
+                || cell1.getBlock() == cell2.getBlock();
     }
 
     int getIndex() {
