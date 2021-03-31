@@ -42,7 +42,7 @@ public class Program {
 
                 if (change != null) {
                     state.set(change.getCell(), change.getDigit());
-                    candidates.get(change.getCell()).setNoCandidates();
+                    candidates.get(change.getCell()).setNoCandidates(); // stepChange - but not used?
                     System.out.println(change.getReason());
                     changeMade = true;
                 }
@@ -52,7 +52,7 @@ public class Program {
 
                     if (change != null) {
                         state.set(change.getCell(), change.getDigit());
-                        candidates.get(change.getCell()).setNoCandidates();
+                        candidates.get(change.getCell()).setNoCandidates(); // stepChange - but not used?
                         System.out.println(change.getReason());
                         changeMade = true;
                     }
@@ -613,7 +613,7 @@ public class Program {
 
                         var digitUsedMask =
                                 cell.allSiblings().stream()
-                                        .mapToInt(sibling -> Masks.maskForDigit((int) currentState.get(sibling)).get())
+                                        .mapToInt(sibling -> Masks.maskForDigit(currentState.get(sibling)).get())
                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                         boolean[] isDigitUsed = new boolean[9];
