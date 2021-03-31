@@ -568,7 +568,7 @@ public class Program {
         }
 
         Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
-        int digit = singleCandidate.getMask().singleDigit();
+        int digit = singleCandidate.singleDigit();
 
         String reason = String.format("%s can only contain %s.", singleCandidate.getCell(), digit);
 
@@ -911,6 +911,10 @@ class Candidate {
     Candidate(Cell cell, Mask mask) {
         this.cell = cell;
         this.mask = mask;
+    }
+
+    Integer singleDigit() {
+        return getMask().singleDigit();
     }
 
     boolean matchesMask(int mask) {
