@@ -53,7 +53,6 @@ public class Program {
                     List<CandidateChange> candidateChange = new ArrayList<>();
 
                     for (int digit = 1; digit <= 9; digit++) {
-                        int mask = Masks.maskForDigit(digit);
                         for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
                             int rowNumberCount = 0;
                             Cell rowCandidate = null;
@@ -69,17 +68,17 @@ public class Program {
                                 Cell colCell = Cell.of(indexInGroup, cellGroup);
                                 Cell blockCell = Cell.ofBlock(cellGroup, indexInGroup);
 
-                                if (candidates.get(rowCell).hasCandidateDigit(mask)) {
+                                if (candidates.get(rowCell).hasCandidateDigit(digit)) {
                                     rowNumberCount += 1;
                                     rowCandidate = rowCell;
                                 }
 
-                                if (candidates.get(colCell).hasCandidateDigit(mask)) {
+                                if (candidates.get(colCell).hasCandidateDigit(digit)) {
                                     colNumberCount += 1;
                                     colCandidate = colCell;
                                 }
 
-                                if (candidates.get(blockCell).hasCandidateDigit(mask)) {
+                                if (candidates.get(blockCell).hasCandidateDigit(digit)) {
                                     blockNumberCount += 1;
                                     blockCandidate = blockCell;
                                 }
@@ -218,8 +217,8 @@ public class Program {
                                                     "CleanableCellsCount",
                                                     (int) group.stream()
                                                             .filter(cell -> (state.get(cell) == 0) &&
-                                                                    (candidates.get(cell).hasCandidateDigit(mask)) &&
-                                                                    (candidates.get(cell).hasCandidateDigit(~mask)))
+                                                                    (candidates.get(cell).matchesMask(mask)) &&
+                                                                    (candidates.get(cell).matchesMask(~mask)))
                                                             .count()))
                                             .filter(group -> ((CellGroup) (group.get("Cells"))).cellsWithMask(mask, state, candidates).size() == new Mask((Integer) group.get("Mask")).candidatesCount())
                                             .collect(toList()))
@@ -232,8 +231,8 @@ public class Program {
 
                         if (((CellGroup) groupWithNMasks.get("Cells")).stream()
                                 .anyMatch(cell -> {
-                                    return (candidates.get(cell).hasCandidateDigit(mask)) &&
-                                            candidates.get(cell).hasOtherCandidateDigitsThan(mask);
+                                    return (candidates.get(cell).matchesMask(mask)) &&
+                                            candidates.get(cell).matchesMask(~mask);
                                 })) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + ((CellGroup) groupWithNMasks.get("Cells")).getDescription() + " values ");
@@ -913,12 +912,12 @@ class Candidate {
         this.mask = mask;
     }
 
-    boolean hasCandidateDigit(int mask) {
+    boolean matchesMask(int mask) {
         return (getMask().get() & mask) != 0;
     }
 
-    boolean hasOtherCandidateDigitsThan(int mask) {
-        return (getMask().get() & ~mask) != 0;
+    boolean hasCandidateDigit(int digit) {
+        return matchesMask(Masks.maskForDigit(digit));
     }
 
     void setNoCandidates() {
