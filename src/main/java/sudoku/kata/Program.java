@@ -973,6 +973,13 @@ class Mask {
         return mask;
     }
 
+    public List<Integer> digits() {
+        return IntStream.range(1, 10)
+                .filter(digit -> (mask & (1 << (digit - 1))) != 0)
+                .boxed()
+                .collect(toUnmodifiableList());
+    }
+
     private static Map<Integer, Integer> singleBitMaskToDigit() {
         Map<Integer, Integer> singleBitMaskToDigit = new HashMap<>();
         for (int i = 0; i < 9; i++)
