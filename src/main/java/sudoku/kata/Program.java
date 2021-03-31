@@ -54,36 +54,13 @@ public class Program {
 
                     for (int digit = 1; digit <= 9; digit++) {
                         for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
+
                             int rowNumberCount = 0;
                             Cell rowCandidate = null;
-
-                            int colNumberCount = 0;
-                            Cell colCandidate = null;
-
-                            int blockNumberCount = 0;
-                            Cell blockCandidate = null;
-
-                            for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
-                                Cell rowCell = Cell.of(cellGroup, indexInGroup);
-                                if (candidates.get(rowCell).hasCandidateDigit(digit)) {
+                            for (Cell cell : CellGroup.rows().get(cellGroup)) {
+                                if (candidates.get(cell).hasCandidateDigit(digit)) {
                                     rowNumberCount += 1;
-                                    rowCandidate = rowCell;
-                                }
-                            }
-
-                            for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
-                                Cell colCell = Cell.of(indexInGroup, cellGroup);
-                                if (candidates.get(colCell).hasCandidateDigit(digit)) {
-                                    colNumberCount += 1;
-                                    colCandidate = colCell;
-                                }
-                            }
-
-                            for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
-                                Cell blockCell = Cell.ofBlock(cellGroup, indexInGroup);
-                                if (candidates.get(blockCell).hasCandidateDigit(digit)) {
-                                    blockNumberCount += 1;
-                                    blockCandidate = blockCell;
+                                    rowCandidate = cell;
                                 }
                             }
 
@@ -92,9 +69,27 @@ public class Program {
                                 candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
                             }
 
+                            int colNumberCount = 0;
+                            Cell colCandidate = null;
+                            for (Cell cell : CellGroup.columns().get(cellGroup)) {
+                                if (candidates.get(cell).hasCandidateDigit(digit)) {
+                                    colNumberCount += 1;
+                                    colCandidate = cell;
+                                }
+                            }
+
                             if (colNumberCount == 1) {
                                 groupDescriptions.add("Column #" + (cellGroup + 1));
                                 candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
+                            }
+
+                            int blockNumberCount = 0;
+                            Cell blockCandidate = null;
+                            for (Cell cell : CellGroup.blocks().get(cellGroup)) {
+                                if (candidates.get(cell).hasCandidateDigit(digit)) {
+                                    blockNumberCount += 1;
+                                    blockCandidate = cell;
+                                }
                             }
 
                             if (blockNumberCount == 1) {
