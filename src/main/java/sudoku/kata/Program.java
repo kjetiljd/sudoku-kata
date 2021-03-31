@@ -65,19 +65,22 @@ public class Program {
 
                             for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
                                 Cell rowCell = Cell.of(cellGroup, indexInGroup);
-                                Cell colCell = Cell.of(indexInGroup, cellGroup);
-                                Cell blockCell = Cell.ofBlock(cellGroup, indexInGroup);
-
                                 if (candidates.get(rowCell).hasCandidateDigit(digit)) {
                                     rowNumberCount += 1;
                                     rowCandidate = rowCell;
                                 }
+                            }
 
+                            for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
+                                Cell colCell = Cell.of(indexInGroup, cellGroup);
                                 if (candidates.get(colCell).hasCandidateDigit(digit)) {
                                     colNumberCount += 1;
                                     colCandidate = colCell;
                                 }
+                            }
 
+                            for (int indexInGroup = 0; indexInGroup < 9; indexInGroup++) {
+                                Cell blockCell = Cell.ofBlock(cellGroup, indexInGroup);
                                 if (candidates.get(blockCell).hasCandidateDigit(digit)) {
                                     blockNumberCount += 1;
                                     blockCandidate = blockCell;
