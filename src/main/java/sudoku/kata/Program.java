@@ -1180,7 +1180,7 @@ class CellGroup extends AbstractList<Cell> {
 
     public List<Cell> cellsWithMask(int mask, State state, Candidates candidates) {
         return this.stream()
-                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().get() & mask) != 0)
+                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().matches(new Mask(mask))))
                 .collect(toList());
     }
 
