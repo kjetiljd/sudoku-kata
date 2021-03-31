@@ -82,7 +82,7 @@ public class Program {
                                     Candidate candidate = candidates.get(cell);
                                     Mask maskToRemove = candidate.getMask().overlappingWith(twoDigitGroup.getMask());
 
-                                    String valuesReport = String.join(", ", maskToRemove.digits().stream().map(Object::toString).collect(Collectors.toList()));
+                                    String valuesReport = maskToRemove.digits().stream().map(Object::toString).collect(joining(", "));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
                                     candidate.setMask(candidate.getMask().minus(twoDigitGroup.getMask()));
