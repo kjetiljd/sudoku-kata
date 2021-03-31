@@ -1062,7 +1062,7 @@ class Board {
     }
 }
 
-class MaskGroup {
+class MaskGroup extends AbstractList<Cell> {
     private final Mask mask;
     private final CellGroup group;
 
@@ -1077,6 +1077,20 @@ class MaskGroup {
 
     public CellGroup getGroup() {
         return group;
+    }
+
+    public String getDescription() {
+        return group.getDescription();
+    }
+
+    @Override
+    public Cell get(int index) {
+        return group.get(index);
+    }
+
+    @Override
+    public int size() {
+        return group.size();
     }
 }
 
