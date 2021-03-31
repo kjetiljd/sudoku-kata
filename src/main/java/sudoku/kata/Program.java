@@ -209,8 +209,8 @@ public class Program {
                 // At this point we have the lists with pairs of cells that might pick one of two digits each
                 // Now we have to check whether that is really true - does the board have two solutions?
 
-                List<Integer> stateIndex1 = new ArrayList<>();
-                List<Integer> stateIndex2 = new ArrayList<>();
+                List<Cell> cellList1 = new ArrayList<>();
+                List<Cell> cellList2 = new ArrayList<>();
                 List<Integer> value1 = new ArrayList<>();
                 List<Integer> value2 = new ArrayList<>();
 
@@ -352,18 +352,18 @@ public class Program {
                         } // while (command != "complete" && command != "fail")
 
                         if (command.equals("complete")) {   // Board was solved successfully even with two digits swapped
-                            stateIndex1.add(candidate1.getCell().getIndex());
-                            stateIndex2.add(candidate2.getCell().getIndex());
+                            cellList1.add(candidate1.getCell());
+                            cellList2.add(candidate2.getCell());
                             value1.add(digit1);
                             value2.add(digit2);
                         }
                     }
                 } // while (!candidateIndex1.empty())
 
-                if (!stateIndex1.isEmpty()) {
-                    int pos = rng.nextInt(stateIndex1.size());
-                    int index1 = stateIndex1.get(pos);
-                    int index2 = stateIndex2.get(pos);
+                if (!cellList1.isEmpty()) {
+                    int pos = rng.nextInt(cellList1.size());
+                    int index1 = cellList1.get(pos).getIndex();
+                    int index2 = cellList2.get(pos).getIndex();
                     int digit1 = value1.get(pos);
                     int digit2 = value2.get(pos);
                     int row1 = index1 / 9;
