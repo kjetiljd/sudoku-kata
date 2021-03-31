@@ -79,17 +79,17 @@ public class Program {
 
                     if (!twoDigitGroups.isEmpty()) {
                         for (var twoDigitGroup : twoDigitGroups) {
+                            var maskCells =
+                                    twoDigitGroup.getGroup().stream()
+                                            .filter(cell ->
+                                                    candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
+                                            .collect(toList());
+
                             var cells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
                                                     !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
                                                             && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get()) > 0)
-                                            .collect(toList());
-
-                            var maskCells =
-                                    twoDigitGroup.getGroup().stream()
-                                            .filter(cell ->
-                                                    candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
                                             .collect(toList());
 
                             if (!cells.isEmpty()) {
