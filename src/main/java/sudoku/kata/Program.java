@@ -1144,14 +1144,16 @@ class CellGroup extends AbstractList<Cell> {
         //endregion
     }
 
-    private static List<CellGroup> blockCellGroups() {
-        return Cell.cells().stream()
-                .collect(groupingBy(Cell::getBlock))
-                .entrySet().stream()
-                .map(group -> new CellGroup(
-                        format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
-                        group.getValue()))
-                .collect(toList());
+    private static List<CellGroup> rowCellGroups() {
+        var rowCellGroups =
+                Cell.cells().stream()
+                        .collect(groupingBy(Cell::getRow))
+                        .entrySet().stream()
+                        .map(group -> new CellGroup(
+                                "row #" + (group.getKey() + 1),
+                                group.getValue()))
+                        .collect(toList());
+        return rowCellGroups;
     }
 
     private static List<CellGroup> columnCellGroups() {
@@ -1166,16 +1168,14 @@ class CellGroup extends AbstractList<Cell> {
         return columnCellGroups;
     }
 
-    private static List<CellGroup> rowCellGroups() {
-        var rowCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getRow))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                "row #" + (group.getKey() + 1),
-                                group.getValue()))
-                        .collect(toList());
-        return rowCellGroups;
+    private static List<CellGroup> blockCellGroups() {
+        return Cell.cells().stream()
+                .collect(groupingBy(Cell::getBlock))
+                .entrySet().stream()
+                .map(group -> new CellGroup(
+                        format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
+                        group.getValue()))
+                .collect(toList());
     }
 
     public List<Cell> cellsWithMask(int mask, State state, Candidates candidates) {
