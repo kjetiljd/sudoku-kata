@@ -1085,6 +1085,18 @@ class CellGroup extends AbstractList<Cell> {
         this.cells = Collections.unmodifiableList(cells);
     }
 
+    public static List<CellGroup> rows() {
+        return rows;
+    }
+
+    public static List<CellGroup> columns() {
+        return columns;
+    }
+
+    public static List<CellGroup> blocks() {
+        return blocks;
+    }
+
     static List<CellGroup> all() {
         return all;
     }
