@@ -72,7 +72,7 @@ public class Program {
                                                     .filter(group -> group.stream()
                                                             .anyMatch(cell -> candidates.get(cell).getMask().get() != twoDigitMask.get()
                                                                     && (candidates.get(cell).getMask().get() & twoDigitMask.get()) > 0))
-                                                    .map(group -> new MaskGroup(twoDigitMask.get(), group))
+                                                    .map(group -> new MaskGroup(twoDigitMask, group))
                                                     .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -82,20 +82,20 @@ public class Program {
                             var cells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidates.get(cell).getMask().get() != twoDigitGroup.getMask()
-                                                            && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask()) > 0)
+                                                    candidates.get(cell).getMask().get() != twoDigitGroup.getMask().get()
+                                                            && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get()) > 0)
                                             .collect(toList());
 
                             var maskCells =
                                     twoDigitGroup.getGroup().stream()
                                             .filter(cell ->
-                                                    candidates.get(cell).getMask().get() == twoDigitGroup.getMask())
+                                                    candidates.get(cell).getMask().get() == twoDigitGroup.getMask().get())
                                             .collect(toList());
 
                             if (!cells.isEmpty()) {
                                 int upper = 0;
                                 int lower = 0;
-                                int temp = twoDigitGroup.getMask();
+                                int temp = twoDigitGroup.getMask().get();
 
                                 int value = 1;
                                 while (temp > 0) {
@@ -113,7 +113,7 @@ public class Program {
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cells) {
-                                    int maskToRemove = candidates.get(cell).getMask().get() & twoDigitGroup.getMask();
+                                    int maskToRemove = candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -127,7 +127,7 @@ public class Program {
                                     String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ~(int) twoDigitGroup.getMask()));
+                                    candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ~(int) twoDigitGroup.getMask().get()));
                                     stepChangeMade = true;
                                 }
                             }
@@ -1063,15 +1063,15 @@ class Board {
 }
 
 class MaskGroup {
-    private final int mask;
+    private final Mask mask;
     private final CellGroup group;
 
-    public MaskGroup(int mask, CellGroup group) {
+    public MaskGroup(Mask mask, CellGroup group) {
         this.mask = mask;
         this.group = group;
     }
 
-    public int getMask() {
+    public Mask getMask() {
         return mask;
     }
 
