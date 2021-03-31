@@ -147,7 +147,7 @@ public class Program {
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !new Mask(mask).matches(Masks.maskForDigit(state.get(cell)))))
                                             .map(group -> new MaskGroup(new Mask(mask), group))
-                                            .filter(group -> group.getGroup().cellsWithMask(mask, state, candidates).size() == group.getMask().candidatesCount())
+                                            .filter(group -> group.getGroup().cellsWithMask(state, candidates, new Mask(mask)).size() == group.getMask().candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -176,7 +176,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : groupWithNMasks.getGroup().cellsWithMask(mask, state, candidates)) {
+                            for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, new Mask(mask))) {
                                 message.append(" " + cell);
                             }
 
@@ -185,7 +185,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : groupWithNMasks.getGroup().cellsWithMask(mask, state, candidates)) {
+                        for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, new Mask(mask))) {
                             int maskToClear = candidates.get(cell).getMask().get() & ~groupWithNMasks.getMask().get();
                             if (maskToClear == 0)
                                 continue;
@@ -1169,9 +1169,9 @@ class CellGroup extends AbstractList<Cell> {
                 .collect(toList());
     }
 
-    public List<Cell> cellsWithMask(int mask, State state, Candidates candidates) {
+    public List<Cell> cellsWithMask(State state, Candidates candidates, Mask mask) {
         return this.stream()
-                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().matches(new Mask(mask))))
+                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().matches(mask)))
                 .collect(toList());
     }
 
