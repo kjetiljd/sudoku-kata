@@ -66,10 +66,10 @@ public class Program {
                             candidates.twoDigitMasks().stream()
                                     .map(twoDigitMask ->
                                             CellGroup.all().stream()
-                                                    .filter(group -> group.stream()
+                                                    .filter(cellGroup -> cellGroup.stream()
                                                             .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
                                                             .count() == 2)
-                                                    .filter(group -> group.stream()
+                                                    .filter(cellGroup -> cellGroup.stream()
                                                             .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
                                                                     && (candidates.get(cell).getMask().get() & twoDigitMask.get()) > 0))
                                                     .map(group -> new MaskGroup(twoDigitMask, group))
