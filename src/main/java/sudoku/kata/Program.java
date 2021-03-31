@@ -71,7 +71,7 @@ public class Program {
                                                             .count() == 2)
                                                     .filter(cellGroup -> cellGroup.stream()
                                                             .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
-                                                                    && (candidates.get(cell).getMask().get() & twoDigitMask.get()) > 0))
+                                                                    && (candidates.get(cell).getMask().overlappingWith(twoDigitMask).get()) > 0))
                                                     .map(group -> new MaskGroup(twoDigitMask, group))
                                                     .collect(toList()))
                                     .flatMap(Collection::stream)
@@ -87,9 +87,8 @@ public class Program {
 
                             var cellsToCleanUp =
                                     twoDigitGroup.getGroup().stream()
-                                            .filter(cell ->
-                                                    !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
-                                                            && (candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get()) > 0)
+                                            .filter(cell -> !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
+                                                    && (candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).get()) > 0)
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
@@ -101,7 +100,7 @@ public class Program {
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cellsToCleanUp) {
-                                    int maskToRemove = candidates.get(cell).getMask().get() & twoDigitGroup.getMask().get();
+                                    int maskToRemove = candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).get();
                                     List<Integer> valuesToRemove = new ArrayList<>();
                                     int curValue = 1;
                                     while (maskToRemove > 0) {
@@ -178,7 +177,7 @@ public class Program {
                             if (maskToClear == 0)
                                 continue;
 
-                            candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & groupWithNMasks.getMask().get()));
+                            candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().overlappingWith(groupWithNMasks.getMask()).get()));
                             stepChangeMade = true;
 
                             int valueToClear = 1;
@@ -945,6 +944,10 @@ class Mask {
         return maskToOnesCount;
     }
 
+    Mask overlappingWith(Mask other) {
+        return new Mask(get() & other.get());
+    }
+
     Mask inverted() {
         return new Mask(~get());
     }
@@ -977,7 +980,7 @@ class Mask {
     }
 
     boolean matches(Mask other) {
-        return (get() & other.get()) != 0;
+        return overlappingWith(other).get() != 0;
     }
 
     @Override
