@@ -38,7 +38,7 @@ public class Program {
             while (stepChangeMade) {
                 stepChangeMade = false;
 
-                Change change = pickCellWithOnlyOneCandidateLeft(rng, candidates);
+                Change change = pickACellWithOnlyOneCandidateDigitLeft(rng, candidates);
 
                 if (change != null) {
                     state.set(change.getCell(), change.getDigit());
@@ -557,7 +557,7 @@ public class Program {
         new Board(startingState).printBoard();
     }
 
-    private static Change pickCellWithOnlyOneCandidateLeft(Random rng, Candidates candidates) {
+    private static Change pickACellWithOnlyOneCandidateDigitLeft(Random rng, Candidates candidates) {
 
         List<Candidate> singleCandidates = candidates.stream()
                 .filter(candidate -> candidate.candidateDigitsCount() == 1)
