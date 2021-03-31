@@ -111,13 +111,14 @@ public class Program {
                         String description = groupDescriptions.get(index);
                         CandidateChange chosenChange = candidateChange.get(index);
 
-                        String message = description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".";
-
-                        state.set(chosenChange.getCell(), chosenChange.getDigit());
-                        candidates.get(chosenChange.getCell()).setNoCandidates();
+                        change = Change.changeWithReason(chosenChange,
+                                description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
+                    }
+                    if (change != null) {
+                        state.set(change.getCell(), change.getDigit());
+                        candidates.get(change.getCell()).setNoCandidates();
+                        System.out.println(change.getReason());
                         changeMade = true;
-
-                        System.out.println(message);
                     }
                 }
 
