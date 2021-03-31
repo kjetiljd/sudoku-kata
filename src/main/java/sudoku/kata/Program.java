@@ -106,7 +106,7 @@ public class Program {
                                     String valuesReport = String.join(", ", digitsToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ~(int) twoDigitGroup.getMask().get()));
+                                    candidates.get(cell).setMask(candidates.get(cell).getMask().overlappingWith(maskToRemove.inverted()));
                                     stepChangeMade = true;
                                 }
                             }
