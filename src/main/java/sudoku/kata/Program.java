@@ -211,8 +211,8 @@ public class Program {
 
                 List<Cell> cellList1 = new ArrayList<>();
                 List<Cell> cellList2 = new ArrayList<>();
-                List<Integer> value1 = new ArrayList<>();
-                List<Integer> value2 = new ArrayList<>();
+                List<Integer> digitList1 = new ArrayList<>();
+                List<Integer> digitList2 = new ArrayList<>();
 
                 while (!candidateQueue1.isEmpty()) {
                     Candidate candidate1 = candidateQueue1.remove();
@@ -354,8 +354,8 @@ public class Program {
                         if (command.equals("complete")) {   // Board was solved successfully even with two digits swapped
                             cellList1.add(candidate1.getCell());
                             cellList2.add(candidate2.getCell());
-                            value1.add(digit1);
-                            value2.add(digit2);
+                            digitList1.add(digit1);
+                            digitList2.add(digit2);
                         }
                     }
                 } // while (!candidateIndex1.empty())
@@ -382,7 +382,7 @@ public class Program {
                     candidates.get(cell2).setNoCandidates();
                     changeMade = true;
 
-                    System.out.println("Guessing that " + value1.get(pos) + " and " + value2.get(pos) + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(cell1) + "->" + cell1 + ", " + solutionState.get(cell2) + "->" + cell2 + ".");
+                    System.out.println("Guessing that " + digitList1.get(pos) + " and " + digitList2.get(pos) + " are arbitrary in " + description + " (multiple solutions): Pick " + solutionState.get(cell1) + "->" + cell1 + ", " + solutionState.get(cell2) + "->" + cell2 + ".");
                 }
             }
             //endregion
