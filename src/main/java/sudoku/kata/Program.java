@@ -181,39 +181,27 @@ public class Program {
                 // Try to see if there are pairs of values that can be exchanged arbitrarily
                 // This happens when board has more than one valid solution
 
-                Queue<Integer> candidateIndex1 = new LinkedList<>();
-                Queue<Integer> candidateIndex2 = new LinkedList<>();
+                Queue<Candidate> candidateQueue1 = new LinkedList<>();
+                Queue<Candidate> candidateQueue2 = new LinkedList<>();
                 Queue<Integer> candidateDigit1 = new LinkedList<>();
                 Queue<Integer> candidateDigit2 = new LinkedList<>();
 
-                for (int i = 0; i < candidates.size() - 1; i++) {
-                    if (candidates.get(i).getMask().candidatesCount() == 2) {
-                        int row = i / 9;
-                        int col = i % 9;
-                        int blockIndex = 3 * (row / 3) + col / 3;
+                for (Candidate candidateI : candidates) {
+                    if (candidateI.candidateDigitsCount() == 2) {
 
-                        int temp = candidates.get(i).getMask().get();
-                        int lower = 0;
-                        int upper = 0;
-                        for (int digit = 1; temp > 0; digit++) {
-                            if ((temp & 1) != 0) {
-                                lower = upper;
-                                upper = digit;
-                            }
-                            temp = temp >> 1;
-                        }
+                        var digits = candidateI.getMask().digits();
 
-                        for (int j = i + 1; j < candidates.size(); j++) {
-                            if (candidates.get(j).getMask().get() == candidates.get(i).getMask().get()) {
-                                int row1 = j / 9;
-                                int col1 = j % 9;
-                                int blockIndex1 = 3 * (row1 / 3) + col1 / 3;
+                        for (int j = candidates.indexOf(candidateI) + 1; j < candidates.size(); j++) {
+                            Candidate candidateJ = candidates.get(j);
+                            if (candidates.get(j).getMask().equals(candidateI.getMask())) {
 
-                                if (row == row1 || col == col1 || blockIndex == blockIndex1) {
-                                    candidateIndex1.add(i);
-                                    candidateIndex2.add(j);
-                                    candidateDigit1.add(lower);
-                                    candidateDigit2.add(upper);
+                                if (candidateI.getCell().getRow() == candidateJ.getCell().getRow()
+                                        || candidateI.getCell().getColumn() == candidateJ.getCell().getColumn()
+                                        || candidateI.getCell().getBlock() == candidateJ.getCell().getBlock()) {
+                                    candidateQueue1.add(candidateI);
+                                    candidateQueue2.add(candidateJ);
+                                    candidateDigit1.add(digits.get(0));
+                                    candidateDigit2.add(digits.get(1));
                                 }
                             }
                         }
@@ -228,21 +216,20 @@ public class Program {
                 List<Integer> value1 = new ArrayList<>();
                 List<Integer> value2 = new ArrayList<>();
 
-                while (!candidateIndex1.isEmpty()) {
-                    int index1 = candidateIndex1.remove();
-                    int index2 = candidateIndex2.remove();
+                while (!candidateQueue1.isEmpty()) {
+                    Candidate candidate1 = candidateQueue1.remove();
+                    Candidate candidate2 = candidateQueue2.remove();
                     int digit1 = candidateDigit1.remove();
                     int digit2 = candidateDigit2.remove();
 
-
                     State alternateState = state.copy();
 
-                    if (solutionState.get(index1) == digit1) {
-                        alternateState.set(index1, digit2);
-                        alternateState.set(index2, digit1);
+                    if (solutionState.get(candidate1.getCell().getIndex()) == digit1) {
+                        alternateState.set(candidate1.getCell().getIndex(), digit2);
+                        alternateState.set(candidate2.getCell().getIndex(), digit1);
                     } else {
-                        alternateState.set(index1, digit1);
-                        alternateState.set(index2, digit2);
+                        alternateState.set(candidate1.getCell().getIndex(), digit1);
+                        alternateState.set(candidate2.getCell().getIndex(), digit2);
                     }
 
                     {
@@ -367,8 +354,8 @@ public class Program {
                         } // while (command != "complete" && command != "fail")
 
                         if (command.equals("complete")) {   // Board was solved successfully even with two digits swapped
-                            stateIndex1.add(index1);
-                            stateIndex2.add(index2);
+                            stateIndex1.add(candidate1.getCell().getIndex());
+                            stateIndex2.add(candidate2.getCell().getIndex());
                             value1.add(digit1);
                             value2.add(digit2);
                         }
