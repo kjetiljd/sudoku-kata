@@ -1071,7 +1071,11 @@ class MaskGroup {
 }
 
 class CellGroup extends AbstractList<Cell> {
-    private static final List<CellGroup> cellGroups = buildCellGroups();
+    private static final List<CellGroup> rows = rowCellGroups();
+    private static final List<CellGroup> columns = columnCellGroups();
+    private static final List<CellGroup> blocks = blockCellGroups();
+
+    private static final List<CellGroup> all = buildCellGroups();
 
     private final String description;
     private final List<Cell> cells;
@@ -1082,7 +1086,7 @@ class CellGroup extends AbstractList<Cell> {
     }
 
     static List<CellGroup> all() {
-        return cellGroups;
+        return all;
     }
 
     public String getDescription() {
@@ -1101,15 +1105,23 @@ class CellGroup extends AbstractList<Cell> {
 
     private static List<CellGroup> buildCellGroups() {
         //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
-        var rowCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getRow))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                "row #" + (group.getKey() + 1),
-                                group.getValue()))
-                        .collect(toList());
+        return Collections.unmodifiableList(Stream.of(rows, columns, blocks)
+                .flatMap(Collection::stream)
+                .collect(toList()));
+        //endregion
+    }
 
+    private static List<CellGroup> blockCellGroups() {
+        return Cell.cells().stream()
+                .collect(groupingBy(Cell::getBlock))
+                .entrySet().stream()
+                .map(group -> new CellGroup(
+                        format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
+                        group.getValue()))
+                .collect(toList());
+    }
+
+    private static List<CellGroup> columnCellGroups() {
         var columnCellGroups =
                 Cell.cells().stream()
                         .collect(groupingBy(Cell::getColumn))
@@ -1118,23 +1130,19 @@ class CellGroup extends AbstractList<Cell> {
                                 "column #" + (group.getKey() + 1),
                                 group.getValue()))
                         .collect(toList());
+        return columnCellGroups;
+    }
 
-        var blockCellGroups =
+    private static List<CellGroup> rowCellGroups() {
+        var rowCellGroups =
                 Cell.cells().stream()
-                        .collect(groupingBy(Cell::getBlock))
+                        .collect(groupingBy(Cell::getRow))
                         .entrySet().stream()
                         .map(group -> new CellGroup(
-                                format("block (%s, %s)", group.getKey() / 3 + 1, group.getKey() % 3 + 1),
+                                "row #" + (group.getKey() + 1),
                                 group.getValue()))
                         .collect(toList());
-
-        var cellGroupsList =
-                Stream.of(rowCellGroups, columnCellGroups, blockCellGroups)
-                        .flatMap(Collection::stream)
-                        .collect(toList());
-
-        return Collections.unmodifiableList(cellGroupsList);
-        //endregion
+        return rowCellGroups;
     }
 
     public List<Cell> cellsWithMask(int mask, State state, Candidates candidates) {
