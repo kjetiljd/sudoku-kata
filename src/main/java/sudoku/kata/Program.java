@@ -924,7 +924,12 @@ public class Program {
     }
 
     public static void main(String[] args) throws IOException {
-        play();
+        int seed = new Random().nextInt();
+        System.out.println("Seed: " + seed);
+
+        play(new Random(seed));
+
+        System.out.println("Seed: " + seed);
 
         if (System.console() != null) {
             System.out.println();
