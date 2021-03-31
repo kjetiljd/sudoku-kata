@@ -36,7 +36,6 @@ public class Program {
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
-                stepChangeMade = false;
 
                 Change change = pickACellWithOnlyOneCandidateDigitLeft(rng, candidates);
 
@@ -51,6 +50,7 @@ public class Program {
                     changeMade = true;
                 }
 
+                stepChangeMade = false;
 
                 if (!changeMade) {
 
@@ -66,14 +66,13 @@ public class Program {
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
-                                List<Integer> digitsInGroup = twoDigitGroup.getMask().digits();
-
                                 var maskCells =
                                         twoDigitGroup.stream()
                                                 .filter(cell ->
                                                         candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
                                                 .collect(toList());
 
+                                List<Integer> digitsInGroup = twoDigitGroup.getMask().digits();
                                 System.out.println(
                                         "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getDescription() +
                                                 " are in cells " + maskCells.get(0) +
