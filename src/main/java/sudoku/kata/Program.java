@@ -92,27 +92,18 @@ public class Program {
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
-                                List<Integer> digitsToRemove = twoDigitGroup.getMask().digits();
+                                List<Integer> digitsInGroup = twoDigitGroup.getMask().digits();
 
                                 System.out.println(
-                                        "Values " + digitsToRemove.get(0) + " and " + digitsToRemove.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
+                                        "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getGroup().getDescription() +
                                                 " are in cells " + maskCells.get(0) +
                                                 " and " + maskCells.get(1) + ".");
 
                                 for (var cell : cellsToCleanUp) {
                                     Mask maskToRemove = candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask());
-                                    List<Integer> valuesToRemove = new ArrayList<>();
-                                    int curValue = 1;
-                                    int maskRemaining = maskToRemove.get();
-                                    while (maskRemaining > 0) {
-                                        if ((maskRemaining & 1) > 0) {
-                                            valuesToRemove.add(curValue);
-                                        }
-                                        maskRemaining = maskRemaining >> 1;
-                                        curValue += 1;
-                                    }
 
-                                    String valuesReport = String.join(", ", valuesToRemove.stream().map(Object::toString).collect(Collectors.toList()));
+                                    List<Integer> digitsToRemove = maskToRemove.digits();
+                                    String valuesReport = String.join(", ", digitsToRemove.stream().map(Object::toString).collect(Collectors.toList()));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
                                     candidates.get(cell).setMask(new Mask(candidates.get(cell).getMask().get() & ~(int) twoDigitGroup.getMask().get()));
