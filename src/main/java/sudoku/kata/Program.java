@@ -145,9 +145,9 @@ public class Program {
                     var groupsWithNMasks =
                             Masks.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
-                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !new Mask(mask).matches(Masks.maskForDigit(state.get(cell)))))
-                                            .map(group -> new MaskGroup(new Mask(mask), group))
-                                            .filter(group -> group.getGroup().cellsWithMask(state, candidates, new Mask(mask)).size() == group.getMask().candidatesCount())
+                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(Masks.maskForDigit(state.get(cell)))))
+                                            .map(group -> new MaskGroup(mask, group))
+                                            .filter(group -> group.getGroup().cellsWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -994,17 +994,17 @@ class Mask {
 }
 
 class Masks {
-    static final List<Integer> nMasks = nMasks();
+    static final List<Mask> nMasks = nMasks();
 
     static Mask maskForDigit(int digit) {
         return new Mask(1 << (digit - 1));
     }
 
     // masks that represent two or more candidates
-    private static List<Integer> nMasks() {
+    private static List<Mask> nMasks() {
         return Mask.maskToOnesCount.entrySet().stream()
                 .filter(tuple -> tuple.getValue() > 1)
-                .map(tuple -> tuple.getKey())
+                .map(tuple -> new Mask(tuple.getKey()))
                 .collect(toList());
     }
 }
