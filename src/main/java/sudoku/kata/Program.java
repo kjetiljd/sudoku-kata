@@ -40,22 +40,15 @@ public class Program {
 
                 Change change = pickACellWithOnlyOneCandidateDigitLeft(rng, candidates);
 
+                if (change == null) {
+                    change = pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(rng, candidates);
+                }
+
                 if (change != null) {
                     state.set(change.getCell(), change.getDigit());
                     candidates.get(change.getCell()).setNoCandidates(); // stepChange - but not used?
                     System.out.println(change.getReason());
                     changeMade = true;
-                }
-
-                if (!changeMade) {
-                    change = pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(rng, candidates);
-
-                    if (change != null) {
-                        state.set(change.getCell(), change.getDigit());
-                        candidates.get(change.getCell()).setNoCandidates(); // stepChange - but not used?
-                        System.out.println(change.getReason());
-                        changeMade = true;
-                    }
                 }
 
 
