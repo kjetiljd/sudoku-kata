@@ -136,11 +136,11 @@ public class Program {
                     //endregion
                 }
 
-                //region Try to find groups of digits of size N which only appear in N cells within row/column/block
-                // When a set of N digits only appears in N cells within row/column/block, then no other digit can appear in the same set of cells
-                // All other candidates can then be removed from those cells
 
                 if (!changeMade && !stepChangeMade) {
+                    //region Try to find groups of digits of size N which only appear in N cells within row/column/block
+                    // When a set of N digits only appears in N cells within row/column/block, then no other digit can appear in the same set of cells
+                    // All other candidates can then be removed from those cells
 
                     var groupsWithNMasks =
                             Masks.nMasks.stream()
@@ -154,17 +154,17 @@ public class Program {
 
 
                     for (var groupWithNMasks : groupsWithNMasks) {
-                        int mask = groupWithNMasks.getMask().get();
+                        Mask mask = groupWithNMasks.getMask();
 
                         if (groupWithNMasks.getGroup().stream()
                                 .anyMatch(cell ->
-                                        candidates.get(cell).matchesMask(new Mask(mask))
-                                                && candidates.get(cell).matchesMask(new Mask(~mask)))) {
+                                        candidates.get(cell).matchesMask(mask)
+                                                && candidates.get(cell).matchesMask(mask.inverted()))) {
                             StringBuilder message = new StringBuilder();
                             message.append("In " + groupWithNMasks.getGroup().getDescription() + " values ");
 
                             String separator = "";
-                            int temp = mask;
+                            int temp = mask.get();
                             int curValue = 1;
                             while (temp > 0) {
                                 if ((temp & 1) > 0) {
@@ -176,7 +176,7 @@ public class Program {
                             }
 
                             message.append(" appear only in cells");
-                            for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, new Mask(mask))) {
+                            for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, mask)) {
                                 message.append(" " + cell);
                             }
 
@@ -185,7 +185,7 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, new Mask(mask))) {
+                        for (var cell : groupWithNMasks.getGroup().cellsWithMask(state, candidates, mask)) {
                             int maskToClear = candidates.get(cell).getMask().get() & ~groupWithNMasks.getMask().get();
                             if (maskToClear == 0)
                                 continue;
@@ -211,9 +211,9 @@ public class Program {
                             System.out.println(message.toString());
                         }
                     }
+                    //endregion
                 }
 
-                //endregion
             }
             //region Final attempt - look if the board has multiple solutions
             if (!changeMade) {
@@ -955,6 +955,10 @@ class Mask {
             maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
         }
         return maskToOnesCount;
+    }
+
+    Mask inverted() {
+        return new Mask(~get());
     }
 
     Integer singleDigit() {
