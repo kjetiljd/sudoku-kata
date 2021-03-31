@@ -145,7 +145,7 @@ public class Program {
                     var groupsWithNMasks =
                             Masks.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
-                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || (mask & (Masks.maskForDigit(state.get(cell)).get())) == 0))
+                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !new Mask(mask).matches(Masks.maskForDigit(state.get(cell)))))
                                             .map(group -> Map.of(
                                                     "Mask", mask,
                                                     "Cells", group,
