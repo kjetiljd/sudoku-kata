@@ -137,25 +137,15 @@ public class Program {
                             if (maskToClear == 0)
                                 continue;
 
+                            String message =
+                                    new Mask(maskToClear).digits().stream()
+                                            .map(Object::toString)
+                                            .collect(joining(", ")) +
+                                            " cannot appear in cell " + cell + ".";
+                            System.out.println(message);
+
                             candidates.get(cell).setMask(candidates.get(cell).getMask().overlappingWith(groupWithNMasks.getMask()));
                             stepChangeMade = true;
-
-                            int valueToClear = 1;
-
-                            String separator = "";
-                            StringBuilder message = new StringBuilder();
-
-                            while (maskToClear > 0) {
-                                if ((maskToClear & 1) > 0) {
-                                    message.append(separator + valueToClear);
-                                    separator = ", ";
-                                }
-                                maskToClear = maskToClear >> 1;
-                                valueToClear += 1;
-                            }
-
-                            message.append(" cannot appear in cell " + cell + ".");
-                            System.out.println(message.toString());
                         }
                     }
                     //endregion
