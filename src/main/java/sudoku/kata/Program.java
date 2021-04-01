@@ -133,12 +133,12 @@ public class Program {
                         }
 
                         for (var cell : groupWithNMasks.cellsWithMask(state, candidates, mask)) {
-                            int maskToClear = candidates.get(cell).getMask().get() & ~groupWithNMasks.getMask().get();
-                            if (maskToClear == 0)
+                            Mask maskToClear = candidates.get(cell).getMask().minus(groupWithNMasks.getMask());
+                            if (maskToClear.candidatesCount() == 0)
                                 continue;
 
                             String message =
-                                    new Mask(maskToClear).digits().stream()
+                                    maskToClear.digits().stream()
                                             .map(Object::toString)
                                             .collect(joining(", ")) +
                                             " cannot appear in cell " + cell + ".";
