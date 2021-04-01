@@ -748,6 +748,29 @@ class Change {
     }
 }
 
+class CellState {
+    private final State state;
+    private final int stateIndex;
+
+    private CellState(State state, int stateIndex) {
+        this.state = state;
+        this.stateIndex = stateIndex;
+    }
+
+    Cell getCell() {
+        return Cell.of(stateIndex);
+    }
+
+    int getState() {
+        return state.get(stateIndex);
+    }
+
+    void setState(int value) {
+        state.set(stateIndex, value);
+    }
+
+}
+
 class State extends AbstractList<Integer> {
     private final int[] state;
 
