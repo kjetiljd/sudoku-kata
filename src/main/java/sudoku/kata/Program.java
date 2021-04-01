@@ -443,7 +443,7 @@ public class Program {
         State startingState = solutionState.copy();
 
         for (int i = 0; i < removedPos; i++) {
-            startingState.set(positions[i], 0);
+            startingState.set(Cell.of(positions[i]), 0);
         }
         return startingState;
     }
@@ -748,11 +748,30 @@ class Change {
     }
 }
 
+class FrozenCellState extends CellState {
+    private final int value;
+
+    FrozenCellState(State state, int stateIndex) {
+        super(state, stateIndex);
+        this.value = state.get(getCell());
+    }
+
+    @Override
+    int getState() {
+        return value;
+    }
+
+    @Override
+    void setState(int value) {
+        throw new UnsupportedOperationException("Cannot set state, as this one is frozen: " + this);
+    }
+}
+
 class CellState {
     private final State state;
     private final int stateIndex;
 
-    private CellState(State state, int stateIndex) {
+    CellState(State state, int stateIndex) {
         this.state = state;
         this.stateIndex = stateIndex;
     }
@@ -762,16 +781,20 @@ class CellState {
     }
 
     int getState() {
-        return state.get(stateIndex);
+        return state.get(stateIndex).getState();
     }
 
     void setState(int value) {
-        state.set(stateIndex, value);
+        state.set(getCell(), value);
+    }
+
+    FrozenCellState frozen() {
+        return new FrozenCellState(state, stateIndex);
     }
 
 }
 
-class State extends AbstractList<Integer> {
+class State extends AbstractList<CellState> {
     private final int[] state;
 
     State(int[] initialState) {
@@ -789,8 +812,8 @@ class State extends AbstractList<Integer> {
     }
 
     @Override
-    public Integer get(int index) {
-        return state[index];
+    public CellState get(int index) {
+        return new CellState(this, index);
     }
 
     public Integer get(Cell cell) {
@@ -798,9 +821,9 @@ class State extends AbstractList<Integer> {
     }
 
     @Override
-    public Integer set(int index, Integer value) {
-        var prev = state[index];
-        state[index] = value;
+    public CellState set(int index, CellState value) {
+        var prev = get(index).frozen();
+        state[index] = value.getState();
         return prev;
     }
 
