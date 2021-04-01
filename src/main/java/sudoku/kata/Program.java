@@ -105,35 +105,35 @@ public class Program {
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(Masks.maskForDigit(state.get(cell)))))
                                             .map(group -> new MaskGroup(mask, group))
-                                            .filter(group -> group.cellsWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
+                                            .filter(group -> group.candidatesWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
 
 
                     for (var groupWithNMasks : groupsWithNMasks) {
-                        Mask mask = groupWithNMasks.getMask();
+                        Mask nMask = groupWithNMasks.getMask();
 
                         if (groupWithNMasks.stream()
                                 .anyMatch(cell ->
-                                        candidates.get(cell).matchesMask(mask)
-                                                && candidates.get(cell).matchesMask(mask.inverted()))) {
+                                        candidates.get(cell).matchesMask(nMask)
+                                                && candidates.get(cell).matchesMask(nMask.inverted()))) {
 
                             StringBuilder message = new StringBuilder();
                             message.append("In " + groupWithNMasks.getDescription() + " values ");
-                            message.append(mask.digits().stream().map(Object::toString).collect(joining(", ")));
+                            message.append(nMask.digits().stream().map(Object::toString).collect(joining(", ")));
                             message.append(" appear only in cells");
                             groupWithNMasks
-                                    .cellsWithMask(state, candidates, mask)
-                                    .stream().map(cell -> " " + cell)
+                                    .candidatesWithMask(state, candidates, nMask)
+                                    .stream().map(candidate -> " " + candidate.getCell())
                                     .forEach(message::append);
                             message.append(" and other values cannot appear in those cells.");
 
                             System.out.println(message.toString());
                         }
 
-                        for (var cell : groupWithNMasks.cellsWithMask(state, candidates, mask)) {
-                            Mask maskToClear = candidates.get(cell).getMask().minus(groupWithNMasks.getMask());
+                        for (var candidate : groupWithNMasks.candidatesWithMask(state, candidates, nMask)) {
+                            Mask maskToClear = candidate.getMask().minus(nMask);
                             if (maskToClear.candidatesCount() == 0)
                                 continue;
 
@@ -141,10 +141,10 @@ public class Program {
                                     maskToClear.digits().stream()
                                             .map(Object::toString)
                                             .collect(joining(", ")) +
-                                            " cannot appear in cell " + cell + ".";
+                                            " cannot appear in cell " + candidate.getCell() + ".";
                             System.out.println(message);
 
-                            candidates.get(cell).setMask(candidates.get(cell).getMask().overlappingWith(groupWithNMasks.getMask()));
+                            candidate.setMask(candidate.getMask().overlappingWith(nMask));
                             stepChangeMade = true;
                         }
                     }
@@ -1098,8 +1098,8 @@ class MaskGroup extends AbstractList<Cell> {
         return group.size();
     }
 
-    public List<Cell> cellsWithMask(State state, Candidates candidates, Mask mask) {
-        return group.cellsWithMask(state, candidates, mask);
+    public List<Candidate> candidatesWithMask(State state, Candidates candidates, Mask mask) {
+        return group.candidatesWithMask(state, candidates, mask);
     }
 }
 
@@ -1190,9 +1190,10 @@ class CellGroup extends AbstractList<Cell> {
                 .collect(toList());
     }
 
-    public List<Cell> cellsWithMask(State state, Candidates candidates, Mask mask) {
+    public List<Candidate> candidatesWithMask(State state, Candidates candidates, Mask mask) {
         return this.stream()
                 .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().matches(mask)))
+                .map(cell -> candidates.get(cell))
                 .collect(toList());
     }
 
