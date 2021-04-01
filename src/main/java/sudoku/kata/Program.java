@@ -118,26 +118,15 @@ public class Program {
                                 .anyMatch(cell ->
                                         candidates.get(cell).matchesMask(mask)
                                                 && candidates.get(cell).matchesMask(mask.inverted()))) {
+
                             StringBuilder message = new StringBuilder();
                             message.append("In " + groupWithNMasks.getDescription() + " values ");
-
-                            String separator = "";
-                            int temp = mask.get();
-                            int curValue = 1;
-                            while (temp > 0) {
-                                if ((temp & 1) > 0) {
-                                    message.append(separator + curValue);
-                                    separator = ", ";
-                                }
-                                temp = temp >> 1;
-                                curValue += 1;
-                            }
-
+                            message.append(mask.digits().stream().map(Object::toString).collect(joining(", ")));
                             message.append(" appear only in cells");
-                            for (var cell : groupWithNMasks.cellsWithMask(state, candidates, mask)) {
-                                message.append(" " + cell);
-                            }
-
+                            groupWithNMasks
+                                    .cellsWithMask(state, candidates, mask)
+                                    .stream().map(cell -> " " + cell)
+                                    .forEach(message::append);
                             message.append(" and other values cannot appear in those cells.");
 
                             System.out.println(message.toString());
