@@ -665,14 +665,17 @@ public class Program {
                                         .filter(cellGroup -> cellGroup.stream()
                                                 .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
                                                 .count() == 2)
-                                        .filter(cellGroup -> cellGroup.stream()
-                                                .anyMatch(cell -> !candidates.get(cell).getMask().equals(twoDigitMask)
-                                                        && (candidates.get(cell).getMask().overlappingWith(twoDigitMask).get()) > 0))
                                         .map(group -> new MaskGroup(twoDigitMask, group))
                                         .collect(toList()))
                         .flatMap(Collection::stream)
                         .collect(toList());
-        return twoDigitGroups;
+        var twoDigitGroupsWithCellsThatCanBeCleaned =
+                twoDigitGroups.stream()
+                        .filter(maskGroup -> maskGroup.stream()
+                                .anyMatch(cell -> !candidates.get(cell).getMask().equals(maskGroup.getMask())
+                                        && (candidates.get(cell).getMask().overlappingWith(maskGroup.getMask()).get()) > 0))
+                        .collect(toList());
+        return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
 
 
