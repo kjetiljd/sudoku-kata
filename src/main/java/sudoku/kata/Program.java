@@ -1008,6 +1008,15 @@ class Masks {
 
 class Board {
 
+    static void print(State state) {
+        System.out.println(String.join(System.lineSeparator(), board(state.getState())));
+    }
+
+    static void printCode(State state) {
+        String code = Arrays.stream(state.getState()).mapToObj(Integer::toString).collect(Collectors.joining(""));
+        System.out.format("Code: %s", code).println();
+    }
+
     private static List<String> board(int[] state) {
         char[][] board = emptyBoard();
         for (int i = 0; i < state.length; i++) {
@@ -1044,15 +1053,6 @@ class Board {
                         middle.toCharArray(),
                         line.toCharArray()
                 };
-    }
-
-    static void printCode(State state) {
-        String code = Arrays.stream(state.getState()).mapToObj(Integer::toString).collect(Collectors.joining(""));
-        System.out.format("Code: %s", code).println();
-    }
-
-    static void print(State state) {
-        System.out.println(String.join(System.lineSeparator(), board(state.getState())));
     }
 }
 
