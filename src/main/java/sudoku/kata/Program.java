@@ -124,7 +124,7 @@ public class Program {
                             message.append(" appear only in cells");
                             groupWithNDigitsSets
                                     .candidatesWithDigitsSet(state, candidates, nDigitsSet)
-                                    .stream().map(candidate -> " " + candidate.getCell())
+                                    .stream().map(candidate -> " " + candidate)
                                     .forEach(message::append);
                             message.append(" and other values cannot appear in those cells.");
 
@@ -140,7 +140,7 @@ public class Program {
                                     digitsToClear.stream()
                                             .map(Object::toString)
                                             .collect(joining(", ")) +
-                                            " cannot appear in cell " + candidate.getCell() + ".";
+                                            " cannot appear in cell " + (Cell) candidate + ".";
                             System.out.println(message);
 
                             candidate.setDigits(candidate.getDigits().overlappingWith(nDigitsSet));
@@ -172,7 +172,7 @@ public class Program {
                         for (int j = candidates.indexOf(candidateI) + 1; j < candidates.size(); j++) {
                             Candidate candidateJ = candidates.get(j);
                             if (candidateJ.digits().equals(candidateI.digits())) {
-                                if (Cell.sharesACellGroup(candidateI.getCell(), candidateJ.getCell())) {
+                                if (Cell.sharesACellGroup(candidateI, candidateJ)) {
                                     candidateQueue1.add(candidateI);
                                     candidateQueue2.add(candidateJ);
                                     candidateDigit1.add(digits.get(0));
@@ -199,12 +199,12 @@ public class Program {
 
                     State alternateState = state.copy();
 
-                    if (solutionState.get(candidate1.getCell()) == digit1) {
-                        alternateState.set(candidate1.getCell(), digit2);
-                        alternateState.set(candidate2.getCell(), digit1);
+                    if (solutionState.get(candidate1) == digit1) {
+                        alternateState.set(candidate1, digit2);
+                        alternateState.set(candidate2, digit1);
                     } else {
-                        alternateState.set(candidate1.getCell(), digit1);
-                        alternateState.set(candidate2.getCell(), digit2);
+                        alternateState.set(candidate1, digit1);
+                        alternateState.set(candidate2, digit2);
                     }
 
                     {
@@ -325,8 +325,8 @@ public class Program {
                         } // while (command != "complete" && command != "fail")
 
                         if (command.equals(Command.COMPLETE)) {   // Board was solved successfully even with two digits swapped
-                            cellList1.add(candidate1.getCell());
-                            cellList2.add(candidate2.getCell());
+                            cellList1.add(candidate1);
+                            cellList2.add(candidate2);
                             digitList1.add(digit1);
                             digitList2.add(digit2);
                         }
@@ -563,9 +563,9 @@ public class Program {
         Candidate singleCandidate = singleCandidates.get(rng.nextInt(singleCandidates.size()));
         int digit = singleCandidate.singleDigit();
 
-        String reason = String.format("%s can only contain %s.", singleCandidate.getCell(), digit);
+        String reason = String.format("%s can only contain %s.", (Cell) singleCandidate, digit);
 
-        return Change.changeWithReason(new CandidateChange(singleCandidate.getCell(), digit), reason);
+        return Change.changeWithReason(new CandidateChange(singleCandidate, digit), reason);
     }
 
     private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
@@ -836,7 +836,7 @@ class Candidates extends AbstractList<Candidate> {
                     DigitsSet candidateDigitsSet = new DigitsSet(digitsUsed).inverted();
                     return new Candidate(cell, candidateDigitsSet);
                 }).collect(toMap(
-                        candidate -> candidate.getCell().getIndex(), Function.identity()
+                        candidate -> candidate.getIndex(), Function.identity()
                 ));
     }
 
@@ -887,10 +887,6 @@ class Candidate extends Cell {
 
     void setNoCandidates() {
         digits = new DigitsSet(List.of());
-    }
-
-    public Cell getCell() {
-        return this;
     }
 
     public DigitsSet getDigits() {
