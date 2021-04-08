@@ -61,7 +61,7 @@ public class Program {
                             var cellsToCleanUp =
                                     twoDigitGroup.stream()
                                             .filter(cell -> !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
-                                                    && (candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).get()) > 0)
+                                                    && (candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).digits().size()) > 0)
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
