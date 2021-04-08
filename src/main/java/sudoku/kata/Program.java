@@ -60,18 +60,18 @@ public class Program {
                         for (var twoDigitGroup : twoDigitGroups) {
                             var cellsToCleanUp =
                                     twoDigitGroup.stream()
-                                            .filter(cell -> !candidates.get(cell).getDigits().equals(twoDigitGroup.getDigitsSet())
-                                                    && (candidates.get(cell).getDigits().overlappingWith(twoDigitGroup.getDigitsSet()).size()) > 0)
+                                            .filter(cell -> !candidates.get(cell).getDigits().equals(twoDigitGroup.getDigits())
+                                                    && (candidates.get(cell).getDigits().overlappingWith(twoDigitGroup.getDigits()).size()) > 0)
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
                                 var maskCells =
                                         twoDigitGroup.stream()
                                                 .filter(cell ->
-                                                        candidates.get(cell).getDigits().equals(twoDigitGroup.getDigitsSet()))
+                                                        candidates.get(cell).getDigits().equals(twoDigitGroup.getDigits()))
                                                 .collect(toList());
 
-                                List<Integer> digitsInGroup = twoDigitGroup.getDigitsSet();
+                                List<Integer> digitsInGroup = twoDigitGroup.getDigits();
                                 System.out.println(
                                         "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getDescription() +
                                                 " are in cells " + maskCells.get(0) +
@@ -79,12 +79,12 @@ public class Program {
 
                                 for (var cell : cellsToCleanUp) {
                                     Candidate candidate = candidates.get(cell);
-                                    DigitsSet digitsToRemove = candidate.getDigits().overlappingWith(twoDigitGroup.getDigitsSet());
+                                    DigitsSet digitsToRemove = candidate.getDigits().overlappingWith(twoDigitGroup.getDigits());
 
                                     String valuesReport = digitsToRemove.stream().map(Object::toString).collect(joining(", "));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidate.setDigits(candidate.getDigits().minus(twoDigitGroup.getDigitsSet()));
+                                    candidate.setDigits(candidate.getDigits().minus(twoDigitGroup.getDigits()));
                                     stepChangeMade = true;
                                 }
                             }
@@ -104,14 +104,14 @@ public class Program {
                                     .map(digitsSet -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !digitsSet.matches(new DigitsSet(List.of(state.get(cell))))))
                                             .map(group -> new DigitsSetGroup(digitsSet, group))
-                                            .filter(group -> group.candidatesWithDigitsSet(state, candidates, digitsSet).size() == group.getDigitsSet().size())
+                                            .filter(group -> group.candidatesWithDigitsSet(state, candidates, digitsSet).size() == group.getDigits().size())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
 
 
                     for (var groupWithNDigitsSets : groupsWithNDigitsSets) {
-                        DigitsSet nDigitsSet = groupWithNDigitsSets.getDigitsSet();
+                        DigitsSet nDigitsSet = groupWithNDigitsSets.getDigits();
 
                         if (groupWithNDigitsSets.stream()
                                 .anyMatch(cell ->
@@ -649,8 +649,8 @@ public class Program {
         var twoDigitGroupsWithCellsThatCanBeCleaned =
                 twoDigitGroups.stream()
                         .filter(digitsSetGroup -> digitsSetGroup.stream()
-                                .anyMatch(cell -> !candidates.get(cell).getDigits().equals(digitsSetGroup.getDigitsSet())
-                                        && (candidates.get(cell).getDigits().overlappingWith(digitsSetGroup.getDigitsSet()).size()) > 0))
+                                .anyMatch(cell -> !candidates.get(cell).getDigits().equals(digitsSetGroup.getDigits())
+                                        && (candidates.get(cell).getDigits().overlappingWith(digitsSetGroup.getDigits()).size()) > 0))
                         .collect(toList());
         return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
@@ -1015,16 +1015,16 @@ class StatePrinter {
 }
 
 class DigitsSetGroup extends AbstractList<Cell> {
-    private final DigitsSet digitsSet;
+    private final DigitsSet digits;
     private final CellGroup group;
 
-    public DigitsSetGroup(DigitsSet digitsSet, CellGroup group) {
-        this.digitsSet = digitsSet;
+    public DigitsSetGroup(DigitsSet digits, CellGroup group) {
+        this.digits = digits;
         this.group = group;
     }
 
-    public DigitsSet getDigitsSet() {
-        return digitsSet;
+    public DigitsSet getDigits() {
+        return digits;
     }
 
     public String getDescription() {
