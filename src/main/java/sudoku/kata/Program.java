@@ -1015,15 +1015,14 @@ class StatePrinter {
     private static List<String> boardLines(State state) {
         char[][] board = emptyBoard();
         for (CellState cellState : state) {
-            int i = cellState.getCell().getIndex();
-            int tempRow = i / 9;
-            int tempCol = i % 9;
+            int tempRow = cellState.getCell().getRow();
+            int tempCol = cellState.getCell().getColumn();
             int rowToWrite = tempRow + tempRow / 3 + 1;
             int colToWrite = tempCol + tempCol / 3 + 1;
 
             board[rowToWrite][colToWrite] = '.';
-            if (state.getState()[i] > 0)
-                board[rowToWrite][colToWrite] = (char) ('0' + state.getState()[i]);
+            if (cellState.getState() > 0)
+                board[rowToWrite][colToWrite] = (char) ('0' + cellState.getState());
         }
 
         return Arrays.stream(board).map(String::new).collect(toList());
