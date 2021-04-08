@@ -104,7 +104,7 @@ public class Program {
                                     .map(digitsSet -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !digitsSet.matches(new DigitsSet(List.of(state.get(cell))))))
                                             .map(group -> new DigitsSetGroup(digitsSet, group))
-                                            .filter(group -> group.candidatesWithDigitsSet(state, candidates, digitsSet).size() == group.getDigitsSet().candidatesCount())
+                                            .filter(group -> group.candidatesWithDigitsSet(state, candidates, digitsSet).size() == group.getDigitsSet().size())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
@@ -133,7 +133,7 @@ public class Program {
 
                         for (var candidate : groupWithNDigitsSets.candidatesWithDigitsSet(state, candidates, nDigitsSet)) {
                             DigitsSet digitsToClear = candidate.getDigits().minus(nDigitsSet);
-                            if (digitsToClear.candidatesCount() == 0)
+                            if (digitsToClear.size() == 0)
                                 continue;
 
                             String message =
@@ -247,7 +247,7 @@ public class Program {
                                                 isDigitUsed[digit - 1] = true
                                         );
 
-                                        int candidatesCount = digitsUsedSet.inverted().candidatesCount();
+                                        int candidatesCount = digitsUsedSet.inverted().size();
 
                                         if (candidatesCount == 0) {
                                             containsUnsolvableCells = true;
@@ -650,7 +650,7 @@ public class Program {
                 twoDigitGroups.stream()
                         .filter(digitsSetGroup -> digitsSetGroup.stream()
                                 .anyMatch(cell -> !candidates.get(cell).getDigits().equals(digitsSetGroup.getDigitsSet())
-                                        && (candidates.get(cell).getDigits().overlappingWith(digitsSetGroup.getDigitsSet()).candidatesCount()) > 0))
+                                        && (candidates.get(cell).getDigits().overlappingWith(digitsSetGroup.getDigitsSet()).size()) > 0))
                         .collect(toList());
         return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
@@ -823,7 +823,7 @@ class Candidates extends AbstractList<Candidate> {
     List<DigitsSet> twoDigitDigitsSets() {
         return candidates.values().stream()
                 .map(Candidate::getDigits)
-                .filter(digitsSet -> digitsSet.candidatesCount() == 2)
+                .filter(digitsSet -> digitsSet.size() == 2)
                 .distinct()
                 .collect(toList());
     }
@@ -906,7 +906,7 @@ class Candidate {
     }
 
     int candidateDigitsCount() {
-        return getDigits().candidatesCount();
+        return getDigits().size();
     }
 }
 
@@ -931,7 +931,7 @@ class DigitsSet extends AbstractList<Integer> {
     private static List<DigitsSet> nDigitDigitsSets() {
         return IntStream.range(1, (1 << 9))
                 .mapToObj(i -> digitsSetFromIntMask(i))
-                .filter(digitsSet -> digitsSet.candidatesCount() > 1)
+                .filter(digitsSet -> digitsSet.size() > 1)
                 .collect(toList());
     }
 
@@ -951,10 +951,6 @@ class DigitsSet extends AbstractList<Integer> {
 
     Integer singleDigit() {
         return this.get(0);
-    }
-
-    int candidatesCount() {
-        return this.size();
     }
 
     boolean matches(DigitsSet other) {
