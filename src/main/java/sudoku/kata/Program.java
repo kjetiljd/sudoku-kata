@@ -17,7 +17,7 @@ public class Program {
     static void play(Random random) {
         //region Construct fully populated board
 
-        char[][] board = prepareEmptyBoard();
+        char[][] board = Board.prepareEmptyBoard();
 
         // Construct board to be solved
 
@@ -905,28 +905,6 @@ public class Program {
         }
     }
 
-    private static char[][] prepareEmptyBoard() {
-        String line = "+---+---+---+";
-        String middle = "|...|...|...|";
-        char[][] board = new char[][]
-                {
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray()
-                };
-        return board;
-    }
-
     public static void main(String[] args) throws IOException {
         play();
 
@@ -944,4 +922,27 @@ enum Command {
     COLLAPSE,
     COMPLETE,
     FAIL;
+}
+
+class Board {
+    static char[][] prepareEmptyBoard() {
+        String line = "+---+---+---+";
+        String middle = "|...|...|...|";
+        return new char[][]
+                {
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray()
+                };
+    }
 }
