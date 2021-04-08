@@ -239,10 +239,7 @@ public class Program {
                                 for (var cell : Cell.cells()) {
                                     if (currentState.get(cell) == 0) {
 
-                                        var digitUsedMask =
-                                                cell.allSiblings().stream()
-                                                        .mapToInt(sibling -> new Mask(List.of(currentState.get(sibling))).get())
-                                                        .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+                                        int digitUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings())).get();
 
                                         boolean[] isDigitUsed = new boolean[9];
 
@@ -370,6 +367,12 @@ public class Program {
         }
     }
 
+    static Set<Integer> digitsUsed(State currentState, List<Cell> cells) {
+        return cells.stream()
+                .map(sibling -> currentState.get(sibling))
+                .collect(Collectors.toSet());
+    }
+
     private static void printSolutionState(State solutionState) {
         System.out.println();
         System.out.println("Final look of the solved board:");
@@ -463,10 +466,7 @@ public class Program {
                 for (var cell : Cell.cells()) {
                     if (currentState.get(cell) == 0) {
 
-                        var digitUsedMask =
-                                cell.allSiblings().stream()
-                                        .mapToInt(sibling -> new Mask(List.of(currentState.get(sibling))).get())
-                                        .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+                        int digitUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings())).get();
 
                         boolean[] isDigitUsed = new boolean[9];
 
@@ -839,9 +839,7 @@ class Candidates extends AbstractList<Candidate> {
                         return new NoCandidate(Cell.of(i));
                     }
                     int collidingDigitsMask =
-                            Cell.of(i).allSiblings().stream()
-                                    .mapToInt(sibling -> new Mask(List.of(state.get(sibling))).get())
-                                    .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
+                            new Mask(Program.digitsUsed(state, Cell.of(i).allSiblings())).get();
                     return new Candidate(Cell.of(i), new Mask(allOnes & ~collidingDigitsMask));
                 }).collect(toMap(
                         candidate -> candidate.getCell().getIndex(), Function.identity()
@@ -924,7 +922,7 @@ class Mask {
         this.mask = mask;
     }
 
-    public Mask(List<Integer> possibleDigits) {
+    public Mask(Collection<Integer> possibleDigits) {
         int mask = 0;
         for (Integer digit : possibleDigits) {
             mask |= 1 << (digit - 1);
