@@ -565,7 +565,7 @@ public class Program {
 
         String reason = String.format("%s can only contain %s.", singleCandidate.getCell(), digit);
 
-        return Change.changeWithReason(CandidateChange.setDigit(singleCandidate.getCell(), digit), reason);
+        return Change.changeWithReason(new CandidateChange(singleCandidate.getCell(), digit), reason);
     }
 
     private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
@@ -587,7 +587,7 @@ public class Program {
 
                 if (rowNumberCount == 1) {
                     groupDescriptions.add("Row #" + (cellGroupIndex + 1));
-                    candidateChanges.add(CandidateChange.setDigit(rowCandidate, digit));
+                    candidateChanges.add(new CandidateChange(rowCandidate, digit));
                 }
 
                 int colNumberCount = 0;
@@ -601,7 +601,7 @@ public class Program {
 
                 if (colNumberCount == 1) {
                     groupDescriptions.add("Column #" + (cellGroupIndex + 1));
-                    candidateChanges.add(CandidateChange.setDigit(colCandidate, digit));
+                    candidateChanges.add(new CandidateChange(colCandidate, digit));
                 }
 
                 int blockNumberCount = 0;
@@ -618,7 +618,7 @@ public class Program {
                     int blockCol = cellGroupIndex % 3;
 
                     groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                    candidateChanges.add(CandidateChange.setDigit(blockCandidate, digit));
+                    candidateChanges.add(new CandidateChange(blockCandidate, digit));
                 }
             } // for (cellGroup = 0..8)
         } // for (digit = 1..9)
@@ -682,13 +682,9 @@ class CandidateChange {
     private final Cell cell;
     private final int digit;
 
-    private CandidateChange(Cell cell, int digit) {
+    CandidateChange(Cell cell, int digit) {
         this.cell = cell;
         this.digit = digit;
-    }
-
-    static CandidateChange setDigit(Cell cell, int digit) {
-        return new CandidateChange(cell, digit);
     }
 
     public Cell getCell() {
