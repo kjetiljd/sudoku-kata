@@ -939,19 +939,9 @@ public class Program {
 }
 
 enum Command {
-    EXPAND("expand"),
-    MOVE("move"),
-    COLLAPSE("collapse"),
-    COMPLETE("complete"),
-    FAIL("fail");
-
-    private String value;
-
-    public String getValue() {
-        return value;
-    }
-
-    Command(String value) {
-        this.value = value;
-    }
+    EXPAND,
+    MOVE,
+    COLLAPSE,
+    COMPLETE,
+    FAIL;
 }
