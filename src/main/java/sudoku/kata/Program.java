@@ -1134,12 +1134,11 @@ class CellGroup extends AbstractList<Cell> {
         return cells.size();
     }
 
+    // Builds a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
     private static List<CellGroup> buildCellGroups() {
-        //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
         return Collections.unmodifiableList(Stream.of(rows, columns, blocks)
                 .flatMap(Collection::stream)
                 .collect(toList()));
-        //endregion
     }
 
     private static List<CellGroup> rowCellGroups() {
