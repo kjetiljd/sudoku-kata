@@ -1009,28 +1009,29 @@ class Masks {
 class StatePrinter {
 
     static void printBoard(State state) {
-        System.out.println(String.join(System.lineSeparator(), board(state.getState())));
+        System.out.println(String.join(System.lineSeparator(), boardLines(state)));
     }
 
-    static void printCode(State state) {
-        String code = Arrays.stream(state.getState()).mapToObj(Integer::toString).collect(Collectors.joining(""));
-        System.out.format("Code: %s", code).println();
-    }
-
-    private static List<String> board(int[] state) {
+    private static List<String> boardLines(State state) {
+        int[] state1 = state.getState();
         char[][] board = emptyBoard();
-        for (int i = 0; i < state.length; i++) {
+        for (int i = 0; i < state1.length; i++) {
             int tempRow = i / 9;
             int tempCol = i % 9;
             int rowToWrite = tempRow + tempRow / 3 + 1;
             int colToWrite = tempCol + tempCol / 3 + 1;
 
             board[rowToWrite][colToWrite] = '.';
-            if (state[i] > 0)
-                board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
+            if (state1[i] > 0)
+                board[rowToWrite][colToWrite] = (char) ('0' + state1[i]);
         }
 
         return Arrays.stream(board).map(String::new).collect(toList());
+    }
+
+    static void printCode(State state) {
+        String code = Arrays.stream(state.getState()).mapToObj(Integer::toString).collect(Collectors.joining(""));
+        System.out.format("Code: %s", code).println();
     }
 
     // Prepare empty board
