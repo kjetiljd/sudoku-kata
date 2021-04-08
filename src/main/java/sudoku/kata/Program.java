@@ -1015,10 +1015,9 @@ class StatePrinter {
     private static List<String> boardLines(State state) {
         char[][] board = emptyBoard();
         for (CellState cellState : state) {
-            int tempRow = cellState.getCell().getRow();
-            int tempCol = cellState.getCell().getColumn();
-            int rowToWrite = tempRow + tempRow / 3 + 1;
-            int colToWrite = tempCol + tempCol / 3 + 1;
+            Cell cell = cellState.getCell();
+            int rowToWrite = cell.getRow() + cell.getRow() / 3 + 1;
+            int colToWrite = cell.getColumn() + cell.getColumn() / 3 + 1;
 
             board[rowToWrite][colToWrite] = '.';
             if (cellState.getState() > 0)
