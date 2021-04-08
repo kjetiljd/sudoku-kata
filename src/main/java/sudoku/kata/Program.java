@@ -54,24 +54,24 @@ public class Program {
                 if (!changeMade) {
 
                     //region Try to find pairs of digits in the same row/column/block and remove them from other colliding cells
-                    List<MaskGroup> twoDigitGroups = groupsWithPairsOfCellsWithSameTwoDigitCandidates(candidates);
+                    List<DigitsSetGroup> twoDigitGroups = groupsWithPairsOfCellsWithSameTwoDigitCandidates(candidates);
 
                     if (!twoDigitGroups.isEmpty()) {
                         for (var twoDigitGroup : twoDigitGroups) {
                             var cellsToCleanUp =
                                     twoDigitGroup.stream()
-                                            .filter(cell -> !candidates.get(cell).getMask().equals(twoDigitGroup.getMask())
-                                                    && (candidates.get(cell).getMask().overlappingWith(twoDigitGroup.getMask()).digits().size()) > 0)
+                                            .filter(cell -> !candidates.get(cell).getDigitsSet().equals(twoDigitGroup.getDigitsSet())
+                                                    && (candidates.get(cell).getDigitsSet().overlappingWith(twoDigitGroup.getDigitsSet()).digits().size()) > 0)
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
                                 var maskCells =
                                         twoDigitGroup.stream()
                                                 .filter(cell ->
-                                                        candidates.get(cell).getMask().equals(twoDigitGroup.getMask()))
+                                                        candidates.get(cell).getDigitsSet().equals(twoDigitGroup.getDigitsSet()))
                                                 .collect(toList());
 
-                                List<Integer> digitsInGroup = twoDigitGroup.getMask().digits();
+                                List<Integer> digitsInGroup = twoDigitGroup.getDigitsSet().digits();
                                 System.out.println(
                                         "Values " + digitsInGroup.get(0) + " and " + digitsInGroup.get(1) + " in " + twoDigitGroup.getDescription() +
                                                 " are in cells " + maskCells.get(0) +
@@ -79,12 +79,12 @@ public class Program {
 
                                 for (var cell : cellsToCleanUp) {
                                     Candidate candidate = candidates.get(cell);
-                                    Mask maskToRemove = candidate.getMask().overlappingWith(twoDigitGroup.getMask());
+                                    DigitsSet digitsToRemove = candidate.getDigitsSet().overlappingWith(twoDigitGroup.getDigitsSet());
 
-                                    String valuesReport = maskToRemove.digits().stream().map(Object::toString).collect(joining(", "));
+                                    String valuesReport = digitsToRemove.digits().stream().map(Object::toString).collect(joining(", "));
                                     System.out.println(valuesReport + " cannot appear in " + cell + ".");
 
-                                    candidate.setMask(candidate.getMask().minus(twoDigitGroup.getMask()));
+                                    candidate.setDigitsSet(candidate.getDigitsSet().minus(twoDigitGroup.getDigitsSet()));
                                     stepChangeMade = true;
                                 }
                             }
@@ -99,31 +99,31 @@ public class Program {
                     // When a set of N digits only appears in N cells within row/column/block, then no other digit can appear in the same set of cells
                     // All other candidates can then be removed from those cells
 
-                    var groupsWithNMasks =
-                            Mask.nMasks.stream()
-                                    .map(mask -> CellGroup.all().stream()
-                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(new Mask(List.of(state.get(cell))))))
-                                            .map(group -> new MaskGroup(mask, group))
-                                            .filter(group -> group.candidatesWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
+                    var groupsWithNDigitsSets =
+                            DigitsSet.nDigitsSet.stream()
+                                    .map(digitsSet -> CellGroup.all().stream()
+                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !digitsSet.matches(new DigitsSet(List.of(state.get(cell))))))
+                                            .map(group -> new DigitsSetGroup(digitsSet, group))
+                                            .filter(group -> group.candidatesWithDigitsSet(state, candidates, digitsSet).size() == group.getDigitsSet().candidatesCount())
                                             .collect(toList()))
                                     .flatMap(Collection::stream)
                                     .collect(toList());
 
 
-                    for (var groupWithNMasks : groupsWithNMasks) {
-                        Mask nMask = groupWithNMasks.getMask();
+                    for (var groupWithNDigitsSets : groupsWithNDigitsSets) {
+                        DigitsSet nDigitsSet = groupWithNDigitsSets.getDigitsSet();
 
-                        if (groupWithNMasks.stream()
+                        if (groupWithNDigitsSets.stream()
                                 .anyMatch(cell ->
-                                        candidates.get(cell).matchesMask(nMask)
-                                                && candidates.get(cell).matchesMask(nMask.inverted()))) {
+                                        candidates.get(cell).matchesDigitsSet(nDigitsSet)
+                                                && candidates.get(cell).matchesDigitsSet(nDigitsSet.inverted()))) {
 
                             StringBuilder message = new StringBuilder();
-                            message.append("In " + groupWithNMasks.getDescription() + " values ");
-                            message.append(nMask.digits().stream().map(Object::toString).collect(joining(", ")));
+                            message.append("In " + groupWithNDigitsSets.getDescription() + " values ");
+                            message.append(nDigitsSet.digits().stream().map(Object::toString).collect(joining(", ")));
                             message.append(" appear only in cells");
-                            groupWithNMasks
-                                    .candidatesWithMask(state, candidates, nMask)
+                            groupWithNDigitsSets
+                                    .candidatesWithDigitsSet(state, candidates, nDigitsSet)
                                     .stream().map(candidate -> " " + candidate.getCell())
                                     .forEach(message::append);
                             message.append(" and other values cannot appear in those cells.");
@@ -131,19 +131,19 @@ public class Program {
                             System.out.println(message.toString());
                         }
 
-                        for (var candidate : groupWithNMasks.candidatesWithMask(state, candidates, nMask)) {
-                            Mask maskToClear = candidate.getMask().minus(nMask);
-                            if (maskToClear.candidatesCount() == 0)
+                        for (var candidate : groupWithNDigitsSets.candidatesWithDigitsSet(state, candidates, nDigitsSet)) {
+                            DigitsSet digitsToClear = candidate.getDigitsSet().minus(nDigitsSet);
+                            if (digitsToClear.candidatesCount() == 0)
                                 continue;
 
                             String message =
-                                    maskToClear.digits().stream()
+                                    digitsToClear.digits().stream()
                                             .map(Object::toString)
                                             .collect(joining(", ")) +
                                             " cannot appear in cell " + candidate.getCell() + ".";
                             System.out.println(message);
 
-                            candidate.setMask(candidate.getMask().overlappingWith(nMask));
+                            candidate.setDigitsSet(candidate.getDigitsSet().overlappingWith(nDigitsSet));
                             stepChangeMade = true;
                         }
                     }
@@ -239,15 +239,15 @@ public class Program {
                                 for (var cell : Cell.cells()) {
                                     if (currentState.get(cell) == 0) {
 
-                                        Mask digitsUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings()));
+                                        DigitsSet digitsUsedSet = new DigitsSet(digitsUsed(currentState, cell.allSiblings()));
 
                                         boolean[] isDigitUsed = new boolean[9];
 
-                                        digitsUsedMask.digits().forEach(digit ->
+                                        digitsUsedSet.digits().forEach(digit ->
                                                 isDigitUsed[digit - 1] = true
                                         );
 
-                                        int candidatesCount = digitsUsedMask.inverted().candidatesCount();
+                                        int candidatesCount = digitsUsedSet.inverted().candidatesCount();
 
                                         if (candidatesCount == 0) {
                                             containsUnsolvableCells = true;
@@ -466,11 +466,11 @@ public class Program {
                 for (var cell : Cell.cells()) {
                     if (currentState.get(cell) == 0) {
 
-                        Mask digitsUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings()));
+                        DigitsSet digitsUsedSet = new DigitsSet(digitsUsed(currentState, cell.allSiblings()));
 
                         boolean[] isDigitUsed = new boolean[9];
 
-                        digitsUsedMask.digits().forEach(digit ->
+                        digitsUsedSet.digits().forEach(digit ->
                                 isDigitUsed[digit - 1] = true
                         );
 
@@ -634,23 +634,23 @@ public class Program {
         //endregion
     }
 
-    private static List<MaskGroup> groupsWithPairsOfCellsWithSameTwoDigitCandidates(Candidates candidates) {
+    private static List<DigitsSetGroup> groupsWithPairsOfCellsWithSameTwoDigitCandidates(Candidates candidates) {
         var twoDigitGroups =
-                candidates.twoDigitMasks().stream()
-                        .map(twoDigitMask ->
+                candidates.twoDigitDigitsSets().stream()
+                        .map(twoDigitDigitsSet ->
                                 CellGroup.all().stream()
                                         .filter(cellGroup -> cellGroup.stream()
-                                                .filter(cell -> candidates.get(cell).getMask().equals(twoDigitMask))
+                                                .filter(cell -> candidates.get(cell).getDigitsSet().equals(twoDigitDigitsSet))
                                                 .count() == 2)
-                                        .map(group -> new MaskGroup(twoDigitMask, group))
+                                        .map(group -> new DigitsSetGroup(twoDigitDigitsSet, group))
                                         .collect(toList()))
                         .flatMap(Collection::stream)
                         .collect(toList());
         var twoDigitGroupsWithCellsThatCanBeCleaned =
                 twoDigitGroups.stream()
-                        .filter(maskGroup -> maskGroup.stream()
-                                .anyMatch(cell -> !candidates.get(cell).getMask().equals(maskGroup.getMask())
-                                        && (candidates.get(cell).getMask().overlappingWith(maskGroup.getMask()).candidatesCount()) > 0))
+                        .filter(digitsSetGroup -> digitsSetGroup.stream()
+                                .anyMatch(cell -> !candidates.get(cell).getDigitsSet().equals(digitsSetGroup.getDigitsSet())
+                                        && (candidates.get(cell).getDigitsSet().overlappingWith(digitsSetGroup.getDigitsSet()).candidatesCount()) > 0))
                         .collect(toList());
         return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
@@ -824,10 +824,10 @@ class Candidates extends AbstractList<Candidate> {
         this.candidates = calculateFrom(state);
     }
 
-    List<Mask> twoDigitMasks() {
+    List<DigitsSet> twoDigitDigitsSets() {
         return candidates.values().stream()
-                .map(Candidate::getMask)
-                .filter(mask -> mask.candidatesCount() == 2)
+                .map(Candidate::getDigitsSet)
+                .filter(digitsSet -> digitsSet.candidatesCount() == 2)
                 .distinct()
                 .collect(toList());
     }
@@ -840,8 +840,8 @@ class Candidates extends AbstractList<Candidate> {
                         return new NoCandidate(cell);
                     }
                     Set<Integer> digitsUsed = Program.digitsUsed(state, cell.allSiblings());
-                    Mask candidatesMask = new Mask(digitsUsed).inverted();
-                    return new Candidate(cell, candidatesMask);
+                    DigitsSet candidateDigitsSet = new DigitsSet(digitsUsed).inverted();
+                    return new Candidate(cell, candidateDigitsSet);
                 }).collect(toMap(
                         candidate -> candidate.getCell().getIndex(), Function.identity()
                 ));
@@ -864,93 +864,93 @@ class Candidates extends AbstractList<Candidate> {
 
 class NoCandidate extends Candidate {
     NoCandidate(Cell cell) {
-        super(cell, new Mask(List.of()));
+        super(cell, new DigitsSet(List.of()));
     }
 }
 
 class Candidate {
     private final Cell cell;
-    private Mask mask;
+    private DigitsSet digitsSet;
 
-    Candidate(Cell cell, Mask mask) {
+    Candidate(Cell cell, DigitsSet digitsSet) {
         this.cell = cell;
-        this.mask = mask;
+        this.digitsSet = digitsSet;
     }
 
     List<Integer> digits() {
-        return getMask().digits();
+        return getDigitsSet().digits();
     }
 
     Integer singleDigit() {
-        return getMask().singleDigit();
+        return getDigitsSet().singleDigit();
     }
 
-    boolean matchesMask(Mask other) {
-        return getMask().matches(other);
+    boolean matchesDigitsSet(DigitsSet other) {
+        return getDigitsSet().matches(other);
     }
 
     boolean hasCandidateDigit(int digit) {
-        return matchesMask(new Mask(List.of(digit)));
+        return matchesDigitsSet(new DigitsSet(List.of(digit)));
     }
 
     void setNoCandidates() {
-        mask = new Mask(List.of());
+        digitsSet = new DigitsSet(List.of());
     }
 
     public Cell getCell() {
         return cell;
     }
 
-    public Mask getMask() {
-        return mask;
+    public DigitsSet getDigitsSet() {
+        return digitsSet;
     }
 
-    public void setMask(Mask mask) {
-        this.mask = mask;
+    public void setDigitsSet(DigitsSet digitsSet) {
+        this.digitsSet = digitsSet;
     }
 
     int candidateDigitsCount() {
-        return getMask().candidatesCount();
+        return getDigitsSet().candidatesCount();
     }
 }
 
-class Mask {
-    static final List<Mask> nMasks = nMasks();
-    private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+class DigitsSet {
+    static final List<DigitsSet> nDigitsSet = nDigitsSet();
+    private static final DigitsSet allDigits = new DigitsSet(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     private final List<Integer> digits;
 
-    private Mask(int mask) {
+    private DigitsSet(int mask) {
         this.digits = IntStream.range(1, 10).filter(i -> (mask & (1 << (i - 1))) != 0).boxed().sorted().collect(toList());;
     }
 
-    public Mask(Collection<Integer> possibleDigits) {
+    public DigitsSet(Collection<Integer> possibleDigits) {
         this.digits = possibleDigits.stream().sorted().collect(toList());
     }
 
-    static Mask maskFromIntMask(int i) {
-        return new Mask(i);
+    static DigitsSet digitsSetFromIntMask(int i) {
+        return new DigitsSet(i);
     }
 
     // masks that represent two or more candidates
-    private static List<Mask> nMasks() {
+    private static List<DigitsSet> nDigitsSet() {
         return IntStream.range(1, (1 << 9))
-                .mapToObj(i -> maskFromIntMask(i))
-                .filter(mask -> mask.candidatesCount() > 1)
+                .mapToObj(i -> digitsSetFromIntMask(i))
+                .filter(digitsSet -> digitsSet.candidatesCount() > 1)
                 .collect(toList());
     }
 
-    Mask inverted() {
-        return new Mask(allDigits.digits().stream()
+    DigitsSet inverted() {
+        return new DigitsSet(allDigits.digits().stream()
                 .filter(digit -> !digits().contains(digit))
                 .collect(Collectors.toSet()));
     }
 
-    Mask minus(Mask other) {
+    DigitsSet minus(DigitsSet other) {
         return overlappingWith(other.inverted());
     }
 
-    Mask overlappingWith(Mask other) {
-        return new Mask(this.digits().stream().filter(it -> other.digits().contains(it)).collect(toSet()));
+    DigitsSet overlappingWith(DigitsSet other) {
+        return new DigitsSet(this.digits().stream().filter(it -> other.digits().contains(it)).collect(toSet()));
     }
 
     Integer singleDigit() {
@@ -965,15 +965,15 @@ class Mask {
         return this.digits;
     }
 
-    boolean matches(Mask other) {
+    boolean matches(DigitsSet other) {
         return !overlappingWith(other).digits().isEmpty();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        if (digits.size() != ((Mask) o).digits.size()) return false;
-        return digits.containsAll(((Mask) o).digits);
+        if (digits.size() != ((DigitsSet) o).digits.size()) return false;
+        return digits.containsAll(((DigitsSet) o).digits);
     }
 
     @Override
@@ -1028,17 +1028,17 @@ class StatePrinter {
     }
 }
 
-class MaskGroup extends AbstractList<Cell> {
-    private final Mask mask;
+class DigitsSetGroup extends AbstractList<Cell> {
+    private final DigitsSet digitsSet;
     private final CellGroup group;
 
-    public MaskGroup(Mask mask, CellGroup group) {
-        this.mask = mask;
+    public DigitsSetGroup(DigitsSet digitsSet, CellGroup group) {
+        this.digitsSet = digitsSet;
         this.group = group;
     }
 
-    public Mask getMask() {
-        return mask;
+    public DigitsSet getDigitsSet() {
+        return digitsSet;
     }
 
     public String getDescription() {
@@ -1055,8 +1055,8 @@ class MaskGroup extends AbstractList<Cell> {
         return group.size();
     }
 
-    public List<Candidate> candidatesWithMask(State state, Candidates candidates, Mask mask) {
-        return group.candidatesWithMask(state, candidates, mask);
+    public List<Candidate> candidatesWithDigitsSet(State state, Candidates candidates, DigitsSet digitsSet) {
+        return group.candidatesWithDigitsSet(state, candidates, digitsSet);
     }
 }
 
@@ -1142,9 +1142,9 @@ class CellGroup extends AbstractList<Cell> {
                 .collect(toList());
     }
 
-    public List<Candidate> candidatesWithMask(State state, Candidates candidates, Mask mask) {
+    public List<Candidate> candidatesWithDigitsSet(State state, Candidates candidates, DigitsSet digitsSet) {
         return this.stream()
-                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().matches(mask)))
+                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getDigitsSet().matches(digitsSet)))
                 .map(candidates::get)
                 .collect(toList());
     }
