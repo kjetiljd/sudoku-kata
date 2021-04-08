@@ -864,7 +864,7 @@ class Candidates extends AbstractList<Candidate> {
 
 class NoCandidate extends Candidate {
     NoCandidate(Cell cell) {
-        super(cell, new Mask(0));
+        super(cell, new Mask(List.of()));
     }
 }
 
@@ -919,7 +919,7 @@ class Mask {
     private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-    Mask(int mask) {
+      private Mask(int mask) {
         this.mask = mask;
     }
 
@@ -935,11 +935,13 @@ class Mask {
         Map<Integer, Integer> maskToOnesCount = new HashMap<>();
         maskToOnesCount.put(0, 0);
         for (int i = 1; i < (1 << 9); i++) {
-            int smaller = i >> 1;
-            int increment = i & 1;
-            maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
+            maskToOnesCount.put(i, maskFromIntMask(i).digits().size());
         }
         return maskToOnesCount;
+    }
+
+    static Mask maskFromIntMask(int i) {
+        return new Mask(i);
     }
 
     Mask inverted() {
@@ -975,14 +977,6 @@ class Mask {
                 .collect(toUnmodifiableList());
     }
 
-    private static Map<Integer, Integer> singleBitMaskToDigit() {
-        Map<Integer, Integer> singleBitMaskToDigit = new HashMap<>();
-        for (int i = 0; i < 9; i++)
-            singleBitMaskToDigit.put(1 << i, i + 1);
-
-        return singleBitMaskToDigit;
-    }
-
     boolean matches(Mask other) {
         return overlappingWith(other).get() != 0;
     }
@@ -1006,7 +1000,7 @@ class Masks {
     private static List<Mask> nMasks() {
         return Mask.maskToOnesCount.entrySet().stream()
                 .filter(tuple -> tuple.getValue() > 1)
-                .map(tuple -> new Mask(tuple.getKey()))
+                .map(tuple -> Mask.maskFromIntMask(tuple.getKey()))
                 .collect(toList());
     }
 }
