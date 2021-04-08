@@ -210,7 +210,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        System.out.println(String.join("\n", Arrays.stream(board).map(it -> new String(it)).collect(toList())));
+        System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
