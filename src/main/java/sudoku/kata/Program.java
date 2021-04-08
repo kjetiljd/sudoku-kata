@@ -1189,15 +1189,15 @@ class Cell {
         return 3 * getBlockRow() + getBlockCol();
     }
 
-    List<Cell> rowSiblings() {
+    private CellGroup rowSiblings() {
         return CellGroup.rows().get(getRow());
     }
 
-    List<Cell> columnSiblings() {
+    private CellGroup columnSiblings() {
         return CellGroup.columns().get(getColumn());
     }
 
-    List<Cell> blockSiblings() {
+    private CellGroup blockSiblings() {
         return CellGroup.blocks().get(getBlock());
     }
 
