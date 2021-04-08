@@ -105,7 +105,7 @@ public class Program {
                     var groupsWithNDigitsSets =
                             DigitsSet.nDigitsSet.stream()
                                     .map(digitsSet -> CellGroup.all().stream()
-                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !digitsSet.matches(new DigitsSet(List.of(state.get(cell))))))
+                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !digitsSet.matches(DigitsSet.single(state.get(cell)))))
                                             .map(group -> new DigitsSetGroup(digitsSet, group))
                                             .filter(group -> group.candidatesWithDigitsSet(state, candidates, digitsSet).size() == group.getDigits().size())
                                             .collect(toList()))
@@ -892,7 +892,7 @@ class Candidate extends Cell {
     }
 
     boolean hasCandidateDigit(int digit) {
-        return matchesDigitsSet(new DigitsSet(List.of(digit)));
+        return matchesDigitsSet(DigitsSet.single(digit));
     }
 
     void setNoCandidates() {
@@ -935,6 +935,10 @@ class DigitsSet extends AbstractList<Integer> {
                 .mapToObj(i -> digitsSetFromIntMask(i))
                 .filter(digitsSet -> digitsSet.size() > 1)
                 .collect(toList());
+    }
+
+    static DigitsSet single(Integer digit) {
+        return new DigitsSet(List.of(digit));
     }
 
     DigitsSet inverted() {
