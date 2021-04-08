@@ -1000,7 +1000,7 @@ class StatePrinter {
     }
 
     static void printCode(State state) {
-        String code = Arrays.stream(state.getState()).mapToObj(Integer::toString).collect(Collectors.joining(""));
+        String code = state.stream().map(CellState::getState).map(i -> Integer.toString(i)).collect(Collectors.joining(""));
         System.out.format("Code: %s", code).println();
     }
 
