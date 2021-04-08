@@ -162,7 +162,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
+        printBoard(board);
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -890,7 +890,7 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
+                printBoard(board);
                 ;
                 String code =
                         String.join("", Arrays.stream(board).map(it -> new String(it)).collect(toList()))
@@ -903,6 +903,10 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static void printBoard(char[][] board) {
+        System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
     }
 
     public static void main(String[] args) throws IOException {
