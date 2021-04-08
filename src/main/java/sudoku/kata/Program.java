@@ -1013,17 +1013,17 @@ class StatePrinter {
     }
 
     private static List<String> boardLines(State state) {
-        int[] state1 = state.getState();
         char[][] board = emptyBoard();
-        for (int i = 0; i < state1.length; i++) {
+        for (CellState cellState : state) {
+            int i = cellState.getCell().getIndex();
             int tempRow = i / 9;
             int tempCol = i % 9;
             int rowToWrite = tempRow + tempRow / 3 + 1;
             int colToWrite = tempCol + tempCol / 3 + 1;
 
             board[rowToWrite][colToWrite] = '.';
-            if (state1[i] > 0)
-                board[rowToWrite][colToWrite] = (char) ('0' + state1[i]);
+            if (state.getState()[i] > 0)
+                board[rowToWrite][colToWrite] = (char) ('0' + state.getState()[i]);
         }
 
         return Arrays.stream(board).map(String::new).collect(toList());
