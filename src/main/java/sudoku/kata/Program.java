@@ -311,7 +311,7 @@ public class Program {
                                     usedDigits[movedToDigit - 1] = true;
                                     currentState.set(cellToMove, movedToDigit);
 
-                                    if (Arrays.stream(currentState.getState()).anyMatch(digit -> digit == 0))
+                                    if (currentState.stream().anyMatch(cellState -> cellState.getState() == 0))
                                         command = Command.EXPAND;
                                     else
                                         command = Command.COMPLETE;
