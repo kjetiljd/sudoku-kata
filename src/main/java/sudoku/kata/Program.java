@@ -11,6 +11,12 @@ import static java.util.stream.Collectors.*;
 
 public class Program {
 
+    public static final String EXPAND = "expand";
+    public static final String COMPLETE = "complete";
+    public static final String FAIL = "fail";
+    public static final String MOVE = "move";
+    public static final String COLLAPSE = "collapse";
+
     static void play() {
         play(new Random());
     }
@@ -217,10 +223,10 @@ public class Program {
                         Stack<boolean[]> usedDigitsStack = new Stack<>();
                         Stack<Integer> lastDigitStack = new Stack<>();
 
-                        String command = Command.EXPAND;
+                        String command = EXPAND;
 
-                        while (!command.equals(Command.COMPLETE) && !command.equals(Command.FAIL)) {
-                            if (command.equals(Command.EXPAND)) {
+                        while (!command.equals(COMPLETE) && !command.equals(FAIL)) {
+                            if (command.equals(EXPAND)) {
                                 final State currentState;
 
                                 if (!stateStack.isEmpty()) {
@@ -283,7 +289,7 @@ public class Program {
                                 command = "move";
 
                             } // if (command == "expand")
-                            else if (command.equals(Command.COLLAPSE)) {
+                            else if (command.equals(COLLAPSE)) {
                                 stateStack.pop();
                                 cellStack.pop();
                                 usedDigitsStack.pop();
@@ -292,8 +298,8 @@ public class Program {
                                 if (!stateStack.empty())
                                     command = "move"; // Always try to move after collapse
                                 else
-                                    command = Command.FAIL;
-                            } else if (command.equals(Command.MOVE)) {
+                                    command = FAIL;
+                            } else if (command.equals(MOVE)) {
 
                                 Cell cellToMove = cellStack.peek();
                                 int digitToMove = lastDigitStack.pop();
@@ -316,19 +322,19 @@ public class Program {
                                     currentState.set(cellToMove, movedToDigit);
 
                                     if (Arrays.stream(currentState.getState()).anyMatch(digit -> digit == 0))
-                                        command = Command.EXPAND;
+                                        command = EXPAND;
                                     else
-                                        command = Command.COMPLETE;
+                                        command = COMPLETE;
                                 } else {
                                     // No viable candidate was found at current position - pop it in the next iteration
                                     lastDigitStack.push(0);
-                                    command = Command.COLLAPSE;
+                                    command = COLLAPSE;
                                 }
                             } // if (command == "move")
 
                         } // while (command != "complete" && command != "fail")
 
-                        if (command.equals(Command.COMPLETE)) {   // Board was solved successfully even with two digits swapped
+                        if (command.equals(COMPLETE)) {   // Board was solved successfully even with two digits swapped
                             cellList1.add(candidate1.getCell());
                             cellList2.add(candidate2.getCell());
                             digitList1.add(digit1);
@@ -444,9 +450,9 @@ public class Program {
         // - expand - finds next empty cell and puts new state on stacks
         // - move - finds next candidate number at current pos and applies it to current state
         // - collapse - pops current state from stack as it did not yield a solution
-        String command = Command.EXPAND;
+        String command = EXPAND;
         while (stateStack.size() <= 9 * 9) {
-            if (command.equals(Command.EXPAND)) {
+            if (command.equals(EXPAND)) {
                 final State currentState;
 
                 if (stateStack.isEmpty()) {
@@ -508,7 +514,7 @@ public class Program {
                 command = "move";
 
             } // if (command == "expand")
-            else if (command.equals(Command.COLLAPSE)) {
+            else if (command.equals(COLLAPSE)) {
                 stateStack.pop();
                 cellStack.pop();
                 usedDigitsStack.pop();
@@ -539,11 +545,11 @@ public class Program {
 
                     // Next possible digit was found at current position
                     // Next step will be to expand the state
-                    command = Command.EXPAND;
+                    command = EXPAND;
                 } else {
                     // No viable candidate was found at current position - pop it in the next iteration
                     lastDigitStack.push(0);
-                    command = Command.COLLAPSE;
+                    command = COLLAPSE;
                 }
             } // if (command == "move")
         }
@@ -1298,12 +1304,4 @@ class Cell {
     public String toString() {
         return format("(%s, %s)", getRow() + 1, getColumn() + 1);
     }
-}
-
-class Command {
-    public static final String EXPAND = "expand";
-    public static final String COMPLETE = "complete";
-    public static final String FAIL = "fail";
-    public static final String MOVE = "move";
-    public static final String COLLAPSE = "collapse";
 }
