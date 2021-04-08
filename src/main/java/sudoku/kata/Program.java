@@ -1002,10 +1002,6 @@ class Mask {
     }
 }
 
-class Masks {
-
-}
-
 class StatePrinter {
 
     static void printBoard(State state) {
