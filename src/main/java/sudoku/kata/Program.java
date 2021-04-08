@@ -1019,9 +1019,7 @@ class StatePrinter {
             int rowToWrite = cell.getRow() + cell.getRow() / 3 + 1;
             int colToWrite = cell.getColumn() + cell.getColumn() / 3 + 1;
 
-            board[rowToWrite][colToWrite] = '.';
-            if (cellState.getState() > 0)
-                board[rowToWrite][colToWrite] = (char) ('0' + cellState.getState());
+            board[rowToWrite][colToWrite] = cellState.getState() <= 0 ? '.' : (char) ('0' + cellState.getState());
         }
 
         return Arrays.stream(board).map(String::new).collect(toList());
