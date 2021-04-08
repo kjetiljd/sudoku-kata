@@ -343,7 +343,7 @@ public class Program {
                     Cell cell1 = cellList1.get(pos);
                     Cell cell2 = cellList2.get(pos);
 
-                    String description = "";
+                    String description;
 
                     if (cell1.getRow() == cell2.getRow()) {
                         description = "row #" + (cell1.getRow() + 1);
