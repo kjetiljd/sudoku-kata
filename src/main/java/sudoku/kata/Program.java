@@ -37,7 +37,6 @@ public class Program {
                 };
 
         // Construct board to be solved
-        Random rng = random;
 
         // Top element is current state of the board
         Stack<int[]> stateStack = new Stack<>();
@@ -104,7 +103,7 @@ public class Program {
                             break;
                         }
 
-                        int randomValue = rng.nextInt();
+                        int randomValue = random.nextInt();
 
                         if (bestCandidatesCount < 0 ||
                                 candidatesCount < bestCandidatesCount ||
@@ -198,7 +197,7 @@ public class Program {
         int removedPos = 0;
         while (removedPos < 9 * 9 - remainingDigits) {
             int curRemainingDigits = positions.length - removedPos;
-            int indexToPick = removedPos + rng.nextInt(curRemainingDigits);
+            int indexToPick = removedPos + random.nextInt(curRemainingDigits);
 
             int row = positions[indexToPick] / 9;
             int col = positions[indexToPick] % 9;
@@ -342,7 +341,7 @@ public class Program {
 
 
                 if (singleCandidateIndices.length > 0) {
-                    int pickSingleCandidateIndex = rng.nextInt(singleCandidateIndices.length);
+                    int pickSingleCandidateIndex = random.nextInt(singleCandidateIndices.length);
                     int singleCandidateIndex = singleCandidateIndices[pickSingleCandidateIndex];
                     int candidateMask = candidateMasks[singleCandidateIndex];
                     int candidate = singleBitToIndex.get(candidateMask);
@@ -433,7 +432,7 @@ public class Program {
                     } // for (digit = 1..9)
 
                     if (candidates.size() > 0) {
-                        int index = rng.nextInt(candidates.size());
+                        int index = random.nextInt(candidates.size());
                         String description = groupDescriptions.get(index);
                         int row = candidateRowIndices.get(index);
                         int col = candidateColIndices.get(index);
@@ -776,7 +775,7 @@ public class Program {
                                         break;
                                     }
 
-                                    int randomValue = rng.nextInt();
+                                    int randomValue = random.nextInt();
 
                                     if (bestCandidatesCount < 0 ||
                                             candidatesCount < bestCandidatesCount ||
@@ -864,7 +863,7 @@ public class Program {
                 } // while (!candidateIndex1.empty())
 
                 if (!stateIndex1.isEmpty()) {
-                    int pos = rng.nextInt(stateIndex1.size());
+                    int pos = random.nextInt(stateIndex1.size());
                     int index1 = stateIndex1.get(pos);
                     int index2 = stateIndex2.get(pos);
                     int digit1 = value1.get(pos);
