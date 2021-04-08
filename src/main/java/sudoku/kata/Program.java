@@ -571,7 +571,7 @@ public class Program {
     private static Change pickACellInAGroupThatOnlyCanHaveADigitInOnePlace(Random rng, Candidates candidates) {
         //region Try to find a number which can only appear in one place in a row/column/block
         List<String> groupDescriptions = new ArrayList<>();
-        List<CandidateChange> candidateChange = new ArrayList<>();
+        List<CandidateChange> candidateChanges = new ArrayList<>();
 
         for (int digit = 1; digit <= 9; digit++) {
             for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
@@ -587,7 +587,7 @@ public class Program {
 
                 if (rowNumberCount == 1) {
                     groupDescriptions.add("Row #" + (cellGroup + 1));
-                    candidateChange.add(CandidateChange.setDigit(rowCandidate, digit));
+                    candidateChanges.add(CandidateChange.setDigit(rowCandidate, digit));
                 }
 
                 int colNumberCount = 0;
@@ -601,7 +601,7 @@ public class Program {
 
                 if (colNumberCount == 1) {
                     groupDescriptions.add("Column #" + (cellGroup + 1));
-                    candidateChange.add(CandidateChange.setDigit(colCandidate, digit));
+                    candidateChanges.add(CandidateChange.setDigit(colCandidate, digit));
                 }
 
                 int blockNumberCount = 0;
@@ -618,15 +618,15 @@ public class Program {
                     int blockCol = cellGroup % 3;
 
                     groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
-                    candidateChange.add(CandidateChange.setDigit(blockCandidate, digit));
+                    candidateChanges.add(CandidateChange.setDigit(blockCandidate, digit));
                 }
             } // for (cellGroup = 0..8)
         } // for (digit = 1..9)
 
-        if (candidateChange.size() > 0) {
-            int index = rng.nextInt(candidateChange.size());
+        if (candidateChanges.size() > 0) {
+            int index = rng.nextInt(candidateChanges.size());
             String description = groupDescriptions.get(index);
-            CandidateChange chosenChange = candidateChange.get(index);
+            CandidateChange chosenChange = candidateChanges.get(index);
 
             return Change.changeWithReason(chosenChange,
                     description + " can contain " + chosenChange.getDigit() + " only at " + chosenChange.getCell() + ".");
