@@ -574,11 +574,11 @@ public class Program {
         List<CandidateChange> candidateChanges = new ArrayList<>();
 
         for (int digit = 1; digit <= 9; digit++) {
-            for (int cellGroup = 0; cellGroup < 9; cellGroup++) {
+            for (int cellGroupIndex = 0; cellGroupIndex < 9; cellGroupIndex++) {
 
                 int rowNumberCount = 0;
                 Cell rowCandidate = null;
-                for (Cell cell : CellGroup.rows().get(cellGroup)) {
+                for (Cell cell : CellGroup.rows().get(cellGroupIndex)) {
                     if (candidates.get(cell).hasCandidateDigit(digit)) {
                         rowNumberCount += 1;
                         rowCandidate = cell;
@@ -586,13 +586,13 @@ public class Program {
                 }
 
                 if (rowNumberCount == 1) {
-                    groupDescriptions.add("Row #" + (cellGroup + 1));
+                    groupDescriptions.add("Row #" + (cellGroupIndex + 1));
                     candidateChanges.add(CandidateChange.setDigit(rowCandidate, digit));
                 }
 
                 int colNumberCount = 0;
                 Cell colCandidate = null;
-                for (Cell cell : CellGroup.columns().get(cellGroup)) {
+                for (Cell cell : CellGroup.columns().get(cellGroupIndex)) {
                     if (candidates.get(cell).hasCandidateDigit(digit)) {
                         colNumberCount += 1;
                         colCandidate = cell;
@@ -600,13 +600,13 @@ public class Program {
                 }
 
                 if (colNumberCount == 1) {
-                    groupDescriptions.add("Column #" + (cellGroup + 1));
+                    groupDescriptions.add("Column #" + (cellGroupIndex + 1));
                     candidateChanges.add(CandidateChange.setDigit(colCandidate, digit));
                 }
 
                 int blockNumberCount = 0;
                 Cell blockCandidate = null;
-                for (Cell cell : CellGroup.blocks().get(cellGroup)) {
+                for (Cell cell : CellGroup.blocks().get(cellGroupIndex)) {
                     if (candidates.get(cell).hasCandidateDigit(digit)) {
                         blockNumberCount += 1;
                         blockCandidate = cell;
@@ -614,8 +614,8 @@ public class Program {
                 }
 
                 if (blockNumberCount == 1) {
-                    int blockRow = cellGroup / 3;
-                    int blockCol = cellGroup % 3;
+                    int blockRow = cellGroupIndex / 3;
+                    int blockCol = cellGroupIndex % 3;
 
                     groupDescriptions.add("Block (" + (blockRow + 1) + ", " + (blockCol + 1) + ")");
                     candidateChanges.add(CandidateChange.setDigit(blockCandidate, digit));
