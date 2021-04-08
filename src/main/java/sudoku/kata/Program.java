@@ -1305,5 +1305,5 @@ enum Command {
     COMPLETE,
     FAIL,
     MOVE,
-    COLLAPSE;
+    COLLAPSE
 }
