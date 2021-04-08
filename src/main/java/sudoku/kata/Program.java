@@ -664,7 +664,7 @@ public class Program {
         positions[pos2] = temp;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         int seed = new Random().nextInt();
         System.out.println("Seed: " + seed);
 
