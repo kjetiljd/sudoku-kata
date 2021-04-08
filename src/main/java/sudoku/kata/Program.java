@@ -919,10 +919,12 @@ enum Command {
 }
 
 class Board {
-    static char[][] prepareEmptyBoard() {
+    private final char[][] board;
+
+    private Board() {
         String line = "+---+---+---+";
         String middle = "|...|...|...|";
-        return new char[][]
+        this.board = new char[][]
                 {
                         line.toCharArray(),
                         middle.toCharArray(),
@@ -938,6 +940,10 @@ class Board {
                         middle.toCharArray(),
                         line.toCharArray()
                 };
+    }
+
+    static char[][] prepareEmptyBoard() {
+        return new Board().board;
     }
 
     static void printBoard(char[][] board) {
