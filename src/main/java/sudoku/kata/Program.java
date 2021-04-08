@@ -816,7 +816,7 @@ class State extends AbstractList<CellState> {
 }
 
 class Candidates extends AbstractList<Candidate> {
-    private static final int allOnes = (1 << 9) - 1;
+    static final int allOnes = (1 << 9) - 1;
 
     private final Map<Integer, Candidate> candidates;
 
@@ -835,12 +835,13 @@ class Candidates extends AbstractList<Candidate> {
     private static Map<Integer, Candidate> calculateFrom(State state) {
         return IntStream.range(0, state.size())
                 .mapToObj(i -> {
+                    Cell cell = Cell.of(i);
                     if (state.hasValue(i)) {
-                        return new NoCandidate(Cell.of(i));
+                        return new NoCandidate(cell);
                     }
-                    int collidingDigitsMask =
-                            new Mask(Program.digitsUsed(state, Cell.of(i).allSiblings())).get();
-                    return new Candidate(Cell.of(i), new Mask(allOnes & ~collidingDigitsMask));
+                    Set<Integer> digitsUsed = Program.digitsUsed(state, cell.allSiblings());
+                    Mask candidatesMask = new Mask(digitsUsed).inverted();
+                    return new Candidate(cell, candidatesMask);
                 }).collect(toMap(
                         candidate -> candidate.getCell().getIndex(), Function.identity()
                 ));
@@ -917,6 +918,7 @@ class Mask {
     private static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
     static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     private final int mask;
+    static final Mask allOnes = new Mask(Candidates.allOnes);
 
     Mask(int mask) {
         this.mask = mask;
@@ -941,16 +943,18 @@ class Mask {
         return maskToOnesCount;
     }
 
+    Mask inverted() {
+        return new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9).stream()
+                .filter(digit -> !digits().contains(digit))
+                .collect(Collectors.toSet()));
+    }
+
     Mask minus(Mask other) {
         return overlappingWith(other.inverted());
     }
 
     Mask overlappingWith(Mask other) {
         return new Mask(get() & other.get());
-    }
-
-    Mask inverted() {
-        return new Mask(~get());
     }
 
     Integer singleDigit() {
