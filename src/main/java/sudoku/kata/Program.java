@@ -239,16 +239,15 @@ public class Program {
                                 for (var cell : Cell.cells()) {
                                     if (currentState.get(cell) == 0) {
 
-                                        int digitUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings())).get();
+                                        Mask digitsUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings()));
 
                                         boolean[] isDigitUsed = new boolean[9];
 
-                                        for (int i = 0; i < 9; i++) {
-                                            isDigitUsed[i] = (digitUsedMask & new Mask(List.of(i + 1)).get()) != 0;
-                                        }
+                                        digitsUsedMask.digits().forEach(digit ->
+                                                isDigitUsed[digit - 1] = true
+                                        );
 
-                                        int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
-                                                .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
+                                        int candidatesCount = digitsUsedMask.inverted().candidatesCount();
 
                                         if (candidatesCount == 0) {
                                             containsUnsolvableCells = true;
@@ -466,13 +465,13 @@ public class Program {
                 for (var cell : Cell.cells()) {
                     if (currentState.get(cell) == 0) {
 
-                        int digitUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings())).get();
+                        Mask digitsUsedMask = new Mask(digitsUsed(currentState, cell.allSiblings()));
 
                         boolean[] isDigitUsed = new boolean[9];
 
-                        for (int i = 0; i < 9; i++) {
-                            isDigitUsed[i] = (digitUsedMask & new Mask(List.of(i + 1)).get()) != 0;
-                        }
+                        digitsUsedMask.digits().forEach(digit ->
+                                isDigitUsed[digit - 1] = true
+                        );
 
                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
                                 .mapToObj(idx -> isDigitUsed[idx]).filter(used -> !used).count());
@@ -650,7 +649,7 @@ public class Program {
                 twoDigitGroups.stream()
                         .filter(maskGroup -> maskGroup.stream()
                                 .anyMatch(cell -> !candidates.get(cell).getMask().equals(maskGroup.getMask())
-                                        && (candidates.get(cell).getMask().overlappingWith(maskGroup.getMask()).get()) > 0))
+                                        && (candidates.get(cell).getMask().overlappingWith(maskGroup.getMask()).candidatesCount()) > 0))
                         .collect(toList());
         return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
@@ -965,7 +964,7 @@ class Mask {
         return this.digits().size();
     }
 
-    public int get() {
+    private int get() {
         return mask;
     }
 
