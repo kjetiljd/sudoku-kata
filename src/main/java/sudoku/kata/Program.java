@@ -810,7 +810,6 @@ class State extends AbstractList<State.CellState> {
 }
 
 class Candidates extends AbstractList<Candidate> {
-    static final int allOnes = (1 << 9) - 1;
 
     private final Map<Integer, Candidate> candidates;
 
