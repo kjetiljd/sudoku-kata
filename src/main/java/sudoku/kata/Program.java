@@ -927,7 +927,7 @@ class Mask {
     public Mask(List<Integer> possibleDigits) {
         int mask = 0;
         for (Integer digit : possibleDigits) {
-            mask &= 1 << digit - 1;
+            mask &= 1 << (digit - 1);
         }
         this.mask = mask;
     }
