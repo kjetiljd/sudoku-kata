@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.*;
 
 public class Program {
@@ -103,7 +102,7 @@ public class Program {
                     var groupsWithNMasks =
                             Masks.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
-                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(Masks.maskForDigit(state.get(cell)))))
+                                            .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(Mask.maskForDigit(state.get(cell)))))
                                             .map(group -> new MaskGroup(mask, group))
                                             .filter(group -> group.candidatesWithMask(state, candidates, mask).size() == group.getMask().candidatesCount())
                                             .collect(toList()))
@@ -242,13 +241,13 @@ public class Program {
 
                                         var digitUsedMask =
                                                 cell.allSiblings().stream()
-                                                        .mapToInt(sibling -> Masks.maskForDigit(currentState.get(sibling)).get())
+                                                        .mapToInt(sibling -> Mask.maskForDigit(currentState.get(sibling)).get())
                                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                                         boolean[] isDigitUsed = new boolean[9];
 
                                         for (int i = 0; i < 9; i++) {
-                                            isDigitUsed[i] = (digitUsedMask & Masks.maskForDigit(i + 1).get()) != 0;
+                                            isDigitUsed[i] = (digitUsedMask & Mask.maskForDigit(i + 1).get()) != 0;
                                         }
 
                                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
@@ -466,13 +465,13 @@ public class Program {
 
                         var digitUsedMask =
                                 cell.allSiblings().stream()
-                                        .mapToInt(sibling -> Masks.maskForDigit(currentState.get(sibling)).get())
+                                        .mapToInt(sibling -> Mask.maskForDigit(currentState.get(sibling)).get())
                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                         boolean[] isDigitUsed = new boolean[9];
 
                         for (int i = 0; i < 9; i++) {
-                            isDigitUsed[i] = (digitUsedMask & Masks.maskForDigit(i + 1).get()) != 0;
+                            isDigitUsed[i] = (digitUsedMask & Mask.maskForDigit(i + 1).get()) != 0;
                         }
 
                         int candidatesCount = (int) (IntStream.range(0, isDigitUsed.length)
@@ -841,7 +840,7 @@ class Candidates extends AbstractList<Candidate> {
                     }
                     int collidingDigitsMask =
                             Cell.of(i).allSiblings().stream()
-                                    .mapToInt(sibling -> Masks.maskForDigit(state.get(sibling)).get())
+                                    .mapToInt(sibling -> Mask.maskForDigit(state.get(sibling)).get())
                                     .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
                     return new Candidate(Cell.of(i), new Mask(allOnes & ~collidingDigitsMask));
                 }).collect(toMap(
@@ -892,7 +891,7 @@ class Candidate {
     }
 
     boolean hasCandidateDigit(int digit) {
-        return matchesMask(Masks.maskForDigit(digit));
+        return matchesMask(Mask.maskForDigit(digit));
     }
 
     void setNoCandidates() {
@@ -942,6 +941,10 @@ class Mask {
             maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
         }
         return maskToOnesCount;
+    }
+
+    static Mask maskForDigit(int digit) {
+        return new Mask(1 << (digit - 1));
     }
 
     Mask minus(Mask other) {
@@ -1001,10 +1004,6 @@ class Mask {
 
 class Masks {
     static final List<Mask> nMasks = nMasks();
-
-    static Mask maskForDigit(int digit) {
-        return new Mask(1 << (digit - 1));
-    }
 
     // masks that represent two or more candidates
     private static List<Mask> nMasks() {
