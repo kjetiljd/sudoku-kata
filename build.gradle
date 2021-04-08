@@ -6,6 +6,16 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter:5.4.2')
+    testImplementation("com.github.stefanbirkner:system-lambda:1.2.0")
+    testImplementation("com.approvaltests:approvaltests:9.5.0")
+}
+
 application {
     mainClass = 'sudoku.kata.Program'
+}
+
+test {
+    useJUnitPlatform()
 }
