@@ -983,7 +983,7 @@ class DigitsSet extends AbstractList<Integer> {
 class StatePrinter {
 
     static void printBoard(State state) {
-        System.out.println(String.join(System.lineSeparator(), boardLines(state)));
+        boardLines(state).forEach(System.out::println);
     }
 
     private static List<String> boardLines(State state) {
