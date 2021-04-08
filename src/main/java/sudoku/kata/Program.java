@@ -958,7 +958,7 @@ class Mask {
     }
 
     Integer singleDigit() {
-        return singleBitMaskToDigit.get(get());
+        return this.digits().get(0);
     }
 
     int candidatesCount() {
