@@ -1189,52 +1189,16 @@ class Cell {
         return 3 * getBlockRow() + getBlockCol();
     }
 
-    Cell rowSibling(int i) {
-        return of(rowSiblingIndex(i));
-    }
-
-    private int rowSiblingIndex(int i) {
-        return 9 * getRow() + i;
-    }
-
-    Cell columnSibling(int i) {
-        return of(columnSiblingIndex(i));
-    }
-
-    private int columnSiblingIndex(int i) {
-        return 9 * i + getColumn();
-    }
-
-    Cell blockSibling(int i) {
-        return of(blockSiblingIndex(i));
-    }
-
-    private int blockSiblingIndex(int i) {
-        return 9 * (getBlockRow() * 3 + i / 3) + getBlockCol() * 3 + i % 3;
-    }
-
     List<Cell> rowSiblings() {
-        List<Cell> siblings = new ArrayList<>();
-        for (int j = 0; j < 9; j++) {
-            siblings.add(rowSibling(j));
-        }
-        return siblings;
+        return CellGroup.rows().get(getRow());
     }
 
     List<Cell> columnSiblings() {
-        List<Cell> siblings = new ArrayList<>();
-        for (int j = 0; j < 9; j++) {
-            siblings.add(columnSibling(j));
-        }
-        return siblings;
+        return CellGroup.columns().get(getColumn());
     }
 
     List<Cell> blockSiblings() {
-        List<Cell> siblings = new ArrayList<>();
-        for (int j = 0; j < 9; j++) {
-            siblings.add(blockSibling(j));
-        }
-        return siblings;
+        return CellGroup.blocks().get(getBlock());
     }
 
     List<Cell> allSiblings() {
