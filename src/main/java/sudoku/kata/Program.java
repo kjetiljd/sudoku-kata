@@ -369,6 +369,7 @@ public class Program {
     static Set<Integer> digitsUsed(State currentState, List<Cell> cells) {
         return cells.stream()
                 .map(sibling -> currentState.get(sibling))
+                .filter(i -> i != 0)
                 .collect(Collectors.toSet());
     }
 
@@ -915,22 +916,15 @@ class Candidate {
 
 class Mask {
     static final List<Mask> nMasks = nMasks();
-    private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     private final List<Integer> digits;
 
     private Mask(int mask) {
-        this.mask = mask;
-        this.digits = IntStream.range(0, 9).filter(i -> (mask & (1 << i)) > 0).boxed().collect(toList());;
+        this.digits = IntStream.range(1, 10).filter(i -> (mask & (1 << (i - 1))) != 0).boxed().sorted().collect(toList());;
     }
 
     public Mask(Collection<Integer> possibleDigits) {
-        int mask = 0;
-        for (Integer digit : possibleDigits) {
-            mask |= 1 << (digit - 1);
-        }
         this.digits = possibleDigits.stream().sorted().collect(toList());
-        this.mask = mask;
     }
 
     static Mask maskFromIntMask(int i) {
@@ -968,10 +962,7 @@ class Mask {
     }
 
     public List<Integer> digits() {
-        return IntStream.range(1, 10)
-                .filter(digit -> (mask & (1 << (digit - 1))) != 0)
-                .boxed()
-                .collect(toUnmodifiableList());
+        return this.digits;
     }
 
     boolean matches(Mask other) {
@@ -981,12 +972,13 @@ class Mask {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        return mask == ((Mask) o).mask;
+        if (digits.size() != ((Mask) o).digits.size()) return false;
+        return digits.containsAll(((Mask) o).digits);
     }
 
     @Override
     public int hashCode() {
-        return mask;
+        return digits.hashCode();
     }
 }
 
