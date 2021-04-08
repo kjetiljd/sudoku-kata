@@ -917,9 +917,11 @@ class Mask {
     static final List<Mask> nMasks = nMasks();
     private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
+    private final List<Integer> digits;
 
     private Mask(int mask) {
         this.mask = mask;
+        this.digits = IntStream.range(0, 9).filter(i -> (mask & (1 << i)) > 0).boxed().collect(toList());;
     }
 
     public Mask(Collection<Integer> possibleDigits) {
@@ -927,6 +929,7 @@ class Mask {
         for (Integer digit : possibleDigits) {
             mask |= 1 << (digit - 1);
         }
+        this.digits = possibleDigits.stream().sorted().collect(toList());
         this.mask = mask;
     }
 
