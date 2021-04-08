@@ -861,12 +861,11 @@ class NoCandidate extends Candidate {
     }
 }
 
-class Candidate {
-    private final Cell cell;
+class Candidate extends Cell {
     private DigitsSet digits;
 
     Candidate(Cell cell, DigitsSet digits) {
-        this.cell = cell;
+        super(cell.getIndex());
         this.digits = digits;
     }
 
@@ -891,7 +890,7 @@ class Candidate {
     }
 
     public Cell getCell() {
-        return cell;
+        return this;
     }
 
     public DigitsSet getDigits() {
@@ -1160,7 +1159,7 @@ class Cell {
 
     private final int index;
 
-    private Cell(int index) {
+    protected Cell(int index) {
         this.index = index;
     }
 
