@@ -12,7 +12,11 @@ class ProgramTest {
     @Test
     void playTest() throws Exception {
         String actual = tapSystemOut(() ->
-                Program.play(new Random(1))
+                {
+                    for (int i = 0; i < 20; i++) {
+                        Program.play(new Random(i));
+                    }
+                }
         );
         Approvals.verify(actual);
     }
