@@ -17,7 +17,7 @@ public class Program {
     static void play(Random random) {
         //region Construct fully populated board
 
-        char[][] board = Board.prepareEmptyBoard();
+        char[][] board = new Board().board;
 
         // Construct board to be solved
 
@@ -919,9 +919,9 @@ enum Command {
 }
 
 class Board {
-    private final char[][] board;
+    final char[][] board;
 
-    private Board() {
+    Board() {
         String line = "+---+---+---+";
         String middle = "|...|...|...|";
         this.board = new char[][]
@@ -940,10 +940,6 @@ class Board {
                         middle.toCharArray(),
                         line.toCharArray()
                 };
-    }
-
-    static char[][] prepareEmptyBoard() {
-        return new Board().board;
     }
 
     static void printBoard(char[][] board) {
