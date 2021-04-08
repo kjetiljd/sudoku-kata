@@ -10,12 +10,6 @@ import static java.util.stream.Collectors.toList;
 
 public class Program {
 
-    public static final String EXPAND = "expand";
-    public static final String MOVE = "move";
-    public static final String COLLAPSE = "collapse";
-    public static final String COMPLETE = "complete";
-    public static final String FAIL = "fail";
-
     static void play() {
         play(new Random());
     }
@@ -44,9 +38,9 @@ public class Program {
         // - expand - finds next empty cell and puts new state on stacks
         // - move - finds next candidate number at current pos and applies it to current state
         // - collapse - pops current state from stack as it did not yield a solution
-        String command = EXPAND;
+        Command command = Command.EXPAND;
         while (stateStack.size() <= 9 * 9) {
-            if (command.equals(EXPAND)) {
+            if (command.equals(Command.EXPAND)) {
                 int[] currentState = new int[9 * 9];
 
                 if (stateStack.size() > 0) {
@@ -115,18 +109,18 @@ public class Program {
                 }
 
                 // Always try to move after expand
-                command = MOVE;
+                command = Command.MOVE;
 
             } // if (command == "expand")
-            else if (command.equals(COLLAPSE)) {
+            else if (command.equals(Command.COLLAPSE)) {
                 stateStack.pop();
                 rowIndexStack.pop();
                 colIndexStack.pop();
                 usedDigitsStack.pop();
                 lastDigitStack.pop();
 
-                command = MOVE;   // Always try to move after collapse
-            } else if (command.equals(MOVE)) {
+                command = Command.MOVE;   // Always try to move after collapse
+            } else if (command.equals(Command.MOVE)) {
 
                 int rowToMove = rowIndexStack.peek();
                 int colToMove = colIndexStack.peek();
@@ -157,11 +151,11 @@ public class Program {
 
                     // Next possible digit was found at current position
                     // Next step will be to expand the state
-                    command = EXPAND;
+                    command = Command.EXPAND;
                 } else {
                     // No viable candidate was found at current position - pop it in the next iteration
                     lastDigitStack.push(0);
-                    command = COLLAPSE;
+                    command = Command.COLLAPSE;
                 }
             } // if (command == "move")
         }
@@ -713,9 +707,9 @@ public class Program {
                     usedDigitsStack = new Stack<>();
                     lastDigitStack = new Stack<>();
 
-                    command = EXPAND;
-                    while (!command.equals(COMPLETE) && !command.equals(FAIL)) {
-                        if (command.equals(EXPAND)) {
+                    command = Command.EXPAND;
+                    while (!command.equals(Command.COMPLETE) && !command.equals(Command.FAIL)) {
+                        if (command.equals(Command.EXPAND)) {
                             int[] currentState = new int[9 * 9];
 
                             if (!stateStack.isEmpty()) {
@@ -787,10 +781,10 @@ public class Program {
                             }
 
                             // Always try to move after expand
-                            command = MOVE;
+                            command = Command.MOVE;
 
                         } // if (command == "expand")
-                        else if (command.equals(COLLAPSE)) {
+                        else if (command.equals(Command.COLLAPSE)) {
                             stateStack.pop();
                             rowIndexStack.pop();
                             colIndexStack.pop();
@@ -798,10 +792,10 @@ public class Program {
                             lastDigitStack.pop();
 
                             if (!stateStack.empty())
-                                command = MOVE; // Always try to move after collapse
+                                command = Command.MOVE; // Always try to move after collapse
                             else
-                                command = FAIL;
-                        } else if (command.equals(MOVE)) {
+                                command = Command.FAIL;
+                        } else if (command.equals(Command.MOVE)) {
 
                             int rowToMove = rowIndexStack.peek();
                             int colToMove = colIndexStack.peek();
@@ -831,19 +825,19 @@ public class Program {
                                 board[rowToWrite][colToWrite] = (char) ('0' + movedToDigit);
 
                                 if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
-                                    command = EXPAND;
+                                    command = Command.EXPAND;
                                 else
-                                    command = COMPLETE;
+                                    command = Command.COMPLETE;
                             } else {
                                 // No viable candidate was found at current position - pop it in the next iteration
                                 lastDigitStack.push(0);
-                                command = COLLAPSE;
+                                command = Command.COLLAPSE;
                             }
                         } // if (command == "move")
 
                     } // while (command != "complete" && command != "fail")
 
-                    if (command.equals(COMPLETE)) {   // Board was solved successfully even with two digits swapped
+                    if (command.equals(Command.COMPLETE)) {   // Board was solved successfully even with two digits swapped
                         stateIndex1.add(index1);
                         stateIndex2.add(index2);
                         value1.add(digit1);
@@ -941,5 +935,23 @@ public class Program {
             System.out.print("Press ENTER to exit... ");
             System.console().readLine();
         }
+    }
+}
+
+enum Command {
+    EXPAND("expand"),
+    MOVE("move"),
+    COLLAPSE("collapse"),
+    COMPLETE("complete"),
+    FAIL("fail");
+
+    private String value;
+
+    public String getValue() {
+        return value;
+    }
+
+    Command(String value) {
+        this.value = value;
     }
 }
