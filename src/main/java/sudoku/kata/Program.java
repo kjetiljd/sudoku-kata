@@ -915,7 +915,7 @@ class Candidate {
 }
 
 class DigitsSet {
-    static final List<DigitsSet> nDigitsSet = nDigitsSet();
+    static final List<DigitsSet> nDigitsSet = nDigitDigitsSets();
     private static final DigitsSet allDigits = new DigitsSet(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     private final List<Integer> digits;
 
@@ -931,8 +931,8 @@ class DigitsSet {
         return new DigitsSet(i);
     }
 
-    // masks that represent two or more candidates
-    private static List<DigitsSet> nDigitsSet() {
+    // digitSets that represent two or more candidates
+    private static List<DigitsSet> nDigitDigitsSets() {
         return IntStream.range(1, (1 << 9))
                 .mapToObj(i -> digitsSetFromIntMask(i))
                 .filter(digitsSet -> digitsSet.candidatesCount() > 1)
