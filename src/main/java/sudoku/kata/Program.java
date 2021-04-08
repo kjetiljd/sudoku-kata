@@ -100,7 +100,7 @@ public class Program {
                     // All other candidates can then be removed from those cells
 
                     var groupsWithNMasks =
-                            Masks.nMasks.stream()
+                            Mask.nMasks.stream()
                                     .map(mask -> CellGroup.all().stream()
                                             .filter(group -> group.stream().allMatch(cell -> state.get(cell) == 0 || !mask.matches(new Mask(List.of(state.get(cell))))))
                                             .map(group -> new MaskGroup(mask, group))
@@ -916,6 +916,7 @@ class Candidate {
 
 class Mask {
     static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
+    static final List<Mask> nMasks = nMasks();
     private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
@@ -942,6 +943,14 @@ class Mask {
 
     static Mask maskFromIntMask(int i) {
         return new Mask(i);
+    }
+
+    // masks that represent two or more candidates
+    private static List<Mask> nMasks() {
+        return maskToOnesCount.entrySet().stream()
+                .filter(tuple -> tuple.getValue() > 1)
+                .map(tuple -> maskFromIntMask(tuple.getKey()))
+                .collect(toList());
     }
 
     Mask inverted() {
@@ -994,15 +1003,7 @@ class Mask {
 }
 
 class Masks {
-    static final List<Mask> nMasks = nMasks();
 
-    // masks that represent two or more candidates
-    private static List<Mask> nMasks() {
-        return Mask.maskToOnesCount.entrySet().stream()
-                .filter(tuple -> tuple.getValue() > 1)
-                .map(tuple -> Mask.maskFromIntMask(tuple.getKey()))
-                .collect(toList());
-    }
 }
 
 class StatePrinter {
