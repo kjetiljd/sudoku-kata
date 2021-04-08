@@ -373,13 +373,13 @@ public class Program {
     private static void printSolutionState(State solutionState) {
         System.out.println();
         System.out.println("Final look of the solved board:");
-        Board.print(solutionState);
+        StatePrinter.printBoard(solutionState);
     }
 
     private static void printStartingState(State startingState) {
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        Board.print(startingState);
+        StatePrinter.printBoard(startingState);
     }
 
     private static void printDivider() {
@@ -389,8 +389,8 @@ public class Program {
     }
 
     private static void printState(State state) {
-        Board.print(state);
-        Board.printCode(state);
+        StatePrinter.printBoard(state);
+        StatePrinter.printCode(state);
         System.out.println();
     }
 
@@ -1006,9 +1006,9 @@ class Masks {
     }
 }
 
-class Board {
+class StatePrinter {
 
-    static void print(State state) {
+    static void printBoard(State state) {
         System.out.println(String.join(System.lineSeparator(), board(state.getState())));
     }
 
