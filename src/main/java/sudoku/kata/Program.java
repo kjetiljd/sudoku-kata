@@ -964,10 +964,6 @@ class Mask {
         return this.digits().size();
     }
 
-    private int get() {
-        return mask;
-    }
-
     public List<Integer> digits() {
         return IntStream.range(1, 10)
                 .filter(digit -> (mask & (1 << (digit - 1))) != 0)
@@ -976,7 +972,7 @@ class Mask {
     }
 
     boolean matches(Mask other) {
-        return overlappingWith(other).get() != 0;
+        return !overlappingWith(other).digits().isEmpty();
     }
 
     @Override
