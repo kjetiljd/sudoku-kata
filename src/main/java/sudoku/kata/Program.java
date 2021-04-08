@@ -724,7 +724,7 @@ class Change {
     }
 }
 
-class FrozenCellState extends CellState {
+class FrozenCellState extends State.CellState {
     private final int value;
 
     FrozenCellState(State state, int stateIndex) {
@@ -739,30 +739,7 @@ class FrozenCellState extends CellState {
 
 }
 
-class CellState {
-    private final State state;
-    private final int stateIndex;
-
-    CellState(State state, int stateIndex) {
-        this.state = state;
-        this.stateIndex = stateIndex;
-    }
-
-    Cell getCell() {
-        return Cell.of(stateIndex);
-    }
-
-    int getState() {
-        return state.getState()[stateIndex];
-    }
-
-    FrozenCellState frozen() {
-        return new FrozenCellState(state, stateIndex);
-    }
-
-}
-
-class State extends AbstractList<CellState> {
+class State extends AbstractList<State.CellState> {
     private final int[] state;
 
     State(int[] initialState) {
@@ -808,6 +785,29 @@ class State extends AbstractList<CellState> {
 
     boolean hasValue(int i) {
         return state[i] != 0;
+    }
+
+    static class CellState {
+        private final State state;
+        private final int stateIndex;
+
+        CellState(State state, int stateIndex) {
+            this.state = state;
+            this.stateIndex = stateIndex;
+        }
+
+        Cell getCell() {
+            return Cell.of(stateIndex);
+        }
+
+        int getState() {
+            return state.getState()[stateIndex];
+        }
+
+        FrozenCellState frozen() {
+            return new FrozenCellState(state, stateIndex);
+        }
+
     }
 }
 
@@ -988,7 +988,7 @@ class StatePrinter {
 
     private static List<String> boardLines(State state) {
         char[][] board = emptyBoard();
-        for (CellState cellState : state) {
+        for (State.CellState cellState : state) {
             Cell cell = cellState.getCell();
             int rowToWrite = cell.getRow() + cell.getRow() / 3 + 1;
             int colToWrite = cell.getColumn() + cell.getColumn() / 3 + 1;
@@ -1000,7 +1000,7 @@ class StatePrinter {
     }
 
     static void printCode(State state) {
-        String code = state.stream().map(CellState::getState).map(i -> Integer.toString(i)).collect(Collectors.joining(""));
+        String code = state.stream().map(State.CellState::getState).map(i -> Integer.toString(i)).collect(Collectors.joining(""));
         System.out.format("Code: %s", code).println();
     }
 
