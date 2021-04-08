@@ -1,6 +1,5 @@
 package sudoku.kata;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -743,10 +742,6 @@ class FrozenCellState extends CellState {
         return value;
     }
 
-    @Override
-    void setState(int value) {
-        throw new UnsupportedOperationException("Cannot set state, as this one is frozen: " + this);
-    }
 }
 
 class CellState {
@@ -764,10 +759,6 @@ class CellState {
 
     int getState() {
         return state.get(stateIndex).getState();
-    }
-
-    void setState(int value) {
-        state.set(getCell(), value);
     }
 
     FrozenCellState frozen() {
