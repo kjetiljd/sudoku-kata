@@ -1221,13 +1221,6 @@ class Cell {
         return cells[index];
     }
 
-    static Cell ofBlock(int block, int indexInBlock) {
-        int blockRowIndex = (block / 3) * 3 + indexInBlock / 3;
-        int blockColIndex = (block % 3) * 3 + indexInBlock % 3;
-        int index = blockRowIndex * 9 + blockColIndex;
-        return Cell.of(index);
-    }
-
     static boolean sharesACellGroup(Cell cell1, Cell cell2) {
         return cell1.getRow() == cell2.getRow()
                 || cell1.getColumn() == cell2.getColumn()
