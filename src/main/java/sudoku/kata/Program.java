@@ -915,7 +915,7 @@ class Candidate {
 }
 
 class Mask {
-    static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
+    private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     static final List<Mask> nMasks = nMasks();
     private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
