@@ -1148,27 +1148,23 @@ class CellGroup extends AbstractList<Cell> {
     }
 
     private static List<CellGroup> rowCellGroups() {
-        var rowCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getRow))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                "row #" + (group.getKey() + 1),
-                                group.getValue()))
-                        .collect(toList());
-        return rowCellGroups;
+        return Cell.cells().stream()
+                .collect(groupingBy(Cell::getRow))
+                .entrySet().stream()
+                .map(group -> new CellGroup(
+                        "row #" + (group.getKey() + 1),
+                        group.getValue()))
+                .collect(toList());
     }
 
     private static List<CellGroup> columnCellGroups() {
-        var columnCellGroups =
-                Cell.cells().stream()
-                        .collect(groupingBy(Cell::getColumn))
-                        .entrySet().stream()
-                        .map(group -> new CellGroup(
-                                "column #" + (group.getKey() + 1),
-                                group.getValue()))
-                        .collect(toList());
-        return columnCellGroups;
+        return Cell.cells().stream()
+                .collect(groupingBy(Cell::getColumn))
+                .entrySet().stream()
+                .map(group -> new CellGroup(
+                        "column #" + (group.getKey() + 1),
+                        group.getValue()))
+                .collect(toList());
     }
 
     private static List<CellGroup> blockCellGroups() {
