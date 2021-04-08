@@ -242,7 +242,7 @@ public class Program {
 
                                         var digitUsedMask =
                                                 cell.allSiblings().stream()
-                                                        .mapToInt(sibling -> Masks.maskForDigit((int) currentState.get(sibling)).get())
+                                                        .mapToInt(sibling -> Masks.maskForDigit(currentState.get(sibling)).get())
                                                         .reduce(0, (digitsMask, digitMask) -> digitsMask | digitMask);
 
                                         boolean[] isDigitUsed = new boolean[9];
