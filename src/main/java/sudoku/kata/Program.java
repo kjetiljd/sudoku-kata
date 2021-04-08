@@ -962,7 +962,7 @@ class Mask {
     }
 
     int candidatesCount() {
-        return maskToOnesCount.get(get());
+        return this.digits().size();
     }
 
     public int get() {
