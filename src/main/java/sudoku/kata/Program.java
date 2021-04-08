@@ -827,7 +827,7 @@ class Candidates extends AbstractList<Candidate> {
 
     List<Mask> twoDigitMasks() {
         return candidates.values().stream()
-                .map(candidate -> candidate.getMask())
+                .map(Candidate::getMask)
                 .filter(mask -> mask.candidatesCount() == 2)
                 .distinct()
                 .collect(toList());
@@ -1027,7 +1027,7 @@ class Board {
                 board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
         }
 
-        return Arrays.stream(board).map(it -> new String(it)).collect(toList());
+        return Arrays.stream(board).map(String::new).collect(toList());
     }
 
     // Prepare empty board
@@ -1180,7 +1180,7 @@ class CellGroup extends AbstractList<Cell> {
     public List<Candidate> candidatesWithMask(State state, Candidates candidates, Mask mask) {
         return this.stream()
                 .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getMask().matches(mask)))
-                .map(cell -> candidates.get(cell))
+                .map(candidates::get)
                 .collect(toList());
     }
 
