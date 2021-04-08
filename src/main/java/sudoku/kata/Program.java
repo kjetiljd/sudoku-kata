@@ -944,7 +944,7 @@ class Mask {
     }
 
     static Mask maskForDigit(int digit) {
-        return new Mask(1 << (digit - 1));
+        return new Mask(List.of(digit));
     }
 
     Mask minus(Mask other) {
