@@ -915,7 +915,6 @@ class Candidate {
 }
 
 class Mask {
-    private static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     static final List<Mask> nMasks = nMasks();
     private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
@@ -932,24 +931,15 @@ class Mask {
         this.mask = mask;
     }
 
-    private static Map<Integer, Integer> maskToOnesCount() {
-        Map<Integer, Integer> maskToOnesCount = new HashMap<>();
-        maskToOnesCount.put(0, 0);
-        for (int i = 1; i < (1 << 9); i++) {
-            maskToOnesCount.put(i, maskFromIntMask(i).digits().size());
-        }
-        return maskToOnesCount;
-    }
-
     static Mask maskFromIntMask(int i) {
         return new Mask(i);
     }
 
     // masks that represent two or more candidates
     private static List<Mask> nMasks() {
-        return maskToOnesCount.entrySet().stream()
-                .filter(tuple -> tuple.getValue() > 1)
-                .map(tuple -> maskFromIntMask(tuple.getKey()))
+        return IntStream.range(1, (1 << 9))
+                .mapToObj(i -> maskFromIntMask(i))
+                .filter(mask -> mask.candidatesCount() > 1)
                 .collect(toList());
     }
 
