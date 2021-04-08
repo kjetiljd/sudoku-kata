@@ -891,18 +891,22 @@ public class Program {
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
                 Board.printBoard(board);
-                ;
-                String code =
-                        String.join("", Arrays.stream(board).map(it -> new String(it)).collect(toList()))
-                                .replace("-", "")
-                                .replace("+", "")
-                                .replace("|", "")
-                                .replace(".", "0");
-                System.out.format("Code: %s", code).println();
+
+                printCode(board);
                 System.out.println();
                 //endregion
             }
         }
+    }
+
+    private static void printCode(char[][] board) {
+        String code =
+                String.join("", Arrays.stream(board).map(it -> new String(it)).collect(toList()))
+                        .replace("-", "")
+                        .replace("+", "")
+                        .replace("|", "")
+                        .replace(".", "0");
+        System.out.format("Code: %s", code).println();
     }
 
     public static void main(String[] args) throws IOException {
