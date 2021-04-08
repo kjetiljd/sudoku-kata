@@ -1034,7 +1034,6 @@ class StatePrinter {
         System.out.format("Code: %s", code).println();
     }
 
-    // Prepare empty board
     private static char[][] emptyBoard() {
         String line = "+---+---+---+";
         String middle = "|...|...|...|";
