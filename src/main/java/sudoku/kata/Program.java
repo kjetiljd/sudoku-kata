@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.*;
 
 public class Program {
@@ -895,7 +896,7 @@ class Candidate {
     }
 
     void setNoCandidates() {
-        mask = new Mask(0);
+        mask = new Mask(List.of());
     }
 
     public Cell getCell() {
@@ -921,6 +922,14 @@ class Mask {
     private final int mask;
 
     Mask(int mask) {
+        this.mask = mask;
+    }
+
+    public Mask(List<Integer> possibleDigits) {
+        int mask = 0;
+        for (Integer digit : possibleDigits) {
+            mask &= 1 << digit - 1;
+        }
         this.mask = mask;
     }
 
