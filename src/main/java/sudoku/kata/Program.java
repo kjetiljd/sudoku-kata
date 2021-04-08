@@ -60,7 +60,7 @@ public class Program {
                         for (var twoDigitGroup : twoDigitGroups) {
                             var cellsToCleanUp =
                                     twoDigitGroup.stream()
-                                            .filter(cell -> !candidates.get(cell).getDigits().equals(twoDigitGroup.getDigits())
+                                            .filter(cell -> !candidates.get(cell).hasAll(twoDigitGroup.getDigits())
                                                     && (candidates.get(cell).getDigits().overlappingWith(twoDigitGroup.getDigits()).size()) > 0)
                                             .collect(toList());
 
@@ -68,7 +68,7 @@ public class Program {
                                 var maskCells =
                                         twoDigitGroup.stream()
                                                 .filter(cell ->
-                                                        candidates.get(cell).getDigits().equals(twoDigitGroup.getDigits()))
+                                                        candidates.get(cell).hasAll(twoDigitGroup.getDigits()))
                                                 .collect(toList());
 
                                 List<Integer> digitsInGroup = twoDigitGroup.getDigits();
@@ -640,7 +640,7 @@ public class Program {
                         .map(twoDigitDigitsSet ->
                                 CellGroup.all().stream()
                                         .filter(cellGroup -> cellGroup.stream()
-                                                .filter(cell -> candidates.get(cell).getDigits().equals(twoDigitDigitsSet))
+                                                .filter(cell -> candidates.get(cell).hasAll(twoDigitDigitsSet))
                                                 .count() == 2)
                                         .map(group -> new DigitsSetGroup(twoDigitDigitsSet, group))
                                         .collect(toList()))
@@ -648,9 +648,9 @@ public class Program {
                         .collect(toList());
         var twoDigitGroupsWithCellsThatCanBeCleaned =
                 twoDigitGroups.stream()
-                        .filter(digitsSetGroup -> digitsSetGroup.stream()
-                                .anyMatch(cell -> !candidates.get(cell).getDigits().equals(digitsSetGroup.getDigits())
-                                        && (candidates.get(cell).getDigits().overlappingWith(digitsSetGroup.getDigits()).size()) > 0))
+                        .filter(twoDigitGroup -> twoDigitGroup.stream()
+                                .anyMatch(cell -> !candidates.get(cell).hasAll(twoDigitGroup.getDigits())
+                                        && (candidates.get(cell).getDigits().overlappingWith(twoDigitGroup.getDigits()).size()) > 0))
                         .collect(toList());
         return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
@@ -867,6 +867,10 @@ class Candidate extends Cell {
     Candidate(Cell cell, DigitsSet digits) {
         super(cell.getIndex());
         this.digits = digits;
+    }
+
+    boolean hasAll(DigitsSet digits) {
+        return this.digits.equals(digits);
     }
 
     Integer singleDigit() {
