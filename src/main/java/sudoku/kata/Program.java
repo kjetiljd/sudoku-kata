@@ -16,25 +16,8 @@ public class Program {
 
     static void play(Random random) {
         //region Construct fully populated board
-        // Prepare empty board
-        String line = "+---+---+---+";
-        String middle = "|...|...|...|";
-        char[][] board = new char[][]
-                {
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        middle.toCharArray(),
-                        line.toCharArray()
-                };
+
+        char[][] board = prepareEmptyBoard();
 
         // Construct board to be solved
 
@@ -920,6 +903,28 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static char[][] prepareEmptyBoard() {
+        String line = "+---+---+---+";
+        String middle = "|...|...|...|";
+        char[][] board = new char[][]
+                {
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        middle.toCharArray(),
+                        line.toCharArray()
+                };
+        return board;
     }
 
     public static void main(String[] args) throws IOException {
