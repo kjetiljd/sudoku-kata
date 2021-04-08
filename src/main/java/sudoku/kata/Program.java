@@ -167,11 +167,11 @@ public class Program {
                 for (Candidate candidateI : candidates) {
                     if (candidateI.candidateDigitsCount() == 2) {
 
-                        var digits = candidateI.digits();
+                        var digits = (List<Integer>) candidateI.getDigits();
 
                         for (int j = candidates.indexOf(candidateI) + 1; j < candidates.size(); j++) {
                             Candidate candidateJ = candidates.get(j);
-                            if (candidateJ.digits().equals(candidateI.digits())) {
+                            if (((List<Integer>) candidateJ.getDigits()).equals(candidateI.getDigits())) {
                                 if (Cell.sharesACellGroup(candidateI, candidateJ)) {
                                     candidateQueue1.add(candidateI);
                                     candidateQueue2.add(candidateJ);
@@ -869,16 +869,12 @@ class Candidate extends Cell {
         this.digits = digits;
     }
 
-    List<Integer> digits() {
-        return getDigits();
-    }
-
     Integer singleDigit() {
-        return getDigits().singleDigit();
+        return digits.singleDigit();
     }
 
     boolean matchesDigitsSet(DigitsSet other) {
-        return getDigits().matches(other);
+        return digits.matches(other);
     }
 
     boolean hasCandidateDigit(int digit) {
@@ -898,7 +894,7 @@ class Candidate extends Cell {
     }
 
     int candidateDigitsCount() {
-        return getDigits().size();
+        return digits.size();
     }
 }
 
@@ -1134,7 +1130,7 @@ class CellGroup extends AbstractList<Cell> {
 
     public List<Candidate> candidatesWithDigitsSet(State state, Candidates candidates, DigitsSet digitsSet) {
         return this.stream()
-                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).getDigits().matches(digitsSet)))
+                .filter(cell -> state.get(cell) == 0 && (candidates.get(cell).matchesDigitsSet(digitsSet)))
                 .map(candidates::get)
                 .collect(toList());
     }
