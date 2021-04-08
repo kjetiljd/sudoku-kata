@@ -919,7 +919,7 @@ class Mask {
     private final int mask;
     private static final Mask allDigits = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
-      private Mask(int mask) {
+    private Mask(int mask) {
         this.mask = mask;
     }
 
