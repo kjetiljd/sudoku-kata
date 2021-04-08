@@ -918,7 +918,7 @@ class Mask {
     private static final Map<Integer, Integer> singleBitMaskToDigit = singleBitMaskToDigit();
     static final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
     private final int mask;
-    static final Mask allOnes = new Mask(Candidates.allOnes);
+    static final Mask allOnes = new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
     Mask(int mask) {
         this.mask = mask;
@@ -944,7 +944,7 @@ class Mask {
     }
 
     Mask inverted() {
-        return new Mask(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9).stream()
+        return new Mask(allOnes.digits().stream()
                 .filter(digit -> !digits().contains(digit))
                 .collect(Collectors.toSet()));
     }
