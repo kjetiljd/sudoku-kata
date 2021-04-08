@@ -724,21 +724,6 @@ class Change {
     }
 }
 
-class FrozenCellState extends State.CellState {
-    private final int value;
-
-    FrozenCellState(State state, int stateIndex) {
-        super(state, stateIndex);
-        this.value = state.get(getCell());
-    }
-
-    @Override
-    int getState() {
-        return value;
-    }
-
-}
-
 class State extends AbstractList<State.CellState> {
     private final int[] state;
 
@@ -758,7 +743,7 @@ class State extends AbstractList<State.CellState> {
 
     @Override
     public CellState get(int index) {
-        return new CellState(this, index);
+        return new CellState(index);
     }
 
     public Integer get(Cell cell) {
@@ -787,12 +772,10 @@ class State extends AbstractList<State.CellState> {
         return state[i] != 0;
     }
 
-    static class CellState {
-        private final State state;
+    class CellState {
         private final int stateIndex;
 
-        CellState(State state, int stateIndex) {
-            this.state = state;
+        CellState(int stateIndex) {
             this.stateIndex = stateIndex;
         }
 
@@ -801,11 +784,26 @@ class State extends AbstractList<State.CellState> {
         }
 
         int getState() {
-            return state.getState()[stateIndex];
+            return State.this.getState()[stateIndex];
         }
 
         FrozenCellState frozen() {
-            return new FrozenCellState(state, stateIndex);
+            return new FrozenCellState(stateIndex);
+        }
+
+    }
+
+    class FrozenCellState extends State.CellState {
+        private final int value;
+
+        FrozenCellState(int stateIndex) {
+            super(stateIndex);
+            this.value = State.this.get(getCell());
+        }
+
+        @Override
+        int getState() {
+            return value;
         }
 
     }
