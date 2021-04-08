@@ -140,14 +140,14 @@ public class Program {
                 if (digitToMove > 0) {
                     usedDigits[digitToMove - 1] = false;
                     currentState[currentStateIndex] = 0;
-                    updateBoard(board, rowToWrite, colToWrite, '.');
+                    Board.updateBoard(board, rowToWrite, colToWrite, '.');
                 }
 
                 if (movedToDigit <= 9) {
                     lastDigitStack.push(movedToDigit);
                     usedDigits[movedToDigit - 1] = true;
                     currentState[currentStateIndex] = movedToDigit;
-                    updateBoard(board, rowToWrite, colToWrite, (char) ('0' + movedToDigit));
+                    Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + movedToDigit));
 
                     // Next possible digit was found at current position
                     // Next step will be to expand the state
@@ -200,7 +200,7 @@ public class Program {
             int rowToWrite = row + row / 3 + 1;
             int colToWrite = col + col / 3 + 1;
 
-            updateBoard(board, rowToWrite, colToWrite, '.');
+            Board.updateBoard(board, rowToWrite, colToWrite, '.');
 
             int stateIndex = 9 * row + col;
             state[stateIndex] = 0;
@@ -336,7 +336,7 @@ public class Program {
                     int colToWrite = col + col / 3 + 1;
 
                     state[singleCandidateIndex] = candidate + 1;
-                    updateBoard(board, rowToWrite, colToWrite, (char) ('1' + candidate));
+                    Board.updateBoard(board, rowToWrite, colToWrite, (char) ('1' + candidate));
                     candidateMasks[singleCandidateIndex] = 0;
                     changeMade = true;
 
@@ -428,7 +428,7 @@ public class Program {
                         int stateIndex = 9 * row + col;
                         state[stateIndex] = digit;
                         candidateMasks[stateIndex] = 0;
-                        updateBoard(board, rowToWrite, colToWrite, (char) ('0' + digit));
+                        Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + digit));
 
                         changeMade = true;
 
@@ -815,14 +815,14 @@ public class Program {
                             if (digitToMove > 0) {
                                 usedDigits[digitToMove - 1] = false;
                                 currentState[currentStateIndex] = 0;
-                                updateBoard(board, rowToWrite, colToWrite, '.');
+                                Board.updateBoard(board, rowToWrite, colToWrite, '.');
                             }
 
                             if (movedToDigit <= 9) {
                                 lastDigitStack.push(movedToDigit);
                                 usedDigits[movedToDigit - 1] = true;
                                 currentState[currentStateIndex] = movedToDigit;
-                                updateBoard(board, rowToWrite, colToWrite, (char) ('0' + movedToDigit));
+                                Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + movedToDigit));
 
                                 if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
                                     command = Command.EXPAND;
@@ -878,9 +878,9 @@ public class Program {
                         int rowToWrite = tempRow + tempRow / 3 + 1;
                         int colToWrite = tempCol + tempCol / 3 + 1;
 
-                        updateBoard(board, rowToWrite, colToWrite, '.');
+                        Board.updateBoard(board, rowToWrite, colToWrite, '.');
                         if (state[i] > 0)
-                            updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
+                            Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
                     }
 
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
@@ -897,10 +897,6 @@ public class Program {
                 //endregion
             }
         }
-    }
-
-    private static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
-        board[rowToWrite][colToWrite] = value;
     }
 
     public static void main(String[] args) throws IOException {
@@ -956,5 +952,9 @@ class Board {
                         .replace("|", "")
                         .replace(".", "0");
         System.out.format("Code: %s", code).println();
+    }
+
+    static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
+        board[rowToWrite][colToWrite] = value;
     }
 }
