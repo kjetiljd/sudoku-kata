@@ -60,8 +60,11 @@ public class Program {
                         for (var twoDigitGroup : twoDigitGroups) {
                             var cellsToCleanUp =
                                     twoDigitGroup.stream()
-                                            .filter(cell -> !candidates.get(cell).hasAll(twoDigitGroup.getDigits())
-                                                    && (candidates.get(cell).getDigits().overlappingWith(twoDigitGroup.getDigits()).size()) > 0)
+                                            .filter(cell -> {
+                                                Candidate candidate = candidates.get(cell);
+                                                return !candidate.hasAll(twoDigitGroup.getDigits())
+                                                        && candidate.hasAny(twoDigitGroup.getDigits());
+                                            })
                                             .collect(toList());
 
                             if (!cellsToCleanUp.isEmpty()) {
@@ -649,8 +652,11 @@ public class Program {
         var twoDigitGroupsWithCellsThatCanBeCleaned =
                 twoDigitGroups.stream()
                         .filter(twoDigitGroup -> twoDigitGroup.stream()
-                                .anyMatch(cell -> !candidates.get(cell).hasAll(twoDigitGroup.getDigits())
-                                        && (candidates.get(cell).getDigits().overlappingWith(twoDigitGroup.getDigits()).size()) > 0))
+                                .anyMatch(cell -> {
+                                    Candidate candidate = candidates.get(cell);
+                                    return !candidate.hasAll(twoDigitGroup.getDigits())
+                                            && candidate.hasAny(twoDigitGroup.getDigits());
+                                }))
                         .collect(toList());
         return twoDigitGroupsWithCellsThatCanBeCleaned;
     }
@@ -867,6 +873,10 @@ class Candidate extends Cell {
     Candidate(Cell cell, DigitsSet digits) {
         super(cell.getIndex());
         this.digits = digits;
+    }
+
+    boolean hasAny(DigitsSet digits) {
+        return (this.digits.overlappingWith(digits).size()) > 0;
     }
 
     boolean hasAll(DigitsSet digits) {
