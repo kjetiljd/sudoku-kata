@@ -1221,10 +1221,6 @@ class Cell {
         return cells[index];
     }
 
-    static Cell of(int row, int col) {
-        return Cell.of(9 * row + col);
-    }
-
     static Cell ofBlock(int block, int indexInBlock) {
         int blockRowIndex = (block / 3) * 3 + indexInBlock / 3;
         int blockColIndex = (block % 3) * 3 + indexInBlock % 3;
