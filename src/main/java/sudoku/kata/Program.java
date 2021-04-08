@@ -757,7 +757,7 @@ class CellState {
     }
 
     int getState() {
-        return state.get(stateIndex).getState();
+        return state.getState()[stateIndex];
     }
 
     FrozenCellState frozen() {
