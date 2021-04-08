@@ -954,7 +954,7 @@ class Mask {
     }
 
     Mask overlappingWith(Mask other) {
-        return new Mask(get() & other.get());
+        return new Mask(this.digits().stream().filter(it -> other.digits().contains(it)).collect(toSet()));
     }
 
     Integer singleDigit() {
