@@ -878,7 +878,7 @@ class Candidate {
     }
 
     List<Integer> digits() {
-        return getDigitsSet().digits();
+        return getDigitsSet();
     }
 
     Integer singleDigit() {
@@ -914,7 +914,7 @@ class Candidate {
     }
 }
 
-class DigitsSet {
+class DigitsSet extends AbstractList<Integer> {
     static final List<DigitsSet> nDigitsSet = nDigitDigitsSets();
     private static final DigitsSet allDigits = new DigitsSet(Set.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     private final List<Integer> digits;
@@ -970,6 +970,11 @@ class DigitsSet {
     }
 
     @Override
+    public Integer get(int index) {
+        return digits.get(index);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (digits.size() != ((DigitsSet) o).digits.size()) return false;
@@ -979,6 +984,11 @@ class DigitsSet {
     @Override
     public int hashCode() {
         return digits.hashCode();
+    }
+
+    @Override
+    public int size() {
+        return digits.size();
     }
 }
 
