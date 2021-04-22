@@ -872,7 +872,7 @@ public class Program {
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    boardFromState(board, state);
+                    board = boardFromState(board, state);
 
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
@@ -890,7 +890,7 @@ public class Program {
         }
     }
 
-    private static void boardFromState(char[][] board, int[] state) {
+    private static char[][] boardFromState(char[][] board, int[] state) {
         for (int i = 0; i < state.length; i++) {
             int tempRow = i / 9;
             int tempCol = i % 9;
@@ -901,6 +901,7 @@ public class Program {
             if (state[i] > 0)
                 Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
         }
+        return board;
     }
 
     public static void main(String[] args) throws IOException {
