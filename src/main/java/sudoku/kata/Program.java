@@ -704,7 +704,7 @@ public class Program {
         Map<Integer, Integer> singleBitToIndex = new HashMap<>();
         for (int i = 0; i < 9; i++)
             singleBitToIndex.put(1 << i, i);
-        return singleBitToIndex;
+        return Collections.unmodifiableMap(singleBitToIndex);
     }
 
     private static Map<Integer, Integer> maskToOnesCount() {
