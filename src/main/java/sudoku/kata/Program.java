@@ -30,11 +30,11 @@ public class Program {
         System.out.println();
 
         //region Prepare lookup structures that will be used in further execution
-        Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
+        final Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
 
-        Map<Integer, Integer> singleBitToIndex = singleBitToIndex();
+        final Map<Integer, Integer> singleBitToIndex = singleBitToIndex();
 
-        int allOnes = (1 << 9) - 1;
+        final int allOnes = (1 << 9) - 1;
         //endregion
 
         boolean changeMade = true;
