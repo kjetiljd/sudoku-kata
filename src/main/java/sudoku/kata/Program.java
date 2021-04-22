@@ -69,10 +69,7 @@ public class Program {
                 }
             //endregion
 
-            //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
-
             Map<Integer, List<CellInBlock>> cellGroups = buildCellGroups();
-            //endregion
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
@@ -666,6 +663,7 @@ public class Program {
     }
 
     private static Map<Integer, List<CellInBlock>> buildCellGroups() {
+        // Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
         int numberOfCells = 9 * 9;
         var rowsIndices = IntStream.range(0, numberOfCells)
                 .mapToObj(index -> new CellInBlock(
