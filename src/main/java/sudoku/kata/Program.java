@@ -16,6 +16,9 @@ public class Program {
 
     static void play(Random random) {
         int[] initialSolvedState = constructBoardToBeSolved(random);
+        System.out.println();
+        System.out.println("Final look of the solved board:");
+        Board.printBoard(initialSolvedState);
 
         int[] state = generateInitialBoardFromSolved(random, initialSolvedState);
 
@@ -879,12 +882,7 @@ public class Program {
             } // if (command == "move")
         }
 
-        int[] initialSolvedState = stateStack.peek();
-        System.out.println();
-        System.out.println("Final look of the solved board:");
-        Board.printBoard(initialSolvedState);
-
-        return initialSolvedState;
+        return stateStack.peek();
     }
 
     public static void main(String[] args) throws IOException {
