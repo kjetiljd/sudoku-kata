@@ -21,6 +21,9 @@ public class Program {
         Board.printBoard(initialSolvedState);
 
         int[] state = generateInitialBoardFromSolved(random, initialSolvedState);
+        System.out.println();
+        System.out.println("Starting look of the board to solve:");
+        Board.printBoard(state);
 
         //region Prepare lookup structures that will be used in further execution
         System.out.println();
@@ -740,10 +743,6 @@ public class Program {
 
             removedPos += 1;
         }
-
-        System.out.println();
-        System.out.println("Starting look of the board to solve:");
-        Board.printBoard(state);
         return state;
     }
 
