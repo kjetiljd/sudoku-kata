@@ -35,6 +35,8 @@ public class Program {
         final Map<Integer, Integer> singleBitToIndex = singleBitToIndex();
 
         final int allOnes = (1 << 9) - 1;
+
+        final Map<Integer, List<CellInBlock>> cellGroups = buildCellGroups();
         //endregion
 
         boolean changeMade = true;
@@ -68,8 +70,6 @@ public class Program {
                     candidateMasks[i] = allOnes & ~colidingNumbers;
                 }
             //endregion
-
-            Map<Integer, List<CellInBlock>> cellGroups = buildCellGroups();
 
             boolean stepChangeMade = true;
             while (stepChangeMade) {
