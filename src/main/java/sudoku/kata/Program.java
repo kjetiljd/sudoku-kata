@@ -945,9 +945,7 @@ class Board {
             int rowToWrite = tempRow + tempRow / 3 + 1;
             int colToWrite = tempCol + tempCol / 3 + 1;
 
-            updateBoard(board, rowToWrite, colToWrite, '.');
-            if (state[i] > 0)
-                updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
+            if (state[i] > 0) updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
         }
         return board;
     }
