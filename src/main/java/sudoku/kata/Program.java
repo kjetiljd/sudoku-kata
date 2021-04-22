@@ -17,8 +17,6 @@ public class Program {
     static void play(Random random) {
         //region Construct fully populated board
 
-        char[][] board = Board.prepareEmptyBoard();
-
         // Construct board to be solved
 
         // Top element is current state of the board
@@ -157,8 +155,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        board = Board.boardFromState(stateStack.peek());
-        Board.printBoard(board);
+        Board.printBoard(Board.boardFromState(stateStack.peek()));
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -201,8 +198,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        board = Board.boardFromState(state);
-        Board.printBoard(board);
+        Board.printBoard(Board.boardFromState(state));
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -853,8 +849,6 @@ public class Program {
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    board = Board.boardFromState(state);
-
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
             }
@@ -862,10 +856,9 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                board = Board.boardFromState(state);
-                Board.printBoard(board);
+                Board.printBoard(Board.boardFromState(state));
 
-                Board.printCode(board);
+                Board.printCode(Board.boardFromState(state));
                 System.out.println();
                 //endregion
             }
