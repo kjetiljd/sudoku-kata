@@ -872,7 +872,7 @@ public class Program {
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    board = boardFromState(state);
+                    board = Board.boardFromState(state);
 
                     System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
@@ -888,21 +888,6 @@ public class Program {
                 //endregion
             }
         }
-    }
-
-    private static char[][] boardFromState(int[] state) {
-        char[][] board = Board.prepareEmptyBoard();
-        for (int i = 0; i < state.length; i++) {
-            int tempRow = i / 9;
-            int tempCol = i % 9;
-            int rowToWrite = tempRow + tempRow / 3 + 1;
-            int colToWrite = tempCol + tempCol / 3 + 1;
-
-            Board.updateBoard(board, rowToWrite, colToWrite, '.');
-            if (state[i] > 0)
-                Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
-        }
-        return board;
     }
 
     public static void main(String[] args) throws IOException {
@@ -968,5 +953,20 @@ class Board {
 
     static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
         board[rowToWrite][colToWrite] = value;
+    }
+
+    static char[][] boardFromState(int[] state) {
+        char[][] board = prepareEmptyBoard();
+        for (int i = 0; i < state.length; i++) {
+            int tempRow = i / 9;
+            int tempCol = i % 9;
+            int rowToWrite = tempRow + tempRow / 3 + 1;
+            int colToWrite = tempCol + tempCol / 3 + 1;
+
+            updateBoard(board, rowToWrite, colToWrite, '.');
+            if (state[i] > 0)
+                updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
+        }
+        return board;
     }
 }
