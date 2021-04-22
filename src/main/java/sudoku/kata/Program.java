@@ -25,11 +25,11 @@ public class Program {
         System.out.println("Starting look of the board to solve:");
         Board.printBoard(state);
 
-        //region Prepare lookup structures that will be used in further execution
         System.out.println();
         System.out.println("=".repeat(80));
         System.out.println();
 
+        //region Prepare lookup structures that will be used in further execution
         Map<Integer, Integer> maskToOnesCount = new HashMap<>();
         maskToOnesCount.put(0, 0);
         for (int i = 1; i < (1 << 9); i++) {
