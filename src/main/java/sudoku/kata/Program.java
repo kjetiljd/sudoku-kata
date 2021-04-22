@@ -912,10 +912,6 @@ class Board {
         return new Board().board;
     }
 
-    private static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
-        board[rowToWrite][colToWrite] = value;
-    }
-
     private static char[][] boardFromState(int[] state) {
         char[][] board = prepareEmptyBoard();
         for (int i = 0; i < state.length; i++) {
@@ -924,7 +920,7 @@ class Board {
             int rowToWrite = tempRow + tempRow / 3 + 1;
             int colToWrite = tempCol + tempCol / 3 + 1;
 
-            if (state[i] > 0) updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
+            if (state[i] > 0) board[rowToWrite][colToWrite] = (char) ('0' + state[i]);
         }
         return board;
     }
