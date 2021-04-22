@@ -71,7 +71,7 @@ public class Program {
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
-            HashMap<Integer, List<CellInBlock>> cellGroups = buildCellGroups(state);
+            HashMap<Integer, List<CellInBlock>> cellGroups = buildCellGroups();
             //endregion
 
             boolean stepChangeMade = true;
@@ -665,7 +665,7 @@ public class Program {
         }
     }
 
-    private static HashMap<Integer, List<CellInBlock>> buildCellGroups(int[] state) {
+    private static HashMap<Integer, List<CellInBlock>> buildCellGroups() {
         int numberOfCells = 9 * 9;
         var rowsIndices = IntStream.range(0, numberOfCells)
                 .mapToObj(index -> new CellInBlock(
