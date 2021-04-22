@@ -24,7 +24,8 @@ public class Program {
         int maxRemovedPerBlock = 6;
         int[][] removedPerBlock = new int[3][3];
         int[] positions = IntStream.range(0, 9 * 9).toArray();
-        int[] state = initialSolvedState;
+        int[] state = new int[initialSolvedState.length];
+        System.arraycopy(initialSolvedState, 0, state, 0, state.length);
 
         int[] finalState = new int[state.length];
         System.arraycopy(state, 0, finalState, 0, finalState.length);
