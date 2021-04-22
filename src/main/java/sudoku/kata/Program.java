@@ -908,15 +908,15 @@ class Board {
                 };
     }
 
-    static char[][] prepareEmptyBoard() {
+    private static char[][] prepareEmptyBoard() {
         return new Board().board;
     }
 
-    static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
+    private static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
         board[rowToWrite][colToWrite] = value;
     }
 
-    static char[][] boardFromState(int[] state) {
+    private static char[][] boardFromState(int[] state) {
         char[][] board = prepareEmptyBoard();
         for (int i = 0; i < state.length; i++) {
             int tempRow = i / 9;
