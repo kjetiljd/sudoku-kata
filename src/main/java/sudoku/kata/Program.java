@@ -155,7 +155,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
-        Board.printBoard(Board.boardFromState(stateStack.peek()));
+        Board.printBoard(stateStack.peek());
         //endregion
 
         //region Generate inital board from the completely solved one
@@ -198,7 +198,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
-        Board.printBoard(Board.boardFromState(state));
+        Board.printBoard(state);
         //endregion
 
         //region Prepare lookup structures that will be used in further execution
@@ -856,9 +856,9 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
-                Board.printBoard(Board.boardFromState(state));
+                Board.printBoard(state);
 
-                Board.printCode(Board.boardFromState(state));
+                Board.printCode(state);
                 System.out.println();
                 //endregion
             }
@@ -941,5 +941,13 @@ class Board {
             if (state[i] > 0) updateBoard(board, rowToWrite, colToWrite, (char) ('0' + state[i]));
         }
         return board;
+    }
+
+    static void printCode(int[] state) {
+        printCode(boardFromState(state));
+    }
+
+    static void printBoard(int[] state) {
+        printBoard(boardFromState(state));
     }
 }
