@@ -140,14 +140,12 @@ public class Program {
                 if (digitToMove > 0) {
                     usedDigits[digitToMove - 1] = false;
                     currentState[currentStateIndex] = 0;
-                    Board.updateBoard(board, rowToWrite, colToWrite, '.');
                 }
 
                 if (movedToDigit <= 9) {
                     lastDigitStack.push(movedToDigit);
                     usedDigits[movedToDigit - 1] = true;
                     currentState[currentStateIndex] = movedToDigit;
-                    Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + movedToDigit));
 
                     // Next possible digit was found at current position
                     // Next step will be to expand the state
@@ -200,8 +198,6 @@ public class Program {
 
             int rowToWrite = row + row / 3 + 1;
             int colToWrite = col + col / 3 + 1;
-
-            Board.updateBoard(board, rowToWrite, colToWrite, '.');
 
             int stateIndex = 9 * row + col;
             state[stateIndex] = 0;
@@ -338,7 +334,6 @@ public class Program {
                     int colToWrite = col + col / 3 + 1;
 
                     state[singleCandidateIndex] = candidate + 1;
-                    Board.updateBoard(board, rowToWrite, colToWrite, (char) ('1' + candidate));
                     candidateMasks[singleCandidateIndex] = 0;
                     changeMade = true;
 
@@ -430,7 +425,6 @@ public class Program {
                         int stateIndex = 9 * row + col;
                         state[stateIndex] = digit;
                         candidateMasks[stateIndex] = 0;
-                        Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + digit));
 
                         changeMade = true;
 
@@ -817,14 +811,12 @@ public class Program {
                             if (digitToMove > 0) {
                                 usedDigits[digitToMove - 1] = false;
                                 currentState[currentStateIndex] = 0;
-                                Board.updateBoard(board, rowToWrite, colToWrite, '.');
                             }
 
                             if (movedToDigit <= 9) {
                                 lastDigitStack.push(movedToDigit);
                                 usedDigits[movedToDigit - 1] = true;
                                 currentState[currentStateIndex] = movedToDigit;
-                                Board.updateBoard(board, rowToWrite, colToWrite, (char) ('0' + movedToDigit));
 
                                 if (Arrays.stream(currentState).anyMatch(digit -> digit == 0))
                                     command = Command.EXPAND;
