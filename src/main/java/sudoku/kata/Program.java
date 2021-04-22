@@ -126,9 +126,6 @@ public class Program {
                 int colToMove = colIndexStack.peek();
                 int digitToMove = lastDigitStack.pop();
 
-                int rowToWrite = rowToMove + rowToMove / 3 + 1;
-                int colToWrite = colToMove + colToMove / 3 + 1;
-
                 boolean[] usedDigits = usedDigitsStack.peek();
                 int[] currentState = stateStack.peek();
                 int currentStateIndex = 9 * rowToMove + colToMove;
@@ -195,9 +192,6 @@ public class Program {
             int temp = positions[removedPos];
             positions[removedPos] = positions[indexToPick];
             positions[indexToPick] = temp;
-
-            int rowToWrite = row + row / 3 + 1;
-            int colToWrite = col + col / 3 + 1;
 
             int stateIndex = 9 * row + col;
             state[stateIndex] = 0;
@@ -330,9 +324,6 @@ public class Program {
                     int row = singleCandidateIndex / 9;
                     int col = singleCandidateIndex % 9;
 
-                    int rowToWrite = row + row / 3 + 1;
-                    int colToWrite = col + col / 3 + 1;
-
                     state[singleCandidateIndex] = candidate + 1;
                     candidateMasks[singleCandidateIndex] = 0;
                     changeMade = true;
@@ -417,8 +408,7 @@ public class Program {
                         int row = candidateRowIndices.get(index);
                         int col = candidateColIndices.get(index);
                         int digit = candidates.get(index);
-                        int rowToWrite = row + row / 3 + 1;
-                        int colToWrite = col + col / 3 + 1;
+
 
                         String message = description + " can contain " + digit + " only at (" + (row + 1) + ", " + (col + 1) + ").";
 
@@ -796,9 +786,6 @@ public class Program {
                             int rowToMove = rowIndexStack.peek();
                             int colToMove = colIndexStack.peek();
                             int digitToMove = lastDigitStack.pop();
-
-                            int rowToWrite = rowToMove + rowToMove / 3 + 1;
-                            int colToWrite = colToMove + colToMove / 3 + 1;
 
                             boolean[] usedDigits = usedDigitsStack.peek();
                             int[] currentState = stateStack.peek();
