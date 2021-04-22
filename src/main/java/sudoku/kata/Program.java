@@ -926,12 +926,7 @@ class Board {
     }
 
     static void printCode(int[] state) {
-        String code =
-                String.join("", Arrays.stream(boardFromState(state)).map(it -> new String(it)).collect(toList()))
-                        .replace("-", "")
-                        .replace("+", "")
-                        .replace("|", "")
-                        .replace(".", "0");
+        String code = IntStream.of(state).mapToObj(Integer::toString).collect(Collectors.joining(""));
         System.out.format("Code: %s", code).println();
     }
 
