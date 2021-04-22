@@ -745,8 +745,6 @@ public class Program {
     }
 
     private static int[] constructBoardToBeSolved(Random random) {
-        int[] initialSolvedState;
-
         // Top element is current initialSolvedState of the board
         Stack<int[]> stateStack = new Stack<>();
 
@@ -881,7 +879,7 @@ public class Program {
             } // if (command == "move")
         }
 
-        initialSolvedState = stateStack.peek();
+        int[] initialSolvedState = stateStack.peek();
         System.out.println();
         System.out.println("Final look of the solved board:");
         Board.printBoard(initialSolvedState);
