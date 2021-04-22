@@ -666,7 +666,8 @@ public class Program {
     }
 
     private static HashMap<Integer, List<CellInBlock>> buildCellGroups(int[] state) {
-        var rowsIndices = IntStream.range(0, state.length)
+        int numberOfCells = state.length;
+        var rowsIndices = IntStream.range(0, numberOfCells)
                 .mapToObj(index -> new CellInBlock(
                         index / 9,
                         "row #" + (index / 9 + 1),
@@ -676,7 +677,7 @@ public class Program {
                 .collect(groupingBy(tuple -> tuple.discriminator));
 
         var columnIndices =
-                IntStream.range(0, state.length)
+                IntStream.range(0, numberOfCells)
                         .mapToObj(index -> new CellInBlock(
                                 9 + index % 9,
                                 "column #" + (index % 9 + 1),
@@ -686,7 +687,7 @@ public class Program {
                         .collect(groupingBy(tuple -> tuple.discriminator));
 
         var blockIndices =
-                IntStream.range(0, state.length)
+                IntStream.range(0, numberOfCells)
                         .mapToObj(index -> Map.of(
                                 "Row", index / 9,
                                 "Column", index % 9,
