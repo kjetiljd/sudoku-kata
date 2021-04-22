@@ -666,7 +666,7 @@ public class Program {
     }
 
     private static HashMap<Integer, List<CellInBlock>> buildCellGroups(int[] state) {
-        int numberOfCells = state.length;
+        int numberOfCells = 9 * 9;
         var rowsIndices = IntStream.range(0, numberOfCells)
                 .mapToObj(index -> new CellInBlock(
                         index / 9,
