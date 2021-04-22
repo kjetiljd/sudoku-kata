@@ -32,9 +32,7 @@ public class Program {
         //region Prepare lookup structures that will be used in further execution
         Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
 
-        Map<Integer, Integer> singleBitToIndex = new HashMap<>();
-        for (int i = 0; i < 9; i++)
-            singleBitToIndex.put(1 << i, i);
+        Map<Integer, Integer> singleBitToIndex = singleBitToIndex();
 
         int allOnes = (1 << 9) - 1;
         //endregion
@@ -700,6 +698,13 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static Map<Integer, Integer> singleBitToIndex() {
+        Map<Integer, Integer> singleBitToIndex = new HashMap<>();
+        for (int i = 0; i < 9; i++)
+            singleBitToIndex.put(1 << i, i);
+        return singleBitToIndex;
     }
 
     private static Map<Integer, Integer> maskToOnesCount() {
