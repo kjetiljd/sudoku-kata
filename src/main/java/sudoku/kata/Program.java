@@ -912,20 +912,6 @@ class Board {
         return new Board().board;
     }
 
-    static void printBoard(char[][] board) {
-        System.out.println(String.join(System.lineSeparator(), Arrays.stream(board).map(it -> new String(it)).collect(toList())));
-    }
-
-    static void printCode(char[][] board) {
-        String code =
-                String.join("", Arrays.stream(board).map(it -> new String(it)).collect(toList()))
-                        .replace("-", "")
-                        .replace("+", "")
-                        .replace("|", "")
-                        .replace(".", "0");
-        System.out.format("Code: %s", code).println();
-    }
-
     static void updateBoard(char[][] board, int rowToWrite, int colToWrite, char value) {
         board[rowToWrite][colToWrite] = value;
     }
@@ -944,10 +930,16 @@ class Board {
     }
 
     static void printCode(int[] state) {
-        printCode(boardFromState(state));
+        String code =
+                String.join("", Arrays.stream(boardFromState(state)).map(it -> new String(it)).collect(toList()))
+                        .replace("-", "")
+                        .replace("+", "")
+                        .replace("|", "")
+                        .replace(".", "0");
+        System.out.format("Code: %s", code).println();
     }
 
     static void printBoard(int[] state) {
-        printBoard(boardFromState(state));
+        System.out.println(String.join(System.lineSeparator(), Arrays.stream(boardFromState(state)).map(it -> new String(it)).collect(toList())));
     }
 }
