@@ -71,46 +71,7 @@ public class Program {
 
             //region Build a collection (named cellGroups) which maps cell indices into distinct groups (rows/columns/blocks)
 
-            record CellInBlock(int discriminator, String description, int index, int row, int column) {
-            }
-
-            var rowsIndices = IntStream.range(0, state.length)
-                    .mapToObj(index -> new CellInBlock(
-                            index / 9,
-                            "row #" + (index / 9 + 1),
-                            index,
-                            index / 9,
-                            index % 9))
-                    .collect(groupingBy(tuple -> tuple.discriminator));
-
-            var columnIndices =
-                    IntStream.range(0, state.length)
-                            .mapToObj(index -> new CellInBlock(
-                                    9 + index % 9,
-                                    "column #" + (index % 9 + 1),
-                                    index,
-                                    index / 9,
-                                    index % 9))
-                            .collect(groupingBy(tuple -> tuple.discriminator));
-
-            var blockIndices =
-                    IntStream.range(0, state.length)
-                            .mapToObj(index -> Map.of(
-                                    "Row", index / 9,
-                                    "Column", index % 9,
-                                    "Index", index
-                            ))
-                            .map(tuple -> new CellInBlock(
-                                    (18 + 3 * (tuple.get("Row") / 3) + tuple.get("Column") / 3),
-                                    "block (" + (tuple.get("Row") / 3 + 1) + ", " + (tuple.get("Column") / 3 + 1) + ")",
-                                    tuple.get("Index"),
-                                    tuple.get("Row"),
-                                    tuple.get("Column")))
-                            .collect(groupingBy(tuple -> tuple.discriminator));
-
-            var cellGroups = new HashMap<>(rowsIndices);
-            cellGroups.putAll(columnIndices);
-            cellGroups.putAll(blockIndices);
+            HashMap<Integer, List<CellInBlock>> cellGroups = buildCellGroups(state);
             //endregion
 
             boolean stepChangeMade = true;
@@ -704,6 +665,47 @@ public class Program {
         }
     }
 
+    private static HashMap<Integer, List<CellInBlock>> buildCellGroups(int[] state) {
+        var rowsIndices = IntStream.range(0, state.length)
+                .mapToObj(index -> new CellInBlock(
+                        index / 9,
+                        "row #" + (index / 9 + 1),
+                        index,
+                        index / 9,
+                        index % 9))
+                .collect(groupingBy(tuple -> tuple.discriminator));
+
+        var columnIndices =
+                IntStream.range(0, state.length)
+                        .mapToObj(index -> new CellInBlock(
+                                9 + index % 9,
+                                "column #" + (index % 9 + 1),
+                                index,
+                                index / 9,
+                                index % 9))
+                        .collect(groupingBy(tuple -> tuple.discriminator));
+
+        var blockIndices =
+                IntStream.range(0, state.length)
+                        .mapToObj(index -> Map.of(
+                                "Row", index / 9,
+                                "Column", index % 9,
+                                "Index", index
+                        ))
+                        .map(tuple -> new CellInBlock(
+                                (18 + 3 * (tuple.get("Row") / 3) + tuple.get("Column") / 3),
+                                "block (" + (tuple.get("Row") / 3 + 1) + ", " + (tuple.get("Column") / 3 + 1) + ")",
+                                tuple.get("Index"),
+                                tuple.get("Row"),
+                                tuple.get("Column")))
+                        .collect(groupingBy(tuple -> tuple.discriminator));
+
+        var cellGroups = new HashMap<>(rowsIndices);
+        cellGroups.putAll(columnIndices);
+        cellGroups.putAll(blockIndices);
+        return cellGroups;
+    }
+
     private static Map<Integer, Integer> singleBitToIndex() {
         Map<Integer, Integer> singleBitToIndex = new HashMap<>();
         for (int i = 0; i < 9; i++)
@@ -906,6 +908,9 @@ public class Program {
             System.out.print("Press ENTER to exit... ");
             System.console().readLine();
         }
+    }
+
+    record CellInBlock(int discriminator, String description, int index, int row, int column) {
     }
 }
 
