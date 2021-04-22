@@ -710,7 +710,7 @@ public class Program {
             int increment = i & 1;
             maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
         }
-        return maskToOnesCount;
+        return Collections.unmodifiableMap(maskToOnesCount);
     }
 
     private static int[] generateInitialBoardFromSolved(Random random, int[] initialSolvedState) {
