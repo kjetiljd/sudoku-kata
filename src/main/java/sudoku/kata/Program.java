@@ -27,9 +27,6 @@ public class Program {
         int[] state = new int[initialSolvedState.length];
         System.arraycopy(initialSolvedState, 0, state, 0, state.length);
 
-        int[] finalState = new int[state.length];
-        System.arraycopy(state, 0, finalState, 0, finalState.length);
-
         int removedPos = 0;
         while (removedPos < 9 * 9 - remainingDigits) {
             int curRemainingDigits = positions.length - removedPos;
@@ -529,10 +526,10 @@ public class Program {
                     int digit1 = candidateDigit1.remove();
                     int digit2 = candidateDigit2.remove();
 
-                    int[] alternateState = new int[finalState.length];
+                    int[] alternateState = new int[initialSolvedState.length];
                     System.arraycopy(state, 0, alternateState, 0, alternateState.length);
 
-                    if (finalState[index1] == digit1) {
+                    if (initialSolvedState[index1] == digit1) {
                         alternateState[index1] = digit2;
                         alternateState[index2] = digit1;
                     } else {
@@ -722,13 +719,13 @@ public class Program {
                         description = "block (" + (row1 / 3 + 1) + ", " + (col1 / 3 + 1) + ")";
                     }
 
-                    state[index1] = finalState[index1];
-                    state[index2] = finalState[index2];
+                    state[index1] = initialSolvedState[index1];
+                    state[index2] = initialSolvedState[index2];
                     candidateMasks[index1] = 0;
                     candidateMasks[index2] = 0;
                     changeMade = true;
 
-                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + finalState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + finalState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
+                    System.out.println("Guessing that " + digit1 + " and " + digit2 + " are arbitrary in " + description + " (multiple solutions): Pick " + initialSolvedState[index1] + "->(" + (row1 + 1) + ", " + (col1 + 1) + "), " + initialSolvedState[index2] + "->(" + (row2 + 1) + ", " + (col2 + 1) + ").");
                 }
             }
             //endregion
