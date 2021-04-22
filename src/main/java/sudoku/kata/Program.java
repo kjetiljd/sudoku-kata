@@ -30,13 +30,7 @@ public class Program {
         System.out.println();
 
         //region Prepare lookup structures that will be used in further execution
-        Map<Integer, Integer> maskToOnesCount = new HashMap<>();
-        maskToOnesCount.put(0, 0);
-        for (int i = 1; i < (1 << 9); i++) {
-            int smaller = i >> 1;
-            int increment = i & 1;
-            maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
-        }
+        Map<Integer, Integer> maskToOnesCount = maskToOnesCount();
 
         Map<Integer, Integer> singleBitToIndex = new HashMap<>();
         for (int i = 0; i < 9; i++)
@@ -706,6 +700,17 @@ public class Program {
                 //endregion
             }
         }
+    }
+
+    private static Map<Integer, Integer> maskToOnesCount() {
+        Map<Integer, Integer> maskToOnesCount = new HashMap<>();
+        maskToOnesCount.put(0, 0);
+        for (int i = 1; i < (1 << 9); i++) {
+            int smaller = i >> 1;
+            int increment = i & 1;
+            maskToOnesCount.put(i, maskToOnesCount.get(smaller) + increment);
+        }
+        return maskToOnesCount;
     }
 
     private static int[] generateInitialBoardFromSolved(Random random, int[] initialSolvedState) {
