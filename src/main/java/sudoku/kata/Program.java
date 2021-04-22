@@ -162,6 +162,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Final look of the solved board:");
+        board = Board.boardFromState(stateStack.peek());
         Board.printBoard(board);
         //endregion
 
@@ -210,6 +211,7 @@ public class Program {
 
         System.out.println();
         System.out.println("Starting look of the board to solve:");
+        board = Board.boardFromState(state);
         Board.printBoard(board);
         //endregion
 
@@ -881,6 +883,7 @@ public class Program {
 
             if (changeMade) {
                 //region Print the board as it looks after one change was made to it
+                board = Board.boardFromState(state);
                 Board.printBoard(board);
 
                 Board.printCode(board);
